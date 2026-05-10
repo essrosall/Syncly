@@ -48,8 +48,8 @@ const Dashboard = () => {
       <div className="space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">Welcome back, Sarah!</h1>
-          <p className="text-neutral-700 dark:text-neutral-400">Here's what's happening with your tasks today.</p>
+          <h1 className="text-2xl font-bold mb-1 text-neutral-900 dark:text-neutral-100">Welcome back, Sarah!</h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">Here's what's happening with your tasks today.</p>
         </div>
 
         {/* Stats Grid */}

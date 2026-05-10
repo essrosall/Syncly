@@ -16,8 +16,8 @@ const Workspaces = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">Workspaces</h1>
-            <p className="text-neutral-700 dark:text-neutral-400">Manage your teams and projects</p>
+            <h1 className="text-2xl font-bold mb-1 text-neutral-900 dark:text-neutral-100">Workspaces</h1>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Manage your teams and projects</p>
           </div>
           <Button variant="primary">Create Workspace</Button>
         </div>

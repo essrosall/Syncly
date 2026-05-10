@@ -137,31 +137,40 @@ const Tasks = () => {
     if (activeId === overId) return;
 
     setTasks((prevTasks) => {
-      const activeTasks = [...prevTasks[activeColumnId]];
-      const overTasks = overColumnId ? [...prevTasks[overColumnId]] : [...prevTasks[activeColumnId]];
+      try {
+        const activeTasks = [...(prevTasks[activeColumnId] || [])];
+        const overTasks = overColumnId ? [...(prevTasks[overColumnId] || [])] : [...activeTasks];
 
-      const activeTaskIndex = activeTasks.findIndex(
-        (t) => String(t.id) === activeTaskId
-      );
-      const overTaskIndex = overTasks.findIndex(
-        (t) => String(t.id) === overTaskId
-      );
+        const activeTaskIndex = activeTasks.findIndex(
+          (t) => String(t.id) === activeTaskId
+        );
+        
+        if (activeTaskIndex < 0) return prevTasks;
+        
+        const overTaskIndex = overColumnId && overTaskId 
+          ? overTasks.findIndex((t) => String(t.id) === overTaskId)
+          : -1;
 
-      if (activeColumnId === overColumnId) {
-        // Reorder within the same column
-        const newTasks = arrayMove(activeTasks, activeTaskIndex, overTaskIndex);
-        return { ...prevTasks, [activeColumnId]: newTasks };
-      } else {
-        // Move task to a different column
-        const [movedTask] = activeTasks.splice(activeTaskIndex, 1);
-        const newOverTasks = [...overTasks];
-        newOverTasks.splice(overTaskIndex >= 0 ? overTaskIndex : newOverTasks.length, 0, movedTask);
+        if (activeColumnId === overColumnId) {
+          // Reorder within the same column
+          const newTasks = arrayMove(activeTasks, activeTaskIndex, Math.max(0, overTaskIndex));
+          return { ...prevTasks, [activeColumnId]: newTasks };
+        } else if (overColumnId && prevTasks[overColumnId]) {
+          // Move task to a different column
+          const [movedTask] = activeTasks.splice(activeTaskIndex, 1);
+          const newOverTasks = [...overTasks];
+          newOverTasks.splice(overTaskIndex >= 0 ? overTaskIndex : newOverTasks.length, 0, movedTask);
 
-        return {
-          ...prevTasks,
-          [activeColumnId]: activeTasks,
-          [overColumnId]: newOverTasks,
-        };
+          return {
+            ...prevTasks,
+            [activeColumnId]: activeTasks,
+            [overColumnId]: newOverTasks,
+          };
+        }
+        return prevTasks;
+      } catch (error) {
+        console.error('Drag error:', error);
+        return prevTasks;
       }
     });
   };
@@ -172,8 +181,8 @@ const Tasks = () => {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">Tasks</h1>
-            <p className="text-neutral-700 dark:text-neutral-400">Manage all your tasks and deadlines</p>
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Tasks</h1>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Manage all your tasks and deadlines</p>
           </div>
           <Button variant="primary" className="gap-2">
             <Plus size={18} /> New Task
@@ -181,8 +190,8 @@ const Tasks = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+          <div className="sm:w-80">
             <Input
               type="text"
               placeholder="Search tasks..."
