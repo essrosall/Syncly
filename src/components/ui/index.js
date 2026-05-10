@@ -5,3 +5,4 @@ export { default as Badge } from './Badge';
 export { default as Textarea } from './Textarea';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Alert } from './Alert';
+export { default as Modal } from './Modal';

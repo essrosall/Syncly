@@ -37,10 +37,10 @@ const Dashboard = () => {
   ];
 
   const recentTasks = [
-    { id: 1, title: 'Design landing page', status: 'in-progress', priority: 'high', desc: 'Finalize hero section and CTA', assignee: 'Alex', time: '2h ago' },
-    { id: 2, title: 'Fix login bug', status: 'done', priority: 'high', desc: 'Resolve redirect after OAuth', assignee: 'Maya', time: '1d ago' },
-    { id: 3, title: 'Update documentation', status: 'pending', priority: 'medium', desc: 'Add API examples and auth guide', assignee: 'You', time: '3d ago' },
-    { id: 4, title: 'Database optimization', status: 'in-progress', priority: 'low', desc: 'Add indexes and analyze queries', assignee: 'Sam', time: '5d ago' },
+    { id: 1, title: 'Design landing page', status: 'In-progress', priority: 'High', desc: 'Finalize hero section and CTA', assignee: 'Alex', time: '2h ago' },
+    { id: 2, title: 'Fix login bug', status: 'Done', priority: 'High', desc: 'Resolve redirect after OAuth', assignee: 'Maya', time: '1d ago' },
+    { id: 3, title: 'Update documentation', status: 'Pending', priority: 'Medium', desc: 'Add API examples and auth guide', assignee: 'You', time: '3d ago' },
+    { id: 4, title: 'Database optimization', status: 'In-progress', priority: 'Low', desc: 'Add indexes and analyze queries', assignee: 'Sam', time: '5d ago' },
   ];
 
   return (
@@ -87,7 +87,7 @@ const Dashboard = () => {
                       <p className="font-medium text-neutral-900 dark:text-neutral-100">{task.title}</p>
                       <p className="text-sm text-neutral-700 dark:text-neutral-400 mt-1">{task.desc}</p>
                       <div className="flex items-center gap-3 mt-3">
-                        <Badge variant={task.priority === 'high' ? 'error' : task.priority === 'medium' ? 'warning' : 'default'} size="sm">
+                        <Badge variant={task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'default'} size="sm">
                           {task.priority}
                         </Badge>
                         <span className="text-xs text-neutral-700 dark:text-neutral-400">Assigned to <strong className="text-neutral-900 dark:text-neutral-100">{task.assignee}</strong></span>
@@ -97,9 +97,9 @@ const Dashboard = () => {
                     <div className="ml-4">
                       <Badge
                         variant={
-                          task.status === 'done'
+                          task.status === 'Done'
                             ? 'success'
-                            : task.status === 'in-progress'
+                            : task.status === 'In-progress'
                             ? 'primary'
                             : 'default'
                         }
