@@ -13,7 +13,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 flex items-center justify-center p-4">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
@@ -26,15 +26,15 @@ const Login = () => {
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center mx-auto mb-4">
             <span className="font-bold text-white text-lg">S</span>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Welcome to Syncly</h1>
-          <p className="text-neutral-400">Manage tasks and collaborate with your team</p>
+          <h1 className="text-3xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">Welcome to Syncly</h1>
+          <p className="text-neutral-600 dark:text-neutral-400">Manage tasks and collaborate with your team</p>
         </div>
 
         {/* Login Form */}
         <Card className="space-y-6">
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Email Address</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
@@ -46,7 +46,7 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">Password</label>
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Password</label>
               <Input
                 type="password"
                 placeholder="••••••••"
@@ -59,8 +59,8 @@ const Login = () => {
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2">
-                <input type="checkbox" className="w-4 h-4 rounded border-neutral-600" />
-                <span className="text-neutral-400">Remember me</span>
+                <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 dark:border-neutral-600" />
+                <span className="text-neutral-600 dark:text-neutral-400">Remember me</span>
               </label>
               <a href="#" className="text-primary-400 hover:text-primary-300 font-medium">
                 Forgot password?
@@ -75,10 +75,10 @@ const Login = () => {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-700"></div>
+              <div className="w-full border-t border-neutral-200 dark:border-neutral-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-neutral-900 text-neutral-400">Or continue with</span>
+              <span className="px-2 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400">Or continue with</span>
             </div>
           </div>
 

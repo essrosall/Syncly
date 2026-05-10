@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '../ui';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = ({ user, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="card sticky top-0 z-50 rounded-none border-b border-t-0 border-l-0 border-r-0">
+    <nav className="card sticky top-0 z-50 rounded-none border-b border-t-0 border-l-0 border-r-0" role="navigation" aria-label="Top navigation">
       <div className="px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center" aria-hidden="true">
             <span className="font-bold text-white text-sm">S</span>
           </div>
-          <span className="font-bold text-lg text-neutral-100">Syncly</span>
+          <span className="font-bold text-lg text-neutral-900 dark:text-neutral-100" aria-label="Syncly logo">Syncly</span>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="/" className="text-neutral-300 hover:text-neutral-100 transition-colors">Dashboard</a>
-          <a href="/tasks" className="text-neutral-300 hover:text-neutral-100 transition-colors">Tasks</a>
-          <a href="/workspaces" className="text-neutral-300 hover:text-neutral-100 transition-colors">Workspaces</a>
-          <a href="/analytics" className="text-neutral-300 hover:text-neutral-100 transition-colors">Analytics</a>
+          <a href="/" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Dashboard</a>
+          <a href="/tasks" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Tasks</a>
+          <a href="/workspaces" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Workspaces</a>
+          <a href="/analytics" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Analytics</a>
         </div>
 
         {/* User & Actions */}
@@ -29,8 +30,8 @@ const Navbar = ({ user, onLogout }) => {
           {user && (
             <div className="hidden sm:flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm font-medium text-neutral-100">{user.name}</p>
-                <p className="text-xs text-neutral-400">{user.email}</p>
+                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{user.name}</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">{user.email}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center font-semibold text-white">
                 {user.name.charAt(0)}
@@ -38,6 +39,9 @@ const Navbar = ({ user, onLogout }) => {
             </div>
           )}
           {user && <Button variant="ghost" size="sm" onClick={onLogout}><LogOut size={18} /></Button>}
+          
+          {/* Theme toggle */}
+          <ThemeToggle />
           
           {/* Mobile Menu Toggle */}
           <button

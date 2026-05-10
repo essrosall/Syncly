@@ -7,18 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary brand colors
+        // Primary brand colors (Navy Blue)
         primary: {
-          50: '#f0f7ff',
-          100: '#e0eeff',
-          200: '#bae3ff',
-          300: '#7cc8ff',
-          400: '#36adff',
-          500: '#0891ff',
-          600: '#0277cc',
-          700: '#065ba8',
-          800: '#074a8a',
-          900: '#0a3d70',
+          50: '#f0f4f8',
+          100: '#d9e5f1',
+          200: '#b3cbe3',
+          300: '#7ca6d4',
+          400: '#4a7fb8',
+          500: '#1e5aa6',
+          600: '#1a4d8a',
+          700: '#15406e',
+          800: '#103352',
+          900: '#0a1f36',
         },
         // Neutral colors (for dark mode)
         neutral: {
@@ -79,12 +79,12 @@ export default {
         'lg-dark': '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15)',
       },
       borderRadius: {
-        xs: '0.25rem',
-        sm: '0.375rem',
-        base: '0.5rem',
-        md: '0.75rem',
-        lg: '1rem',
-        xl: '1.5rem',
+        xs: '0.125rem',
+        sm: '0.25rem',
+        base: '0.375rem',
+        md: '0.5rem',
+        lg: '0.75rem',
+        xl: '1rem',
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in',
