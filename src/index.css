@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-neutral-950 text-neutral-100 transition-colors duration-300;
+  }
+
+  html.light {
+    @apply bg-neutral-0 text-neutral-950;
+  }
+
+  /* Smooth scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-900;
+  }
+
+  html.light ::-webkit-scrollbar-track {
+    @apply bg-neutral-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-700 rounded-full hover:bg-neutral-600;
+  }
+
+  html.light ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-400 rounded-full hover:bg-neutral-500;
+  }
+}
+
+@layer components {
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  html.light .glass {
+    @apply bg-black/5 border-black/10;
+  }
+
+  /* Card components */
+  .card {
+    @apply bg-neutral-900 border border-neutral-800 rounded-lg;
+  }
+
+  html.light .card {
+    @apply bg-neutral-0 border-neutral-200;
+  }
+
+  /* Button base styles */
+  .btn-base {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Input base styles */
+  .input-base {
+    @apply px-4 py-2 rounded-lg border bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+
+  html.light .input-base {
+    @apply bg-neutral-0 border-neutral-300 text-neutral-950 placeholder-neutral-400 focus:ring-primary-600;
+  }
+
+  /* Text selection color */
+  ::selection {
+    @apply bg-primary-500 text-white;
+  }
+
+  html.light ::selection {
+    @apply bg-primary-300;
+  }
+}
+
+/* Custom animations for interactions */
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+}
