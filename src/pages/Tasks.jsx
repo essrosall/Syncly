@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainLayout } from '../components/layout';
-import { Card, Badge, Button, Input, Modal, Textarea } from '../components/ui';
+import { Card, Badge, Button, Input, Modal, Textarea, Toast } from '../components/ui';
+import { useCreateModal } from '../contexts/CreateModalContext';
 import { Plus, Filter, Search, GripVertical } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
+import { useGlobalModal } from '../contexts/GlobalModalContext';
+import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import {
   DndContext,
   closestCenter,
@@ -9,6 +13,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -30,6 +35,38 @@ const assigneeOptions = ['You', 'Alex', 'Mike', 'Sarah', 'Admin'];
 
 const priorityOptions = ['high', 'medium', 'low'];
 
+const TASKS_STORAGE_KEY = 'syncly:tasks';
+const TASK_ACTIVITY_STORAGE_KEY = 'syncly:taskActivity';
+
+const defaultTasks = {
+  todo: [
+    { id: 1, title: 'Setup database', priority: 'high', assignee: 'You', dueDate: '2024-05-15', description: 'Configure schema, migrations, and initial tables.' },
+    { id: 2, title: 'Create API documentation', priority: 'medium', assignee: 'Alex', dueDate: '2024-05-20', description: 'Document endpoints, request payloads, and response examples.' },
+  ],
+  'in-progress': [
+    { id: 3, title: 'Design landing page', priority: 'high', assignee: 'You', dueDate: '2024-05-12', description: 'Sketch the hero section, layout, and visual direction.' },
+    { id: 4, title: 'Implement user auth', priority: 'high', assignee: 'Mike', dueDate: '2024-05-18', description: 'Wire up login, signup, and session handling.' },
+  ],
+  review: [
+    { id: 5, title: 'Performance optimization', priority: 'low', assignee: 'Sarah', dueDate: '2024-05-22', description: 'Profile slow flows and reduce rendering overhead.' },
+  ],
+  done: [
+    { id: 6, title: 'Project setup', priority: 'high', assignee: 'You', dueDate: '2024-05-10', description: 'Initialize the repo, tooling, and starter structure.' },
+    { id: 7, title: 'Team onboarding', priority: 'medium', assignee: 'Admin', dueDate: '2024-05-09', description: 'Prepare kickoff notes, access, and checklist items.' },
+  ],
+};
+
+const readStoredJson = (key, fallback) => {
+  if (typeof window === 'undefined') return fallback;
+
+  try {
+    const storedValue = window.localStorage.getItem(key);
+    return storedValue ? JSON.parse(storedValue) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+};
+
 const createTaskForm = (task) => ({
   title: task.title || '',
   priority: task.priority || 'medium',
@@ -39,8 +76,95 @@ const createTaskForm = (task) => ({
   description: task.description || '',
 });
 
+const createEmptyTaskForm = (columnId = 'todo') => ({
+  title: '',
+  priority: 'medium',
+  assignee: 'You',
+  dueDate: '',
+  status: columnId,
+  description: '',
+});
+
 const getTaskStatusMeta = (columnId) =>
   taskStatusOptions.find((option) => option.value === columnId) || taskStatusOptions[0];
+
+const getTaskKey = (taskId) => String(taskId);
+
+const getNextTaskId = (tasks) => {
+  const taskIds = Object.values(tasks).flat().map((task) => Number(task.id) || 0);
+  return (taskIds.length > 0 ? Math.max(...taskIds) : 0) + 1;
+};
+
+const formatActivityTime = (timestamp) =>
+  new Date(timestamp).toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+
+function createInitialTaskActivity() {
+  return {
+  '1': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-01T09:00:00Z',
+    },
+  ],
+  '2': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-02T09:00:00Z',
+    },
+  ],
+  '3': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-03T09:00:00Z',
+    },
+  ],
+  '4': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-04T09:00:00Z',
+    },
+  ],
+  '5': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-05T09:00:00Z',
+    },
+  ],
+  '6': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-06T09:00:00Z',
+    },
+  ],
+  '7': [
+    {
+      type: 'activity',
+      message: 'Task created',
+      author: 'System',
+      timestamp: '2024-05-07T09:00:00Z',
+    },
+  ],
+  };
+}
+
+const defaultTaskActivity = createInitialTaskActivity();
 
 // Draggable task card component
 const DraggableTask = ({ task, columnId, onTaskClick }) => {
@@ -105,35 +229,54 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
   );
 };
 
+// Column wrapper that registers as a droppable container so items can be dropped into empty columns
+const ColumnWrapper = ({ column, children }) => {
+  const { setNodeRef } = useDroppable({ id: column.id });
+
+  return (
+    <div ref={setNodeRef} className="flex flex-col bg-white dark:bg-neutral-900/80 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 min-w-max lg:min-w-0 text-neutral-900 dark:text-neutral-100">
+      {children}
+    </div>
+  );
+};
+
 const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPriorities, setSelectedPriorities] = useState(['high', 'medium', 'low']);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditingTask, setIsEditingTask] = useState(false);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [taskForm, setTaskForm] = useState(null);
+  const [taskActivity, setTaskActivity] = useState(() => readStoredJson(TASK_ACTIVITY_STORAGE_KEY, defaultTaskActivity));
+  const [commentDraft, setCommentDraft] = useState('');
+  const [toastMessage, setToastMessage] = useState(null);
+  const { addToast } = useToast();
+  const { openModal } = useGlobalModal();
+
+  const { createRequest, clearRequest } = useCreateModal();
   
   const mockUser = {
     name: 'Sarah Johnson',
     email: 'sarah@example.com',
   };
 
-  const [tasks, setTasks] = useState({
-    todo: [
-      { id: 1, title: 'Setup database', priority: 'high', assignee: 'You', dueDate: '2024-05-15', description: 'Configure schema, migrations, and initial tables.' },
-      { id: 2, title: 'Create API documentation', priority: 'medium', assignee: 'Alex', dueDate: '2024-05-20', description: 'Document endpoints, request payloads, and response examples.' },
-    ],
-    'in-progress': [
-      { id: 3, title: 'Design landing page', priority: 'high', assignee: 'You', dueDate: '2024-05-12', description: 'Sketch the hero section, layout, and visual direction.' },
-      { id: 4, title: 'Implement user auth', priority: 'high', assignee: 'Mike', dueDate: '2024-05-18', description: 'Wire up login, signup, and session handling.' },
-    ],
-    review: [
-      { id: 5, title: 'Performance optimization', priority: 'low', assignee: 'Sarah', dueDate: '2024-05-22', description: 'Profile slow flows and reduce rendering overhead.' },
-    ],
-    done: [
-      { id: 6, title: 'Project setup', priority: 'high', assignee: 'You', dueDate: '2024-05-10', description: 'Initialize the repo, tooling, and starter structure.' },
-      { id: 7, title: 'Team onboarding', priority: 'medium', assignee: 'Admin', dueDate: '2024-05-09', description: 'Prepare kickoff notes, access, and checklist items.' },
-    ],
-  });
+  const [tasks, setTasks] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    } catch (error) {
+      console.error('Unable to persist tasks:', error);
+    }
+  }, [tasks]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(TASK_ACTIVITY_STORAGE_KEY, JSON.stringify(taskActivity));
+    } catch (error) {
+      console.error('Unable to persist task activity:', error);
+    }
+  }, [taskActivity]);
 
   // Filter tasks based on search term and priority
   const getFilteredTasks = (columnTasks) => {
@@ -160,6 +303,101 @@ const Tasks = () => {
     setSelectedTask({ ...task, columnId });
     setTaskForm(null);
     setIsEditingTask(false);
+    setIsCreatingTask(false);
+    setCommentDraft('');
+  };
+
+  const handleStartCreate = (columnId = 'todo') => {
+    setSelectedTask({
+      id: null,
+      title: '',
+      priority: 'medium',
+      assignee: 'You',
+      dueDate: '',
+      columnId,
+      description: '',
+    });
+    setTaskForm(createEmptyTaskForm(columnId));
+    setIsCreatingTask(true);
+    setIsEditingTask(true);
+    setCommentDraft('');
+  };
+
+  const handleCloseTaskModal = () => {
+    setSelectedTask(null);
+    setTaskForm(null);
+    setIsEditingTask(false);
+    setIsCreatingTask(false);
+    setCommentDraft('');
+  };
+
+  // Open create modal when URL contains ?new=<columnId> or when a top-level create request is present in localStorage
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const newParam = params.get('new');
+      if (newParam) {
+        handleStartCreate(newParam);
+        // prefill assignee/priority if provided
+        const assignee = params.get('assignee');
+        const priority = params.get('priority');
+        if (assignee || priority) {
+          setTaskForm((prev) => ({ ...(prev || {}), ...(assignee ? { assignee } : {}), ...(priority ? { priority } : {}) }));
+        }
+        // remove the param so refresh doesn't re-open
+        params.delete('new');
+        params.delete('assignee');
+        params.delete('priority');
+        const newSearch = params.toString();
+        const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+        window.history.replaceState(null, '', newUrl);
+      }
+
+      // check for a top-level create request (set by other UI pieces via localStorage)
+      const rawCreate = window.localStorage.getItem('syncly:createRequest');
+      if (rawCreate) {
+        try {
+          const parsed = JSON.parse(rawCreate);
+          const col = parsed.column || 'todo';
+          handleStartCreate(col);
+          if (parsed.assignee || parsed.priority) {
+            setTaskForm((prev) => ({ ...(prev || {}), ...(parsed.assignee ? { assignee: parsed.assignee } : {}), ...(parsed.priority ? { priority: parsed.priority } : {}) }));
+          }
+        } catch (e) {
+          // ignore parse errors
+        }
+        window.localStorage.removeItem('syncly:createRequest');
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // Listen for in-app create requests via the CreateModal context
+  useEffect(() => {
+    if (!createRequest) return;
+    try {
+      const col = createRequest.column || 'todo';
+      handleStartCreate(col);
+      if (createRequest.assignee || createRequest.priority) {
+        setTaskForm((prev) => ({ ...(prev || {}), ...(createRequest.assignee ? { assignee: createRequest.assignee } : {}), ...(createRequest.priority ? { priority: createRequest.priority } : {}) }));
+      }
+    } catch (e) {
+      // ignore
+    }
+    // clear the request so it doesn't re-open
+    try {
+      clearRequest();
+    } catch (e) {}
+  }, [createRequest, clearRequest]);
+
+  const addTaskActivityEntry = (taskId, entry) => {
+    const taskKey = getTaskKey(taskId);
+
+    setTaskActivity((prev) => ({
+      ...prev,
+      [taskKey]: [...(prev[taskKey] || []), entry],
+    }));
   };
 
   const handleStartEdit = () => {
@@ -167,9 +405,15 @@ const Tasks = () => {
 
     setTaskForm(createTaskForm(selectedTask));
     setIsEditingTask(true);
+    setIsCreatingTask(false);
   };
 
   const handleCancelEdit = () => {
+    if (isCreatingTask) {
+      handleCloseTaskModal();
+      return;
+    }
+
     setTaskForm(null);
     setIsEditingTask(false);
   };
@@ -184,15 +428,64 @@ const Tasks = () => {
   const handleSaveTask = () => {
     if (!selectedTask || !taskForm) return;
 
+    const title = taskForm.title.trim();
+    if (!title) return;
+
     const originalColumnId = selectedTask.columnId;
     const nextColumnId = taskForm.status;
     const updatedTaskData = {
-      title: taskForm.title.trim(),
+      title,
       priority: taskForm.priority,
       assignee: taskForm.assignee,
       dueDate: taskForm.dueDate,
       description: taskForm.description.trim(),
     };
+
+    if (isCreatingTask) {
+      const newTaskId = getNextTaskId(tasks);
+      const newTask = {
+        id: newTaskId,
+        ...updatedTaskData,
+        columnId: nextColumnId,
+      };
+
+      setTasks((prevTasks) => ({
+        ...prevTasks,
+        [nextColumnId]: [...(prevTasks[nextColumnId] || []), newTask],
+      }));
+
+      setTaskActivity((prev) => ({
+        ...prev,
+        [getTaskKey(newTaskId)]: [
+          {
+            type: 'activity',
+            message: 'Task created',
+            author: mockUser.name,
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }));
+
+      // show toast confirmation via global toast manager
+      try {
+        addToast({ title: 'Task created', message: 'Your task was added to To Do', variant: 'success' });
+      } catch (e) {
+        setToastMessage({ title: 'Task created', message: 'Your task was added to To Do', variant: 'success' });
+      }
+
+      // close modal after creation (user can reopen by clicking task)
+      handleCloseTaskModal();
+      return;
+    }
+
+    const changedFields = [];
+
+    if (selectedTask.title !== updatedTaskData.title) changedFields.push('title');
+    if (selectedTask.priority !== updatedTaskData.priority) changedFields.push('priority');
+    if (selectedTask.assignee !== updatedTaskData.assignee) changedFields.push('assignee');
+    if (selectedTask.dueDate !== updatedTaskData.dueDate) changedFields.push('due date');
+    if ((selectedTask.description || '') !== updatedTaskData.description) changedFields.push('notes');
+    if (selectedTask.columnId !== nextColumnId) changedFields.push('status');
 
     setTasks((prevTasks) => {
       const sourceTasks = [...(prevTasks[originalColumnId] || [])];
@@ -228,8 +521,36 @@ const Tasks = () => {
       ...updatedTaskData,
       columnId: nextColumnId,
     });
+
+    if (changedFields.length > 0) {
+      addTaskActivityEntry(selectedTask.id, {
+        type: 'activity',
+        message: `Updated ${changedFields.join(', ')}`,
+        author: mockUser.name,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     setTaskForm(null);
     setIsEditingTask(false);
+    setIsCreatingTask(false);
+  };
+
+  const handleAddComment = () => {
+    if (!selectedTask) return;
+
+    const trimmedComment = commentDraft.trim();
+
+    if (!trimmedComment) return;
+
+    addTaskActivityEntry(selectedTask.id, {
+      type: 'comment',
+      message: trimmedComment,
+      author: mockUser.name,
+      timestamp: new Date().toISOString(),
+    });
+
+    setCommentDraft('');
   };
 
   const handleDeleteTask = () => {
@@ -245,9 +566,15 @@ const Tasks = () => {
         (task) => String(task.id) !== String(selectedTask.id)
       ),
     }));
+    setTaskActivity((prev) => {
+      const nextActivity = { ...prev };
+      delete nextActivity[getTaskKey(selectedTask.id)];
+      return nextActivity;
+    });
     setSelectedTask(null);
     setTaskForm(null);
     setIsEditingTask(false);
+    setIsCreatingTask(false);
   };
 
   const taskColumns = [
@@ -289,19 +616,19 @@ const Tasks = () => {
         const activeTaskIndex = activeTasks.findIndex(
           (t) => String(t.id) === activeTaskId
         );
-        
+
         if (activeTaskIndex < 0) return prevTasks;
-        
-        const overTaskIndex = overColumnId && overTaskId 
+
+        const overTaskIndex = overColumnId && overTaskId
           ? overTasks.findIndex((t) => String(t.id) === overTaskId)
           : -1;
 
         if (activeColumnId === overColumnId) {
-          // Reorder within the same column
           const newTasks = arrayMove(activeTasks, activeTaskIndex, Math.max(0, overTaskIndex));
           return { ...prevTasks, [activeColumnId]: newTasks };
-        } else if (overColumnId && prevTasks[overColumnId]) {
-          // Move task to a different column
+        }
+
+        if (overColumnId && prevTasks[overColumnId]) {
           const [movedTask] = activeTasks.splice(activeTaskIndex, 1);
           const newOverTasks = [...overTasks];
           newOverTasks.splice(overTaskIndex >= 0 ? overTaskIndex : newOverTasks.length, 0, movedTask);
@@ -312,6 +639,7 @@ const Tasks = () => {
             [overColumnId]: newOverTasks,
           };
         }
+
         return prevTasks;
       } catch (error) {
         console.error('Drag error:', error);
@@ -329,9 +657,9 @@ const Tasks = () => {
             <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Tasks</h1>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">Manage all your tasks and deadlines</p>
           </div>
-          <Button variant="primary" className="gap-2">
-            <Plus size={18} /> New Task
-          </Button>
+                  <Button variant="primary" className="gap-2" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+                    <Plus size={18} /> New Task
+                  </Button>
         </div>
 
         {/* Filters */}
@@ -383,11 +711,8 @@ const Tasks = () => {
           onDragEnd={handleDragEnd}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
-            {taskColumns.map((column) => (
-              <div
-                key={column.id}
-                className="flex flex-col bg-white dark:bg-neutral-900/80 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 min-w-max lg:min-w-0 text-neutral-900 dark:text-neutral-100"
-              >
+              {taskColumns.map((column) => (
+                <ColumnWrapper key={column.id} column={column}>
                 {/* Column Header */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
                   <div className="flex items-center gap-2">
@@ -396,7 +721,11 @@ const Tasks = () => {
                       {getFilteredTasks(tasks[column.id]).length}
                     </Badge>
                   </div>
-                  <button className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100">
+                  <button
+                    type="button"
+                    onClick={() => handleStartCreate(column.id)}
+                    className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                  >
                     <Plus size={18} />
                   </button>
                 </div>
@@ -417,7 +746,7 @@ const Tasks = () => {
                     ))}
                   </SortableContext>
                 </div>
-              </div>
+              </ColumnWrapper>
             ))}
           </div>
         </DndContext>
@@ -425,8 +754,8 @@ const Tasks = () => {
         {/* Task Details Modal */}
         <Modal
           isOpen={selectedTask !== null}
-          onClose={() => setSelectedTask(null)}
-          title={isEditingTask ? 'Edit Task' : selectedTask?.title || 'Task Details'}
+          onClose={handleCloseTaskModal}
+          title={isCreatingTask ? 'Create Task' : isEditingTask ? 'Edit Task' : selectedTask?.title || 'Task Details'}
           className="max-w-2xl"
         >
           {selectedTask && (
@@ -506,10 +835,48 @@ const Tasks = () => {
                     </p>
                   </div>
 
-                  <div className="flex gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                    <Button variant="primary" className="flex-1" onClick={() => setSelectedTask(null)}>
-                      Close
-                    </Button>
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                      Activity & Comments
+                    </h3>
+
+                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
+                      {(taskActivity[getTaskKey(selectedTask.id)] || []).length > 0 ? (
+                        (taskActivity[getTaskKey(selectedTask.id)] || []).map((entry, index) => (
+                          <div key={`${entry.timestamp}-${index}`} className="flex gap-3">
+                            <div className={`mt-1 h-2.5 w-2.5 rounded-full ${entry.type === 'comment' ? 'bg-primary-500' : 'bg-neutral-400'}`} />
+                            <div className="flex-1 space-y-1">
+                              <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                                <span className="font-medium text-neutral-700 dark:text-neutral-300">{entry.author}</span>
+                                <span>{formatActivityTime(entry.timestamp)}</span>
+                                <Badge size="sm" variant={entry.type === 'comment' ? 'primary' : 'default'}>
+                                  {entry.type === 'comment' ? 'Comment' : 'Update'}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">
+                                {entry.message}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">No activity yet.</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <Textarea
+                        rows={3}
+                        placeholder="Write a comment..."
+                        value={commentDraft}
+                        onChange={(event) => setCommentDraft(event.target.value)}
+                      />
+                      <div className="flex justify-end">
+                        <Button variant="secondary" size="sm" onClick={handleAddComment} disabled={!commentDraft.trim()}>
+                          Add Comment
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -596,15 +963,17 @@ const Tasks = () => {
                   </div>
 
                   <div className="flex flex-col-reverse gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800 sm:flex-row sm:justify-between">
-                    <Button variant="danger" onClick={handleDeleteTask}>
-                      Delete Task
-                    </Button>
+                    {isCreatingTask ? <span /> : (
+                      <Button variant="danger" onClick={handleDeleteTask}>
+                        Delete Task
+                      </Button>
+                    )}
                     <div className="flex gap-3">
                       <Button variant="secondary" onClick={handleCancelEdit}>
-                        Cancel
+                        {isCreatingTask ? 'Cancel' : 'Cancel'}
                       </Button>
                       <Button variant="primary" type="submit">
-                        Save Changes
+                        {isCreatingTask ? 'Create Task' : 'Save Changes'}
                       </Button>
                     </div>
                   </div>
@@ -613,6 +982,13 @@ const Tasks = () => {
             </div>
           )}
         </Modal>
+        {/* Toast component */}
+        <Toast
+          title={toastMessage?.title}
+          message={toastMessage?.message}
+          variant={toastMessage?.variant}
+          onClose={() => setToastMessage(null)}
+        />
       </div>
     </MainLayout>
   );

@@ -1,67 +1,39 @@
-import React, { useState } from 'react';
-import { Menu, X, LogOut } from 'lucide-react';
+import React from 'react';
+import { LogOut, Search, Bell } from 'lucide-react';
 import { Button } from '../ui';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = ({ user, onLogout }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
-    <nav className="card sticky top-0 z-50 rounded-none border-b border-t-0 border-l-0 border-r-0" role="navigation" aria-label="Top navigation">
-      <div className="px-6 py-4 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/90 backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-950/85" role="navigation" aria-label="Top utilities">
+      <div className="px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center" aria-hidden="true">
-            <span className="font-bold text-white text-sm">S</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg flex items-center justify-center" aria-hidden="true">
+            <span className="font-semibold text-white text-sm">S</span>
           </div>
-          <span className="font-bold text-lg text-neutral-900 dark:text-neutral-100" aria-label="Syncly logo">Syncly</span>
+          <span className="font-semibold text-lg text-neutral-900 dark:text-neutral-100" aria-label="Syncly logo">Syncly</span>
         </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="/" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Dashboard</a>
-          <a href="/tasks" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Tasks</a>
-          <a href="/workspaces" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Workspaces</a>
-          <a href="/analytics" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">Analytics</a>
+        {/* Search */}
+        <div className="hidden md:flex flex-1 max-w-lg items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2 text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
+          <Search size={18} />
+          <input
+            type="text"
+            placeholder="Search projects, tasks, or notes"
+            className="w-full bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-neutral-100"
+          />
         </div>
 
         {/* User & Actions */}
-        <div className="flex items-center gap-4">
-          {user && (
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{user.name}</p>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400">{user.email}</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center font-semibold text-white">
-                {user.name.charAt(0)}
-              </div>
-            </div>
-          )}
-          {user && <Button variant="ghost" size="sm" onClick={onLogout}><LogOut size={18} /></Button>}
-          
-          {/* Theme toggle */}
-          <ThemeToggle />
-          
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        <div className="flex items-center gap-2 lg:gap-3">
+          <button className="hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800" aria-label="Notifications">
+            <Bell size={18} />
           </button>
+          <ThemeToggle />
+          {user && <Button variant="ghost" size="sm" className="h-10 w-10 px-0" onClick={onLogout} aria-label="Log out"><LogOut size={18} /></Button>}
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-neutral-800 px-6 py-4 space-y-2">
-          <a href="/" className="block py-2 text-neutral-300 hover:text-neutral-100">Dashboard</a>
-          <a href="/tasks" className="block py-2 text-neutral-300 hover:text-neutral-100">Tasks</a>
-          <a href="/workspaces" className="block py-2 text-neutral-300 hover:text-neutral-100">Workspaces</a>
-          <a href="/analytics" className="block py-2 text-neutral-300 hover:text-neutral-100">Analytics</a>
-        </div>
-      )}
     </nav>
   );
 };

@@ -1,22 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+        className="fixed inset-x-0 top-16 bottom-0 bg-black/50 z-40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-x-0 top-16 bottom-0 flex items-start justify-center z-50 p-4 overflow-y-auto">
         <div
-          className={`bg-white dark:bg-neutral-900 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto ${className}`}
+          className={`bg-white dark:bg-neutral-900 rounded-lg shadow-xl max-w-lg w-full max-h-[calc(100vh-5rem)] overflow-y-auto ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

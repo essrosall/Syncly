@@ -6,3 +6,4 @@ export { default as Textarea } from './Textarea';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Alert } from './Alert';
 export { default as Modal } from './Modal';
+export { default as Toast } from './Toast';
