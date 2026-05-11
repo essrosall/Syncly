@@ -32,7 +32,7 @@ const Workspaces = () => {
                 <p className="mt-3 text-3xl font-semibold text-neutral-950">3</p>
                 <p className="mt-2 text-xs text-neutral-500">Across design, mobile, backend</p>
               </div>
-              <div className="rounded-2xl bg-neutral-100 p-3 text-neutral-900">
+              <div className="rounded-md bg-neutral-100 p-3 text-neutral-900">
                 <Layers3 size={20} />
               </div>
             </div>
@@ -45,7 +45,7 @@ const Workspaces = () => {
                 <p className="mt-3 text-3xl font-semibold text-neutral-950">12</p>
                 <p className="mt-2 text-xs text-neutral-500">+2 this week</p>
               </div>
-              <div className="rounded-2xl bg-neutral-100 p-3 text-neutral-900">
+              <div className="rounded-md bg-neutral-100 p-3 text-neutral-900">
                 <Users size={20} />
               </div>
             </div>
@@ -61,7 +61,7 @@ const Workspaces = () => {
                   <p className="mt-3 text-xl font-semibold text-neutral-950">{ws.name}</p>
                   <p className="mt-2 text-sm text-neutral-500">{ws.members} team members, actively collaborating</p>
                 </div>
-                <button className="rounded-xl border border-neutral-200 bg-neutral-50 p-2 text-neutral-500">
+                <button className="rounded-md border border-neutral-200 bg-neutral-50 p-2 text-neutral-500">
                   <MoreHorizontal size={16} />
                 </button>
               </div>

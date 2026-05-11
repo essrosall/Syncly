@@ -60,7 +60,7 @@ const Dashboard = () => {
                   <p className="mt-1 text-sm text-neutral-600">Here is your live snapshot for tasks, progress, and team activity today.</p>
                 </div>
               </div>
-              <div className="rounded-2xl border border-neutral-300 px-4 py-3 text-sm font-medium text-neutral-600">{today}</div>
+              <div className="rounded-md border border-neutral-300 px-4 py-3 text-sm font-medium text-neutral-600">{today}</div>
             </div>
 
             <div className="mt-10 grid gap-3 md:grid-cols-3">
@@ -89,7 +89,7 @@ const Dashboard = () => {
                       <p className="text-sm font-medium text-neutral-700">{stat.label}</p>
                       <p className="mt-3 text-3xl font-semibold text-neutral-950">{stat.value}</p>
                     </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-700">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-md bg-neutral-100 text-neutral-700">
                       <Icon size={18} />
                     </div>
                   </div>
@@ -106,7 +106,7 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold text-neutral-950">Recent Tasks</h2>
                 <p className="text-sm text-neutral-600">Latest updates across your team to help you prioritize what matters most.</p>
               </div>
-              <a href="/tasks" className="rounded-2xl bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm">View All Tasks</a>
+              <a href="/tasks" className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm">View All Tasks</a>
             </div>
 
             <div className="mt-5 space-y-3">

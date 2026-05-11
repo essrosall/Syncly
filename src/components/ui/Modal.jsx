@@ -30,7 +30,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
       {/* Modal */}
       <div className="fixed inset-x-0 top-16 bottom-0 flex items-start justify-center z-50 p-4 overflow-y-auto">
         <div
-          className={`bg-white dark:bg-neutral-900 rounded-lg shadow-xl max-w-lg w-full max-h-[calc(100vh-5rem)] overflow-y-auto ${className}`}
+          className={`bg-white dark:bg-neutral-900 rounded-md shadow-xl max-w-lg w-full max-h-[calc(100vh-5rem)] overflow-y-auto ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

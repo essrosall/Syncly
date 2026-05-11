@@ -16,7 +16,7 @@ const Alert = ({
   };
 
   return (
-    <div className={`rounded-lg p-4 ${styles[type]}`}>
+    <div className={`rounded-md p-4 ${styles[type]}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           {title && <h3 className="font-semibold mb-1">{title}</h3>}

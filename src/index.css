@@ -69,7 +69,7 @@
 
   /* Card components */
   .card {
-    @apply bg-neutral-900 border border-neutral-800 rounded-2xl shadow-lg;
+    @apply bg-neutral-900 border border-neutral-800 rounded-md shadow-lg;
   }
 
   html.light .card {
@@ -83,7 +83,7 @@
 
   /* Input base styles */
   .input-base {
-    @apply px-4 py-2.5 rounded-xl border bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    @apply px-4 py-2.5 rounded-md border bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
   }
 
   html.light .input-base {

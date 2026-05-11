@@ -884,7 +884,7 @@ const Tasks = () => {
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
                       Notes
                     </h3>
-                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
+                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
                       {selectedTask.description || 'No notes added yet.'}
                     </p>
                   </div>
@@ -894,7 +894,7 @@ const Tasks = () => {
                       Activity & Comments
                     </h3>
 
-                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
+                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
                       {(taskActivity[getTaskKey(selectedTask.id)] || []).length > 0 ? (
                         (taskActivity[getTaskKey(selectedTask.id)] || []).map((entry, index) => (
                           <div key={`${entry.timestamp}-${index}`} className="flex gap-3">
