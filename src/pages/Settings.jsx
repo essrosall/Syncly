@@ -11,7 +11,7 @@ const Settings = () => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Settings</h1>
-            <p className="mt-2 text-sm text-neutral-500">Short description</p>
+            <p className="mt-2 text-sm text-neutral-500">Manage your profile, preferences, and workspace security.</p>
           </div>
           <Badge variant="primary">Active</Badge>
         </div>
@@ -21,7 +21,7 @@ const Settings = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-neutral-950">Profile</h2>
-                <p className="mt-1 text-sm text-neutral-500">Update your identity and contact details</p>
+                <p className="mt-1 text-sm text-neutral-500">Manage your name, email, and contact information</p>
               </div>
               <UserRound size={18} className="text-neutral-400" />
             </div>
@@ -39,7 +39,7 @@ const Settings = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950">Notifications</h2>
-                  <p className="mt-1 text-sm text-neutral-500">Stay updated without the noise</p>
+                  <p className="mt-1 text-sm text-neutral-500">Control alerts and email preferences</p>
                 </div>
                 <BellRing size={18} className="text-neutral-400" />
               </div>

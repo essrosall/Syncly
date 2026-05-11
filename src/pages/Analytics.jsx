@@ -52,7 +52,7 @@ const Analytics = () => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Analytics</h1>
-            <p className="mt-2 text-sm text-neutral-500">Short description</p>
+            <p className="mt-2 text-sm text-neutral-500">Track productivity metrics, time allocation, and team performance.</p>
           </div>
           <Badge variant="primary" size="sm">This week</Badge>
         </div>
@@ -62,7 +62,7 @@ const Analytics = () => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-neutral-950">Focus Distribution</h2>
-                <p className="mt-1 text-sm text-neutral-500">How time is being spent this week</p>
+                <p className="mt-1 text-sm text-neutral-500">Breakdown of weekly time spent across activities</p>
               </div>
               <ChartColumnIncreasing size={18} className="text-neutral-400" />
             </div>
@@ -76,7 +76,7 @@ const Analytics = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950">Key Metrics</h2>
-                  <p className="mt-1 text-sm text-neutral-500">Fast read on the current workflow</p>
+                  <p className="mt-1 text-sm text-neutral-500">Performance indicators at a glance</p>
                 </div>
                 <TrendingUp size={18} className="text-neutral-400" />
               </div>

@@ -4,9 +4,9 @@ import ThemeToggle from './ThemeToggle';
 const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-neutral-200/80 bg-neutral-50/95 backdrop-blur-xl" role="navigation" aria-label="Top utilities">
-      <div className="flex h-20 items-center gap-4 px-4 lg:px-6 w-full">
+      <div className="flex h-20 w-full items-center gap-4 px-4 lg:pl-[19rem] lg:pr-5">
 
-        <div className="hidden md:flex flex-1 items-center justify-center">
+        <div className="hidden flex-1 items-center md:flex">
           <div className="flex w-full max-w-[640px] items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)]">
             <Search size={18} className="text-neutral-400" />
             <input

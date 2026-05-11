@@ -17,7 +17,7 @@ const Workspaces = () => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Workspaces</h1>
-            <p className="mt-2 text-sm text-neutral-500">Short description</p>
+            <p className="mt-2 text-sm text-neutral-500">Organize teams and manage projects across dedicated workspaces.</p>
           </div>
           <Button variant="primary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800">
             <FolderKanban size={18} /> Create Workspace
@@ -59,7 +59,7 @@ const Workspaces = () => {
                 <div>
                   <Badge variant={ws.color} size="sm">{ws.status}</Badge>
                   <p className="mt-3 text-xl font-semibold text-neutral-950">{ws.name}</p>
-                  <p className="mt-2 text-sm text-neutral-500">{ws.members} members collaborating in real time</p>
+                  <p className="mt-2 text-sm text-neutral-500">{ws.members} team members, actively collaborating</p>
                 </div>
                 <button className="rounded-xl border border-neutral-200 bg-neutral-50 p-2 text-neutral-500">
                   <MoreHorizontal size={16} />
@@ -77,8 +77,8 @@ const Workspaces = () => {
               </div>
 
               <div className="mt-6 flex items-center justify-between">
-                <span className="text-sm text-neutral-500">Open for updates</span>
-                <Button variant="secondary" size="sm">Open</Button>
+                <span className="text-sm text-neutral-500">View workspace details</span>
+                <Button variant="secondary" size="sm">Manage</Button>
               </div>
             </Card>
           ))}

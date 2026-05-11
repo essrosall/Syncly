@@ -710,10 +710,10 @@ const Tasks = () => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Tasks</h1>
-            <p className="mt-2 text-sm text-neutral-500">Manage all your tasks and deadlines</p>
+            <p className="mt-2 text-sm text-neutral-500">Organize, prioritize, and track all your work in one place.</p>
           </div>
-          <Button variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
-            <Plus size={18} /> New Task
+          <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+            <Plus size={16} /> New Task
           </Button>
         </div>
 
@@ -743,8 +743,12 @@ const Tasks = () => {
                   onClick={() => togglePriority(priority)}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                     selectedPriorities.includes(priority)
-                      ? 'border-neutral-900 bg-neutral-900 text-white'
-                      : 'border-neutral-200 bg-neutral-100 text-neutral-600'
+                      ? priority === 'high'
+                        ? 'border-red-200 bg-red-100 text-red-700'
+                        : priority === 'medium'
+                        ? 'border-amber-200 bg-amber-100 text-amber-700'
+                        : 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                      : 'border-neutral-200 bg-neutral-100 text-neutral-500'
                   }`}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}

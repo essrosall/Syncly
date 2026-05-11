@@ -21,10 +21,10 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
   const { openModal } = useGlobalModal();
 
   return (
-    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-white p-4 shadow-sm">
+    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-neutral-50 p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)]">
       <div className="space-y-4 border-b border-neutral-200 pb-4">
         <div className="flex items-center gap-3 px-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-neutral-950 shadow-sm">
             <span className="text-sm font-semibold">S</span>
           </div>
           <div>
@@ -32,51 +32,52 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
             <p className="text-xs text-neutral-500">Task workspace</p>
           </div>
         </div>
+      </div>
+      <div className="my-2" />
 
-        <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-900 text-white">
-                <span className="text-sm font-semibold">SJ</span>
+          <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">Profile</div>
+          <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-950">
+                  <span className="text-sm font-semibold">SJ</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-neutral-950">Sarah Johnson</p>
+                  <p className="text-xs text-neutral-500">sarah@example.com</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Sarah Johnson</p>
-                <p className="text-xs text-neutral-500">sarah@example.com</p>
-              </div>
+              <button className="rounded-lg border border-neutral-200 p-1.5 text-neutral-500">
+                <Circle size={12} fill="currentColor" />
+              </button>
             </div>
-            <button className="rounded-lg border border-neutral-200 p-1.5 text-neutral-500">
-              <Circle size={12} fill="currentColor" />
-            </button>
-          </div>
 
-          <Button
-            variant="primary"
-            className="mt-4 w-full justify-between bg-neutral-900 text-white hover:bg-neutral-800"
-            onClick={() => {
-              try {
-                openModal(TaskCreateForm, { column: 'todo' });
-              } catch {
+            <Button
+              variant="primary"
+              className="mt-4 w-full justify-between bg-neutral-900 text-white hover:bg-neutral-800"
+              onClick={() => {
                 try {
-                  openCreate({ column: 'todo' });
+                  openModal(TaskCreateForm, { column: 'todo' });
                 } catch {
                   try {
-                    window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' }));
+                    openCreate({ column: 'todo' });
                   } catch {
-                    window.location.href = '/tasks';
-                    return;
+                    try {
+                      window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' }));
+                    } catch {
+                      window.location.href = '/tasks';
+                      return;
+                    }
                   }
+                  if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
                 }
-                if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
-              }
-            }}
-          >
-            <span className="inline-flex items-center gap-2"><Plus size={16} /> New Task</span>
-            <span className="text-lg leading-none">+</span>
-          </Button>
-        </div>
-      </div>
+              }}
+            >
+              <span className="inline-flex items-center gap-2 text-sm"><Plus size={16} /> New Task</span>
+            </Button>
+          </div>
 
-      <nav className="flex-1 py-5" aria-label="Primary">
+      <nav className="flex-1 py-8" aria-label="Primary">
         <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">Main</div>
         <div className="space-y-2">
           {navMain.map((item) => {
@@ -90,11 +91,11 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-900 text-white shadow-sm'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isActive ? 'bg-white/15' : 'bg-neutral-900 text-white'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>
@@ -103,7 +104,7 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
           })}
         </div>
 
-        <div className="my-5 border-t border-neutral-200" aria-hidden="true" />
+        <div className="my-5 border-t border-neutral-150" aria-hidden="true" />
 
         <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">General</div>
         <div className="space-y-2">
@@ -118,11 +119,11 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-900 text-white shadow-sm'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isActive ? 'bg-white/15' : 'bg-neutral-900 text-white'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>
@@ -130,12 +131,14 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
             );
           })}
         </div>
+
+          
       </nav>
 
       <div className="border-t border-neutral-200 pt-4">
-        <div className="rounded-md bg-neutral-100 p-4 text-center">
-          <p className="mb-3 text-sm text-neutral-700">Need help getting started?</p>
-          <Button variant="secondary" size="sm" className="w-full bg-neutral-900 text-white hover:bg-neutral-800">View Tutorials</Button>
+          <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
+            <p className="mb-3 text-sm text-neutral-600">Need help getting started?</p>
+            <Button variant="secondary" size="sm" className="w-full bg-neutral-900 text-white hover:bg-neutral-800">View Tutorials</Button>
         </div>
       </div>
     </aside>
