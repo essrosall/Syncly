@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MainLayout } from '../components/layout';
 import { Card, Badge, Button, Input, Modal, Textarea, Toast } from '../components/ui';
 import { useCreateModal } from '../contexts/CreateModalContext';
@@ -8,7 +8,6 @@ import { useGlobalModal } from '../contexts/GlobalModalContext';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import {
   DndContext,
-  closestCenter,
   rectIntersection,
   KeyboardSensor,
   PointerSensor,
@@ -63,7 +62,7 @@ const readStoredJson = (key, fallback) => {
   try {
     const storedValue = window.localStorage.getItem(key);
     return storedValue ? JSON.parse(storedValue) : fallback;
-  } catch (error) {
+  } catch {
     return fallback;
   }
 };
@@ -268,7 +267,7 @@ const ColumnWrapper = ({ column, children }) => {
     <div
       ref={setNodeRef}
       data-column-id={column.id}
-      className="flex min-h-[24rem] flex-col bg-white dark:bg-neutral-900/80 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 min-w-max lg:min-w-0 text-neutral-900 dark:text-neutral-100"
+      className="flex min-h-[24rem] min-w-max flex-col rounded-md border border-neutral-200 bg-white p-4 text-neutral-950 shadow-[0_12px_30px_rgba(17,25,43,0.04)] lg:min-w-0"
     >
       {children}
     </div>
@@ -368,62 +367,68 @@ const Tasks = () => {
 
   // Open create modal when URL contains ?new=<columnId> or when a top-level create request is present in localStorage
   useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const newParam = params.get('new');
-      if (newParam) {
-        handleStartCreate(newParam);
-        // prefill assignee/priority if provided
-        const assignee = params.get('assignee');
-        const priority = params.get('priority');
-        if (assignee || priority) {
-          setTaskForm((prev) => ({ ...(prev || {}), ...(assignee ? { assignee } : {}), ...(priority ? { priority } : {}) }));
-        }
-        // remove the param so refresh doesn't re-open
-        params.delete('new');
-        params.delete('assignee');
-        params.delete('priority');
-        const newSearch = params.toString();
-        const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
-        window.history.replaceState(null, '', newUrl);
-      }
-
-      // check for a top-level create request (set by other UI pieces via localStorage)
-      const rawCreate = window.localStorage.getItem('syncly:createRequest');
-      if (rawCreate) {
-        try {
-          const parsed = JSON.parse(rawCreate);
-          const col = parsed.column || 'todo';
-          handleStartCreate(col);
-          if (parsed.assignee || parsed.priority) {
-            setTaskForm((prev) => ({ ...(prev || {}), ...(parsed.assignee ? { assignee: parsed.assignee } : {}), ...(parsed.priority ? { priority: parsed.priority } : {}) }));
+    const timer = window.setTimeout(() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const newParam = params.get('new');
+        if (newParam) {
+          handleStartCreate(newParam);
+          const assignee = params.get('assignee');
+          const priority = params.get('priority');
+          if (assignee || priority) {
+            setTaskForm((prev) => ({ ...(prev || {}), ...(assignee ? { assignee } : {}), ...(priority ? { priority } : {}) }));
           }
-        } catch (e) {
-          // ignore parse errors
+          params.delete('new');
+          params.delete('assignee');
+          params.delete('priority');
+          const newSearch = params.toString();
+          const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+          window.history.replaceState(null, '', newUrl);
         }
-        window.localStorage.removeItem('syncly:createRequest');
+
+        const rawCreate = window.localStorage.getItem('syncly:createRequest');
+        if (rawCreate) {
+          try {
+            const parsed = JSON.parse(rawCreate);
+            const col = parsed.column || 'todo';
+            handleStartCreate(col);
+            if (parsed.assignee || parsed.priority) {
+              setTaskForm((prev) => ({ ...(prev || {}), ...(parsed.assignee ? { assignee: parsed.assignee } : {}), ...(parsed.priority ? { priority: parsed.priority } : {}) }));
+            }
+          } catch {
+            return;
+          }
+          window.localStorage.removeItem('syncly:createRequest');
+        }
+      } catch {
+        return;
       }
-    } catch (e) {
-      // ignore
-    }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   // Listen for in-app create requests via the CreateModal context
   useEffect(() => {
     if (!createRequest) return;
-    try {
-      const col = createRequest.column || 'todo';
-      handleStartCreate(col);
-      if (createRequest.assignee || createRequest.priority) {
-        setTaskForm((prev) => ({ ...(prev || {}), ...(createRequest.assignee ? { assignee: createRequest.assignee } : {}), ...(createRequest.priority ? { priority: createRequest.priority } : {}) }));
+    const timer = window.setTimeout(() => {
+      try {
+        const col = createRequest.column || 'todo';
+        handleStartCreate(col);
+        if (createRequest.assignee || createRequest.priority) {
+          setTaskForm((prev) => ({ ...(prev || {}), ...(createRequest.assignee ? { assignee: createRequest.assignee } : {}), ...(createRequest.priority ? { priority: createRequest.priority } : {}) }));
+        }
+      } catch {
+        return;
       }
-    } catch (e) {
-      // ignore
-    }
-    // clear the request so it doesn't re-open
-    try {
-      clearRequest();
-    } catch (e) {}
+      try {
+        clearRequest();
+      } catch {
+        return;
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [createRequest, clearRequest]);
 
   const addTaskActivityEntry = (taskId, entry) => {
@@ -504,7 +509,7 @@ const Tasks = () => {
       // show toast confirmation via global toast manager
       try {
         addToast({ title: 'Task created', message: 'Your task was added to To Do', variant: 'success' });
-      } catch (e) {
+      } catch {
         setToastMessage({ title: 'Task created', message: 'Your task was added to To Do', variant: 'success' });
       }
 
@@ -693,8 +698,7 @@ const Tasks = () => {
 
         console.log('No valid drop target found');
         return prevTasks;
-      } catch (error) {
-        console.error('Drag error:', error);
+      } catch {
         return prevTasks;
       }
     });
@@ -702,21 +706,20 @@ const Tasks = () => {
 
   return (
     <MainLayout user={mockUser} activeTab="tasks">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
+      <div className="space-y-6 animate-fade-in-up">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Tasks</h1>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">Manage all your tasks and deadlines</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Tasks</h1>
+            <p className="mt-2 text-sm text-neutral-500">Manage all your tasks and deadlines</p>
           </div>
-                  <Button variant="primary" className="gap-2" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
-                    <Plus size={18} /> New Task
-                  </Button>
+          <Button variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+            <Plus size={18} /> New Task
+          </Button>
         </div>
 
-        {/* Filters */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+        <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)]">
+          <div className="space-y-4">
+            <div className="flex flex-col items-stretch gap-4 sm:flex-row">
             <div className="flex-1">
               <Input
                 type="text"
@@ -726,37 +729,32 @@ const Tasks = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="secondary" className="gap-2">
+              <Button variant="secondary" className="gap-2">
               <Filter size={18} /> Filter
-            </Button>
-          </div>
+              </Button>
+            </div>
 
-          {/* Priority Filter Buttons */}
-          <div className="flex flex-wrap gap-2">
-            <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 self-center">Priority:</span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <span className="self-center text-xs font-semibold text-neutral-500">Priority:</span>
+              <div className="flex gap-2">
               {['high', 'medium', 'low'].map((priority) => (
                 <button
                   key={priority}
                   onClick={() => togglePriority(priority)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                     selectedPriorities.includes(priority)
-                      ? priority === 'high'
-                        ? 'bg-red-500 text-white'
-                        : priority === 'medium'
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-neutral-500 text-white'
-                      : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-400'
+                      ? 'border-neutral-900 bg-neutral-900 text-white'
+                      : 'border-neutral-200 bg-neutral-100 text-neutral-600'
                   }`}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </button>
               ))}
+              </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Kanban Board */}
         <DndContext
           sensors={sensors}
           collisionDetection={rectIntersection}
@@ -768,28 +766,26 @@ const Tasks = () => {
             )}
             strategy={verticalListSortingStrategy}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
+            <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-4 lg:grid-cols-2 2xl:grid-cols-4">
               {taskColumns.map((column) => (
                 <ColumnWrapper key={column.id} column={column}>
-                {/* Column Header */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-lg">{column.title}</h3>
-                    <Badge variant={column.color} size="sm">
-                      {getFilteredTasks(tasks[column.id]).length}
-                    </Badge>
+                  <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-4">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-neutral-950">{column.title}</h3>
+                      <Badge variant={column.color} size="sm">
+                        {getFilteredTasks(tasks[column.id]).length}
+                      </Badge>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleStartCreate(column.id)}
+                      className="rounded-full bg-neutral-100 p-2 text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900"
+                    >
+                      <Plus size={16} />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleStartCreate(column.id)}
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
 
-                {/* Tasks List */}
-                <div className="space-y-3 flex-1">
+                  <div className="flex flex-1 flex-col space-y-3">
                     {getFilteredTasks(tasks[column.id]).map((task) => (
                       <DraggableTask
                         key={task.id}
@@ -798,9 +794,9 @@ const Tasks = () => {
                         onTaskClick={handleTaskClick}
                       />
                     ))}
-                </div>
-              </ColumnWrapper>
-            ))}
+                  </div>
+                </ColumnWrapper>
+              ))}
             </div>
           </SortableContext>
         </DndContext>

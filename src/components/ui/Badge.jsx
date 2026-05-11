@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Badge = ({
   children,
   variant = 'default',
@@ -7,11 +5,11 @@ const Badge = ({
   className = '',
 }) => {
   const variants = {
-    default: 'bg-neutral-700 text-neutral-100',
-    primary: 'bg-primary-500/20 text-primary-400 border border-primary-500/30',
-    success: 'bg-success-500/20 text-success-400 border border-success-500/30',
-    warning: 'bg-warning-500/20 text-warning-400 border border-warning-500/30',
-    error: 'bg-error-500/20 text-error-400 border border-error-500/30',
+    default: 'bg-neutral-100 text-neutral-700 border border-neutral-200',
+    primary: 'bg-primary-50 text-primary-700 border border-primary-100',
+    success: 'bg-success-500/12 text-success-600 border border-success-500/20',
+    warning: 'bg-warning-500/12 text-warning-600 border border-warning-500/20',
+    error: 'bg-error-500/12 text-error-600 border border-error-500/20',
   };
 
   const sizes = {

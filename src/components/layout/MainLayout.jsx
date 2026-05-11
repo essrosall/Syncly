@@ -1,17 +1,17 @@
-import React from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 const MainLayout = ({ children, user, onLogout, activeTab }) => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-neutral-50 text-neutral-950">
       <Navbar user={user} onLogout={onLogout} />
-      <div className="flex">
-        <Sidebar activeTab={activeTab} />
-        <main role="main" className="flex-1 overflow-auto">
-          <div className="p-4 lg:p-6 max-w-full">{children}</div>
-        </main>
-      </div>
+      <Sidebar activeTab={activeTab} />
+
+      <main role="main" className="w-full ml-0 lg:ml-72 overflow-auto">
+        <div className="min-h-[calc(100vh-5rem)] p-6">
+          {children}
+        </div>
+      </main>
     </div>
   );
 };

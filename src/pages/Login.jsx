@@ -1,40 +1,37 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Input, Button, Card } from '../components/ui';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // TODO: Implement actual authentication
-    console.log('Login attempt:', { email, password });
+    window.localStorage.setItem(
+      'syncly:demoSession',
+      JSON.stringify({ email, signedInAt: new Date().toISOString() })
+    );
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 flex items-center justify-center p-4">
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center mx-auto mb-4">
-            <span className="font-bold text-white text-lg">S</span>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f7f2e8_0%,#f3ede1_100%)] p-4 flex items-center justify-center">
+      <div className="w-full max-w-md">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-neutral-900 text-white shadow-sm">
+            <span className="text-lg font-semibold">S</span>
           </div>
-          <h1 className="text-3xl font-bold mb-2 text-neutral-900 dark:text-neutral-100">Welcome to Syncly</h1>
-          <p className="text-neutral-600 dark:text-neutral-400">Manage tasks and collaborate with your team</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Welcome back</h1>
+          <p className="mt-2 text-sm text-neutral-500">Sign in to continue into your workspace.</p>
         </div>
 
-        {/* Login Form */}
-        <Card className="space-y-6">
+        <Card className="space-y-6 rounded-md border-neutral-200 bg-white/90 shadow-[0_18px_50px_rgba(17,25,43,0.06)]">
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Email Address</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
@@ -46,7 +43,7 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Password</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700">Password</label>
               <Input
                 type="password"
                 placeholder="••••••••"
@@ -58,43 +55,40 @@ const Login = () => {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 dark:border-neutral-600" />
-                <span className="text-neutral-600 dark:text-neutral-400">Remember me</span>
+              <label className="flex items-center gap-2 text-neutral-600">
+                <input type="checkbox" className="h-4 w-4 rounded border-neutral-300" />
+                Remember me
               </label>
-              <a href="#" className="text-primary-400 hover:text-primary-300 font-medium">
+              <a href="#" className="font-medium text-neutral-700 hover:text-neutral-950">
                 Forgot password?
               </a>
             </div>
 
-            <Button variant="primary" className="w-full" type="submit">
+            <Button variant="primary" className="w-full bg-neutral-900 text-white hover:bg-neutral-800" type="submit">
               Sign In <ArrowRight size={18} />
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-200 dark:border-neutral-700"></div>
+              <div className="w-full border-t border-neutral-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400">Or continue with</span>
+              <span className="bg-white px-2 text-neutral-500">Or continue with</span>
             </div>
           </div>
 
-          {/* OAuth Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <Button variant="secondary" className="w-full">Google</Button>
             <Button variant="secondary" className="w-full">GitHub</Button>
           </div>
         </Card>
 
-        {/* Sign Up Link */}
-        <p className="text-center text-neutral-400 text-sm mt-6">
-          Don't have an account?{' '}
-          <a href="/signup" className="text-primary-400 hover:text-primary-300 font-medium">
+        <p className="mt-6 text-center text-sm text-neutral-500">
+          Don&apos;t have an account?{' '}
+          <Link to="/signup" className="font-medium text-neutral-800 hover:text-neutral-950">
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

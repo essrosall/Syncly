@@ -1,4 +1,4 @@
-import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, CheckSquare, Briefcase, BarChart3, Settings, Plus, Circle } from 'lucide-react';
 import { Button } from '../ui';
 import { useCreateModal } from '../../contexts/CreateModalContext';
@@ -21,134 +21,121 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
   const { openModal } = useGlobalModal();
 
   return (
-    <aside className="hidden lg:flex flex-col w-72 shrink-0 h-[calc(100vh-4rem)] sticky top-16 rounded-2xl border border-neutral-200/80 bg-white/85 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-800 dark:bg-neutral-950/80">
-      {/* Profile / CTA */}
-      <div className="p-5 border-b border-neutral-200/80 dark:border-neutral-800">
-        <div className="rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 p-5 text-white shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-white/15 flex items-center justify-center text-lg font-semibold">
-              S
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-sm font-medium text-white/90">
-                <Circle size={10} fill="currentColor" /> Your profile
-              </div>
-              <p className="truncate text-sm text-white/80">Sarah Johnson</p>
-              <p className="truncate text-xs text-white/70">sarah@example.com</p>
-            </div>
+    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-white p-4 shadow-sm">
+      <div className="space-y-4 border-b border-neutral-200 pb-4">
+        <div className="flex items-center gap-3 px-1">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm">
+            <span className="text-sm font-semibold">S</span>
           </div>
-          <div className="mt-4">
-            <Button
-              variant="secondary"
-              className="w-full border border-white/20 bg-white text-primary-700 hover:bg-neutral-50"
-              onClick={() => {
-                try {
-                  openModal(TaskCreateForm, { column: 'todo' });
-                } catch (e) {
-                  try {
-                    openCreate({ column: 'todo' });
-                  } catch (ee) {
-                    try { window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' })); } catch (eee) {}
-                  }
-                  if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
-                }
-              }}
-            >
-              <Plus size={18} /> New Task
-            </Button>
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-neutral-950">Syncly.</p>
+            <p className="text-xs text-neutral-500">Task workspace</p>
+          </div>
+        </div>
 
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  try {
-                    openModal(TaskCreateForm, { column: 'todo', assignee: 'You' });
-                  } catch (e) {
-                    try { openCreate({ column: 'todo', assignee: 'You' }); } catch (ee) { window.location.href = '/tasks?new=todo&assignee=You'; return; }
-                  }
-                  if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
-                }}
-                className="text-sm bg-white/90 text-primary-700 px-3 py-1 rounded-md"
-              >
-                You
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  try {
-                    openModal(TaskCreateForm, { column: 'todo', assignee: 'Alex' });
-                  } catch (e) {
-                    try { openCreate({ column: 'todo', assignee: 'Alex' }); } catch (ee) { window.location.href = '/tasks?new=todo&assignee=Alex'; return; }
-                  }
-                  if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
-                }}
-                className="text-sm bg-white/90 text-primary-700 px-3 py-1 rounded-md"
-              >
-                Alex
-              </button>
+        <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-900 text-white">
+                <span className="text-sm font-semibold">SJ</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-neutral-900">Sarah Johnson</p>
+                <p className="text-xs text-neutral-500">sarah@example.com</p>
+              </div>
             </div>
+            <button className="rounded-lg border border-neutral-200 p-1.5 text-neutral-500">
+              <Circle size={12} fill="currentColor" />
+            </button>
           </div>
+
+          <Button
+            variant="primary"
+            className="mt-4 w-full justify-between bg-neutral-900 text-white hover:bg-neutral-800"
+            onClick={() => {
+              try {
+                openModal(TaskCreateForm, { column: 'todo' });
+              } catch {
+                try {
+                  openCreate({ column: 'todo' });
+                } catch {
+                  try {
+                    window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' }));
+                  } catch {
+                    window.location.href = '/tasks';
+                    return;
+                  }
+                }
+                if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
+              }
+            }}
+          >
+            <span className="inline-flex items-center gap-2"><Plus size={16} /> New Task</span>
+            <span className="text-lg leading-none">+</span>
+          </Button>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4" aria-label="Primary">
-        <div className="mb-3 text-xs uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-500">Main menu</div>
-        <div className="space-y-2 mb-4">
+      <nav className="flex-1 py-5" aria-label="Primary">
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">Main</div>
+        <div className="space-y-2">
           {navMain.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
 
-              return (
-              <a
+            return (
+              <NavLink
                 key={item.id}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                to={item.href}
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors ${
                   isActive
-                    ? 'bg-primary-500/10 text-primary-600 border border-primary-500/20 shadow-sm'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50'
+                    ? 'bg-neutral-900 text-white shadow-sm'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <Icon size={18} />
+                <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isActive ? 'bg-white/15' : 'bg-neutral-900 text-white'}`}>
+                  <Icon size={16} />
+                </span>
                 <span className="font-medium">{item.label}</span>
-              </a>
+              </NavLink>
             );
           })}
         </div>
 
-        <div className="border-t border-neutral-200/80 dark:border-neutral-800 my-4" aria-hidden="true" />
+        <div className="my-5 border-t border-neutral-200" aria-hidden="true" />
 
-        <div className="mb-3 text-xs uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-500">General</div>
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">General</div>
         <div className="space-y-2">
           {navManage.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
 
             return (
-              <a
+              <NavLink
                 key={item.id}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                to={item.href}
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors ${
                   isActive
-                    ? 'bg-primary-500/10 text-primary-600 border border-primary-500/20 shadow-sm'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50'
+                    ? 'bg-neutral-900 text-white shadow-sm'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <Icon size={18} />
+                <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isActive ? 'bg-white/15' : 'bg-neutral-900 text-white'}`}>
+                  <Icon size={16} />
+                </span>
                 <span className="font-medium">{item.label}</span>
-              </a>
+              </NavLink>
             );
           })}
         </div>
       </nav>
 
-      {/* Help Section */}
-      <div className="p-4 border-t border-neutral-200/80 dark:border-neutral-800">
-        <div className="rounded-lg bg-neutral-100 p-4 text-center dark:bg-neutral-900/70">
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">Need help getting started?</p>
-          <Button variant="secondary" size="sm" className="w-full">View Tutorials</Button>
+      <div className="border-t border-neutral-200 pt-4">
+        <div className="rounded-md bg-neutral-100 p-4 text-center">
+          <p className="mb-3 text-sm text-neutral-700">Need help getting started?</p>
+          <Button variant="secondary" size="sm" className="w-full bg-neutral-900 text-white hover:bg-neutral-800">View Tutorials</Button>
         </div>
       </div>
     </aside>
