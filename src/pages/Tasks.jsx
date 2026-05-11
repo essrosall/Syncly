@@ -9,6 +9,7 @@ import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import {
   DndContext,
   closestCenter,
+  rectIntersection,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -89,6 +90,27 @@ const getTaskStatusMeta = (columnId) =>
   taskStatusOptions.find((option) => option.value === columnId) || taskStatusOptions[0];
 
 const getTaskKey = (taskId) => String(taskId);
+
+const TASK_ID_SEPARATOR = '::';
+
+const buildTaskDndId = (columnId, taskId) => `${columnId}${TASK_ID_SEPARATOR}${taskId}`;
+
+const parseTaskDndId = (id) => {
+  const rawId = String(id);
+
+  if (rawId.includes(TASK_ID_SEPARATOR)) {
+    const separatorIndex = rawId.lastIndexOf(TASK_ID_SEPARATOR);
+    return {
+      columnId: rawId.slice(0, separatorIndex),
+      taskId: rawId.slice(separatorIndex + TASK_ID_SEPARATOR.length),
+    };
+  }
+
+  return {
+    columnId: rawId,
+    taskId: null,
+  };
+};
 
 const getNextTaskId = (tasks) => {
   const taskIds = Object.values(tasks).flat().map((task) => Number(task.id) || 0);
@@ -175,7 +197,7 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `${columnId}-${task.id}` });
+  } = useSortable({ id: buildTaskDndId(columnId, task.id) });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -192,12 +214,21 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
       <Card 
         className="hover:shadow-md transition-all cursor-pointer"
         onClick={() => onTaskClick(task, columnId)}
+        data-task-id={task.id}
       >
         <div className="space-y-3">
           <div className="flex items-start gap-2">
-            <div {...attributes} {...listeners}>
-              <GripVertical size={16} className="text-neutral-400 mt-1 flex-shrink-0 cursor-grab" />
-            </div>
+            <button
+              type="button"
+              className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+              aria-label={`Drag ${task.title}`}
+              onClick={(event) => event.stopPropagation()}
+              onPointerDown={(event) => event.stopPropagation()}
+              {...attributes}
+              {...listeners}
+            >
+              <GripVertical size={16} />
+            </button>
             <h4 className="font-medium text-neutral-900 dark:text-neutral-100 flex-1">{task.title}</h4>
           </div>
           
@@ -234,7 +265,11 @@ const ColumnWrapper = ({ column, children }) => {
   const { setNodeRef } = useDroppable({ id: column.id });
 
   return (
-    <div ref={setNodeRef} className="flex flex-col bg-white dark:bg-neutral-900/80 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 min-w-max lg:min-w-0 text-neutral-900 dark:text-neutral-100">
+    <div
+      ref={setNodeRef}
+      data-column-id={column.id}
+      className="flex min-h-[24rem] flex-col bg-white dark:bg-neutral-900/80 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 min-w-max lg:min-w-0 text-neutral-900 dark:text-neutral-100"
+    >
       {children}
     </div>
   );
@@ -596,41 +631,57 @@ const Tasks = () => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (!over) return;
+    if (!over) {
+      console.log('No drop target detected');
+      return;
+    }
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    // Parse the task and column IDs
-    const [activeColumnId, activeTaskId] = activeId.split('-');
-    const [overColumnId, overTaskId] = overId.split('-');
+    console.log('Drag ended - Active:', activeId, 'Over:', overId);
+
+    const { columnId: activeColumnId, taskId: activeTaskId } = parseTaskDndId(activeId);
+    const { columnId: overColumnId, taskId: overTaskId } = parseTaskDndId(overId);
+
+    console.log('Parsed - From column:', activeColumnId, 'task:', activeTaskId, 'To column:', overColumnId, 'task:', overTaskId);
 
     // If task is dropped on the same position, do nothing
-    if (activeId === overId) return;
+    if (activeId === overId) {
+      console.log('Same position, skipping');
+      return;
+    }
 
     setTasks((prevTasks) => {
       try {
         const activeTasks = [...(prevTasks[activeColumnId] || [])];
-        const overTasks = overColumnId ? [...(prevTasks[overColumnId] || [])] : [...activeTasks];
+        const overTasks = overColumnId ? [...(prevTasks[overColumnId] || [])] : [];
 
         const activeTaskIndex = activeTasks.findIndex(
           (t) => String(t.id) === activeTaskId
         );
 
-        if (activeTaskIndex < 0) return prevTasks;
+        if (activeTaskIndex < 0) {
+          console.log('Active task not found');
+          return prevTasks;
+        }
 
         const overTaskIndex = overColumnId && overTaskId
           ? overTasks.findIndex((t) => String(t.id) === overTaskId)
           : -1;
 
+        // Same column reordering
         if (activeColumnId === overColumnId) {
+          console.log('Reordering in same column');
           const newTasks = arrayMove(activeTasks, activeTaskIndex, Math.max(0, overTaskIndex));
           return { ...prevTasks, [activeColumnId]: newTasks };
         }
 
-        if (overColumnId && prevTasks[overColumnId]) {
+        // Cross-column move
+        if (overColumnId && prevTasks[overColumnId] !== undefined) {
+          console.log('Moving to different column:', overColumnId);
           const [movedTask] = activeTasks.splice(activeTaskIndex, 1);
-          const newOverTasks = [...overTasks];
+          const newOverTasks = [...(prevTasks[overColumnId] || [])];
           newOverTasks.splice(overTaskIndex >= 0 ? overTaskIndex : newOverTasks.length, 0, movedTask);
 
           return {
@@ -640,6 +691,7 @@ const Tasks = () => {
           };
         }
 
+        console.log('No valid drop target found');
         return prevTasks;
       } catch (error) {
         console.error('Drag error:', error);
@@ -707,10 +759,16 @@ const Tasks = () => {
         {/* Kanban Board */}
         <DndContext
           sensors={sensors}
-          collisionDetection={closestCenter}
+          collisionDetection={rectIntersection}
           onDragEnd={handleDragEnd}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
+          <SortableContext
+            items={taskColumns.flatMap((column) =>
+              getFilteredTasks(tasks[column.id]).map((t) => buildTaskDndId(column.id, t.id))
+            )}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
               {taskColumns.map((column) => (
                 <ColumnWrapper key={column.id} column={column}>
                 {/* Column Header */}
@@ -732,10 +790,6 @@ const Tasks = () => {
 
                 {/* Tasks List */}
                 <div className="space-y-3 flex-1">
-                  <SortableContext
-                    items={getFilteredTasks(tasks[column.id]).map((t) => `${column.id}-${t.id}`)}
-                    strategy={verticalListSortingStrategy}
-                  >
                     {getFilteredTasks(tasks[column.id]).map((task) => (
                       <DraggableTask
                         key={task.id}
@@ -744,11 +798,11 @@ const Tasks = () => {
                         onTaskClick={handleTaskClick}
                       />
                     ))}
-                  </SortableContext>
                 </div>
               </ColumnWrapper>
             ))}
-          </div>
+            </div>
+          </SortableContext>
         </DndContext>
 
         {/* Task Details Modal */}
