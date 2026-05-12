@@ -30,7 +30,7 @@ const Settings = () => {
               <Input placeholder="Email" defaultValue={mockUser.email} />
             </div>
             <div className="flex justify-end">
-              <Button variant="primary" className="bg-neutral-900 text-white hover:bg-neutral-800">Save changes</Button>
+              <Button variant="primary" className="bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600">Save changes</Button>
             </div>
           </Card>
 

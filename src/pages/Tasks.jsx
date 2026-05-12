@@ -249,7 +249,7 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
 
           <div className="flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-700">
             <span className="text-xs text-neutral-600 dark:text-neutral-400">{task.assignee}</span>
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-xs font-semibold text-white">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-neutral-300 to-neutral-500 flex items-center justify-center text-xs font-semibold text-white dark:from-primary-400 dark:to-primary-600">
               {task.assignee.charAt(0)}
             </div>
           </div>
@@ -712,7 +712,7 @@ const Tasks = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Tasks</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize, prioritize, and track all your work in one place.</p>
           </div>
-          <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+          <Button size="sm" variant="primary" className="gap-2 bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
             <Plus size={16} /> New Task
           </Button>
         </div>
@@ -872,7 +872,7 @@ const Tasks = () => {
                         Assigned To
                       </h3>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-sm font-semibold text-white">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-300 to-neutral-500 flex items-center justify-center text-sm font-semibold text-white dark:from-primary-400 dark:to-primary-600">
                           {selectedTask.assignee.charAt(0)}
                         </div>
                         <p className="text-neutral-700 dark:text-neutral-300">{selectedTask.assignee}</p>
@@ -898,7 +898,7 @@ const Tasks = () => {
                       {(taskActivity[getTaskKey(selectedTask.id)] || []).length > 0 ? (
                         (taskActivity[getTaskKey(selectedTask.id)] || []).map((entry, index) => (
                           <div key={`${entry.timestamp}-${index}`} className="flex gap-3">
-                            <div className={`mt-1 h-2.5 w-2.5 rounded-full ${entry.type === 'comment' ? 'bg-primary-500' : 'bg-neutral-400'}`} />
+                            <div className={`mt-1 h-2.5 w-2.5 rounded-full ${entry.type === 'comment' ? 'bg-neutral-500 dark:bg-primary-500' : 'bg-neutral-400'}`} />
                             <div className="flex-1 space-y-1">
                               <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                                 <span className="font-medium text-neutral-700 dark:text-neutral-300">{entry.author}</span>

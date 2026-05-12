@@ -43,7 +43,7 @@ const Dashboard = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Dashboard Overview</h1>
             <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">Overview of your active workspaces, recent tasks, and team productivity.</p>
           </div>
-          <Button variant="primary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800">
+          <Button variant="primary" size="sm" className="bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600">
             Import Tasks
           </Button>
         </div>

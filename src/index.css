@@ -17,7 +17,7 @@
   }
 
   html.light {
-    @apply bg-[#f4f6f8] text-neutral-950;
+    @apply bg-white text-neutral-950;
   }
 
   body {
@@ -30,9 +30,9 @@
 
   html.light body {
     background-image:
-      radial-gradient(circle at top left, rgba(30, 90, 166, 0.08), transparent 26%),
-      radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), transparent 22%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(244, 246, 248, 0.7) 240px, #f4f6f8 100%);
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.98), transparent 26%),
+      radial-gradient(circle at top right, rgba(243, 244, 246, 0.95), transparent 22%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(250, 250, 250, 0.95) 240px, #ffffff 100%);
   }
 
   /* Smooth scrollbar styling */
@@ -64,7 +64,7 @@
   }
 
   html.light .glass {
-    @apply bg-black/5 border-black/10;
+    @apply bg-white/80 border-neutral-200;
   }
 
   /* Card components */
@@ -73,7 +73,7 @@
   }
 
   html.light .card {
-    @apply bg-neutral-0 border-neutral-200 shadow-[0_20px_60px_rgba(15,23,42,0.08)];
+    @apply bg-white border-neutral-200 shadow-[0_20px_60px_rgba(15,23,42,0.08)];
   }
 
   /* Button base styles */
@@ -87,7 +87,7 @@
   }
 
   html.light .input-base {
-    @apply bg-neutral-0 border-neutral-200 text-neutral-950 placeholder-neutral-400 focus:ring-primary-600 shadow-sm;
+    @apply bg-white border-neutral-200 text-neutral-950 placeholder-neutral-400 focus:ring-primary-600 shadow-sm;
   }
 
   /* Text selection color */
@@ -96,7 +96,7 @@
   }
 
   html.light ::selection {
-    @apply bg-primary-300;
+    @apply bg-neutral-200;
   }
 }
 

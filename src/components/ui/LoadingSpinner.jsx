@@ -10,9 +10,9 @@ const LoadingSpinner = ({ size = 'md', className = '' }) => {
   return (
     <div className={`inline-block ${sizes[size]} ${className}`}>
       <div className="relative w-full h-full">
-        <div className="absolute inset-0 rounded-full border-2 border-neutral-700"></div>
+        <div className="absolute inset-0 rounded-full border-2 border-neutral-300 dark:border-neutral-700"></div>
         <div
-          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary-500 border-r-primary-500 animate-spin"
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-neutral-500 border-r-neutral-500 animate-spin dark:border-t-primary-500 dark:border-r-primary-500"
         ></div>
       </div>
     </div>

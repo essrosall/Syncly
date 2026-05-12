@@ -18,7 +18,7 @@ const Signup = () => {
     <div className="min-h-screen bg-transparent p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-neutral-900 text-white shadow-sm">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-neutral-100">
             <span className="text-lg font-semibold">S</span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Create your account</h1>
@@ -42,7 +42,7 @@ const Signup = () => {
               <Input type="password" placeholder="Create password" {...register('password', { required: 'Password required', minLength: { value: 8, message: 'Minimum 8 characters' } })} error={errors.password && errors.password.message} />
             </div>
               <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Password</label>
-            <Button variant="primary" className="w-full bg-neutral-900 text-white hover:bg-neutral-800" type="submit">Create account</Button>
+            <Button variant="primary" className="w-full bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600" type="submit">Create account</Button>
           </form>
         </Card>
 
