@@ -10,20 +10,20 @@ const Settings = () => {
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Settings</h1>
-            <p className="mt-2 text-sm text-neutral-500">Manage your profile, preferences, and workspace security.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Settings</h1>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Manage your profile, preferences, and workspace security.</p>
           </div>
           <Badge variant="primary">Active</Badge>
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
-          <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] space-y-5">
+          <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] space-y-5 dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-neutral-950">Profile</h2>
-                <p className="mt-1 text-sm text-neutral-500">Manage your name, email, and contact information</p>
+                <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Profile</h2>
+                <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Manage your name, email, and contact information</p>
               </div>
-              <UserRound size={18} className="text-neutral-400" />
+              <UserRound size={18} className="text-neutral-400 dark:text-neutral-500" />
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Input placeholder="Full name" defaultValue={mockUser.name} />
@@ -35,29 +35,29 @@ const Settings = () => {
           </Card>
 
           <div className="space-y-4">
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)]">
+            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950">Notifications</h2>
-                  <p className="mt-1 text-sm text-neutral-500">Control alerts and email preferences</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Notifications</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Control alerts and email preferences</p>
                 </div>
-                <BellRing size={18} className="text-neutral-400" />
+                <BellRing size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
-              <div className="mt-5 space-y-3 text-sm text-neutral-700">
-                <div className="rounded-md bg-neutral-100 px-4 py-3">Task reminders enabled</div>
-                <div className="rounded-md bg-neutral-100 px-4 py-3">Workspace mentions enabled</div>
+              <div className="mt-5 space-y-3 text-sm text-neutral-700 dark:text-neutral-200">
+                <div className="rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Task reminders enabled</div>
+                <div className="rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Workspace mentions enabled</div>
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)]">
+            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950">Security</h2>
-                  <p className="mt-1 text-sm text-neutral-500">Basic account protection</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Security</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Basic account protection</p>
                 </div>
-                <ShieldCheck size={18} className="text-neutral-400" />
+                <ShieldCheck size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
-              <p className="mt-5 text-sm text-neutral-600">Your workspace access is protected with standard sign-in controls.</p>
+              <p className="mt-5 text-sm text-neutral-600 dark:text-neutral-300">Your workspace access is protected with standard sign-in controls.</p>
             </Card>
           </div>
         </div>

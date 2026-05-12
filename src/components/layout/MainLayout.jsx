@@ -3,7 +3,7 @@ import Sidebar from './Sidebar';
 
 const MainLayout = ({ children, user, onLogout, activeTab }) => {
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-950">
+    <div className="min-h-screen bg-transparent text-neutral-950 dark:text-neutral-100">
       <Navbar user={user} onLogout={onLogout} />
       <div className="flex lg:ml-72">
         <Sidebar activeTab={activeTab} />

@@ -21,40 +21,40 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
   const { openModal } = useGlobalModal();
 
   return (
-    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-neutral-50 p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)]">
-      <div className="space-y-4 border-b border-neutral-200 pb-4">
+    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-neutral-50 p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100">
+      <div className="space-y-4 border-b border-neutral-200 pb-4 dark:border-neutral-700">
         <div className="flex items-center gap-3 px-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-neutral-950 shadow-sm">
+          <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-neutral-950 shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:border dark:border-neutral-700">
             <span className="text-sm font-semibold">S</span>
           </div>
           <div>
-            <p className="text-lg font-semibold tracking-tight text-neutral-950">Syncly.</p>
-            <p className="text-xs text-neutral-500">Task workspace</p>
+            <p className="text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Syncly.</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">Task workspace</p>
           </div>
         </div>
       </div>
       <div className="my-2" />
 
-          <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">Profile</div>
-          <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
+          <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
+          <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-950">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100">
                   <span className="text-sm font-semibold">SJ</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-neutral-950">Sarah Johnson</p>
-                  <p className="text-xs text-neutral-500">sarah@example.com</p>
+                  <p className="text-sm font-medium text-neutral-950 dark:text-neutral-100">Sarah Johnson</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">sarah@example.com</p>
                 </div>
               </div>
-              <button className="rounded-md border border-neutral-200 p-1.5 text-neutral-500">
+              <button className="rounded-md border border-neutral-200 p-1.5 text-neutral-500 dark:border-neutral-700 dark:text-neutral-300">
                 <Circle size={12} fill="currentColor" />
               </button>
             </div>
 
             <Button
               variant="primary"
-              className="mt-4 w-full justify-between rounded-md bg-neutral-900 text-white hover:bg-neutral-800"
+              className="mt-4 w-full justify-between rounded-md bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600"
               onClick={() => {
                 try {
                   openModal(TaskCreateForm, { column: 'todo' });
@@ -78,7 +78,7 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
           </div>
 
       <nav className="flex-1 py-8" aria-label="Primary">
-        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">Main</div>
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Main</div>
         <div className="space-y-2">
           {navMain.map((item) => {
             const Icon = item.icon;
@@ -90,12 +90,12 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
                 to={item.href}
                 className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
                   isActive
-                    ? 'bg-neutral-900 text-white shadow-sm'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
+                    ? 'bg-neutral-900 text-white shadow-sm dark:bg-neutral-700 dark:text-neutral-100'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>
@@ -106,7 +106,7 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
 
         <div className="my-5 border-t border-neutral-150" aria-hidden="true" />
 
-        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400">General</div>
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">General</div>
         <div className="space-y-2">
           {navManage.map((item) => {
             const Icon = item.icon;
@@ -118,12 +118,12 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
                 to={item.href}
                 className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
                   isActive
-                    ? 'bg-neutral-900 text-white shadow-sm'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950'
+                    ? 'bg-neutral-900 text-white shadow-sm dark:bg-neutral-700 dark:text-neutral-100'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>
@@ -135,10 +135,10 @@ const Sidebar = ({ activeTab = 'dashboard' }) => {
           
       </nav>
 
-      <div className="border-t border-neutral-200 pt-4">
-          <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)]">
-            <p className="mb-3 text-sm text-neutral-600">Need help getting started?</p>
-            <Button variant="secondary" size="sm" className="w-full rounded-md bg-neutral-900 text-white hover:bg-neutral-800">View Tutorials</Button>
+      <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
+          <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">Need help getting started?</p>
+            <Button variant="secondary" size="sm" className="w-full rounded-md bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600">View Tutorials</Button>
         </div>
       </div>
     </aside>

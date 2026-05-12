@@ -30,11 +30,11 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
       {/* Modal */}
       <div className="fixed inset-x-0 top-16 bottom-0 flex items-start justify-center z-50 p-4 overflow-y-auto">
         <div
-          className={`bg-white dark:bg-neutral-900 rounded-md shadow-xl max-w-lg w-full max-h-[calc(100vh-5rem)] overflow-y-auto ${className}`}
+          className={`bg-white dark:bg-neutral-800 rounded-md shadow-xl max-w-lg w-full max-h-[calc(100vh-5rem)] overflow-y-auto ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+          <div className="sticky top-0 flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
             <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
               {title}
             </h2>

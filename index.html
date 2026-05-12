@@ -13,9 +13,24 @@
     <script>
       (function(){
         try {
-          // Force light mode on initial paint to avoid flash of dark background.
-          document.documentElement.classList.add('light');
-          document.documentElement.classList.remove('dark');
+          var key = 'syncly:theme';
+          var saved = null;
+          try {
+            saved = window.localStorage.getItem(key);
+          } catch (e) {
+            saved = null;
+          }
+          var theme = saved === 'dark' || saved === 'light'
+            ? saved
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          }
         } catch (e) {
           document.documentElement.classList.add('light');
         }

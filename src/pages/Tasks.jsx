@@ -267,7 +267,7 @@ const ColumnWrapper = ({ column, children }) => {
     <div
       ref={setNodeRef}
       data-column-id={column.id}
-      className="flex min-h-[24rem] min-w-max flex-col rounded-md border border-neutral-200 bg-white p-4 text-neutral-950 shadow-[0_12px_30px_rgba(17,25,43,0.04)] lg:min-w-0"
+      className="flex min-h-[24rem] min-w-max flex-col rounded-md border border-neutral-200 bg-white p-4 text-neutral-950 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 lg:min-w-0"
     >
       {children}
     </div>
@@ -709,15 +709,15 @@ const Tasks = () => {
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">Tasks</h1>
-            <p className="mt-2 text-sm text-neutral-500">Organize, prioritize, and track all your work in one place.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Tasks</h1>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize, prioritize, and track all your work in one place.</p>
           </div>
           <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
             <Plus size={16} /> New Task
           </Button>
         </div>
 
-        <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)]">
+        <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
             <div className="flex flex-col items-stretch gap-4 sm:flex-row">
             <div className="flex-1">
@@ -735,7 +735,7 @@ const Tasks = () => {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className="self-center text-xs font-semibold text-neutral-500">Priority:</span>
+                <span className="self-center text-xs font-semibold text-neutral-500 dark:text-neutral-400">Priority:</span>
               <div className="flex gap-2">
               {['high', 'medium', 'low'].map((priority) => (
                 <button
@@ -748,7 +748,7 @@ const Tasks = () => {
                         : priority === 'medium'
                         ? 'border-amber-200 bg-amber-100 text-amber-700'
                         : 'border-emerald-200 bg-emerald-100 text-emerald-700'
-                      : 'border-neutral-200 bg-neutral-100 text-neutral-500'
+                        : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
                   }`}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
@@ -773,9 +773,9 @@ const Tasks = () => {
             <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-4 lg:grid-cols-2 2xl:grid-cols-4">
               {taskColumns.map((column) => (
                 <ColumnWrapper key={column.id} column={column}>
-                  <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-4">
+                  <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-neutral-700">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-neutral-950">{column.title}</h3>
+                      <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">{column.title}</h3>
                       <Badge variant={column.color} size="sm">
                         {getFilteredTasks(tasks[column.id]).length}
                       </Badge>
@@ -783,7 +783,7 @@ const Tasks = () => {
                     <button
                       type="button"
                       onClick={() => handleStartCreate(column.id)}
-                      className="rounded-full bg-neutral-100 p-2 text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900"
+                      className="rounded-full bg-neutral-100 p-2 text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
                     >
                       <Plus size={16} />
                     </button>
@@ -884,7 +884,7 @@ const Tasks = () => {
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
                       Notes
                     </h3>
-                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
+                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
                       {selectedTask.description || 'No notes added yet.'}
                     </p>
                   </div>
@@ -894,7 +894,7 @@ const Tasks = () => {
                       Activity & Comments
                     </h3>
 
-                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 p-4">
+                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
                       {(taskActivity[getTaskKey(selectedTask.id)] || []).length > 0 ? (
                         (taskActivity[getTaskKey(selectedTask.id)] || []).map((entry, index) => (
                           <div key={`${entry.timestamp}-${index}`} className="flex gap-3">

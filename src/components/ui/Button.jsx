@@ -12,9 +12,9 @@ const Button = React.forwardRef(({
   const baseStyles = 'btn-base inline-flex items-center justify-center gap-2 font-medium';
 
   const variants = {
-    primary: 'bg-neutral-900 hover:bg-neutral-800 text-white shadow-sm',
-    secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200',
-    ghost: 'bg-transparent hover:bg-neutral-100 text-neutral-700 border border-transparent',
+    primary: 'bg-neutral-900 hover:bg-neutral-800 text-white shadow-sm dark:bg-neutral-700 dark:hover:bg-neutral-600',
+    secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-100 dark:border-neutral-700',
+    ghost: 'bg-transparent hover:bg-neutral-100 text-neutral-700 border border-transparent dark:text-neutral-200 dark:hover:bg-neutral-800',
     danger: 'bg-error-500 hover:bg-error-600 text-white',
     success: 'bg-success-500 hover:bg-success-600 text-white',
   };

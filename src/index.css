@@ -13,7 +13,7 @@
   }
 
   html {
-    @apply bg-neutral-950 text-neutral-100;
+    @apply bg-neutral-900 text-neutral-100;
   }
 
   html.light {
@@ -22,9 +22,9 @@
 
   body {
     background-image:
-      radial-gradient(circle at top left, rgba(30, 90, 166, 0.08), transparent 28%),
-      radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 24%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.35), transparent 180px);
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 28%),
+      radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 24%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.12), transparent 180px);
     background-attachment: fixed;
   }
 
@@ -41,7 +41,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-900;
+    @apply bg-neutral-800;
   }
 
   html.light ::-webkit-scrollbar-track {
@@ -49,7 +49,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-700 rounded-full hover:bg-neutral-600;
+    @apply bg-neutral-600 rounded-full hover:bg-neutral-500;
   }
 
   html.light ::-webkit-scrollbar-thumb {
@@ -69,7 +69,7 @@
 
   /* Card components */
   .card {
-    @apply bg-neutral-900 border border-neutral-800 rounded-md shadow-lg;
+    @apply bg-neutral-800 border border-neutral-700 rounded-md shadow-lg;
   }
 
   html.light .card {
@@ -83,7 +83,7 @@
 
   /* Input base styles */
   .input-base {
-    @apply px-4 py-2.5 rounded-md border bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    @apply px-4 py-2.5 rounded-md border bg-neutral-800 border-neutral-700 text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
   }
 
   html.light .input-base {
