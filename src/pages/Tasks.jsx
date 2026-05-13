@@ -220,7 +220,7 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
             <div className="flex items-start gap-2 flex-1">
               <button
                 type="button"
-                className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md border border-neutral-200 bg-white p-1 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                 aria-label={`Drag ${task.title}`}
                 onClick={(event) => event.stopPropagation()}
                 onPointerDown={(event) => event.stopPropagation()}
@@ -804,8 +804,31 @@ const Tasks = () => {
 
         <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
-            <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="w-full sm:max-w-md lg:max-w-lg">
+            <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)_auto] lg:items-center lg:gap-4 ">
+              <div className="flex flex-wrap items-center gap-2 rounded-md py-3 dark:border-neutral-700 dark:bg-neutral-800/70 lg:justify-start">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Priority</span>
+                  <div className="flex flex-wrap gap-2">
+                    {priorityOptions.map((priority) => (
+                      <button
+                        key={priority}
+                        onClick={() => togglePriority(priority)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                          selectedPriorities.includes(priority)
+                            ? priority === 'high'
+                              ? 'border-red-200 bg-red-100 text-red-700'
+                              : priority === 'medium'
+                              ? 'border-amber-200 bg-amber-100 text-amber-700'
+                              : 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                            : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                        }`}
+                      >
+                        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+              <div className="w-full max-w-xl justify-self-center">
                 <div className={`flex w-full items-center gap-3 rounded-md border px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] transition-colors ${isTaskSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'}`}>
                   <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
                   <input
@@ -829,7 +852,8 @@ const Tasks = () => {
                   )}
                 </div>
               </div>
-              <div ref={filterMenuRef} className="relative">
+
+              <div ref={filterMenuRef} className="relative self-start justify-self-end lg:self-center">
                 <Button
                   variant="secondary"
                   className="gap-2"
@@ -906,28 +930,8 @@ const Tasks = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="self-center text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Priority</span>
-              <div className="flex flex-wrap gap-2">
-                {priorityOptions.map((priority) => (
-                <button
-                  key={priority}
-                  onClick={() => togglePriority(priority)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
-                    selectedPriorities.includes(priority)
-                      ? priority === 'high'
-                        ? 'border-red-200 bg-red-100 text-red-700'
-                        : priority === 'medium'
-                        ? 'border-amber-200 bg-amber-100 text-amber-700'
-                        : 'border-emerald-200 bg-emerald-100 text-emerald-700'
-                        : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-                  }`}
-                >
-                  {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                </button>
-                ))}
-              </div>
-              <span className="ml-auto text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
                 {hasActiveFilters ? 'Filtered view' : 'Showing all tasks'}
               </span>
             </div>
