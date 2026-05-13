@@ -73,7 +73,7 @@
   }
 
   html.light .card {
-    @apply bg-white border-neutral-200 shadow-[0_20px_60px_rgba(15,23,42,0.08)];
+    @apply bg-neutral-100 border-neutral-200 shadow-[0_20px_60px_rgba(15,23,42,0.08)];
   }
 
   /* Button base styles */

@@ -97,11 +97,10 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               <button
                 type="button"
                 onClick={() => openModal(ProfileEditForm, { title: 'Edit Profile', user: profile })}
-                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-neutral-200 bg-neutral-100 px-2 py-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                 aria-label="Edit profile"
               >
                 <Settings2 size={14} />
-                Edit
               </button>
             </div>
 

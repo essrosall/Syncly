@@ -9,7 +9,7 @@ const Settings = () => {
     <MainLayout user={mockUser} activeTab="settings">
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div id="settings-overview">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Settings</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Manage your profile, preferences, and workspace security.</p>
           </div>
@@ -58,6 +58,21 @@ const Settings = () => {
                 <ShieldCheck size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
               <p className="mt-5 text-sm text-neutral-600 dark:text-neutral-300">Your workspace access is protected with standard sign-in controls.</p>
+            </Card>
+
+            <Card id="settings-documentation" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Documentation</h2>
+              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Product docs, API usage notes, and setup guides.</p>
+            </Card>
+
+            <Card id="settings-tutorials" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Tutorials</h2>
+              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Step-by-step walkthroughs for common workflows.</p>
+            </Card>
+
+            <Card id="settings-community" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Community</h2>
+              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Get help, ask questions, and share feedback.</p>
             </Card>
           </div>
         </div>

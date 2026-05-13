@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MainLayout } from '../components/layout';
 import { Card, Badge, Button, Input, Modal, Textarea, Toast } from '../components/ui';
 import { useCreateModal } from '../contexts/CreateModalContext';
-import { Plus, Filter, Search, GripVertical } from 'lucide-react';
+import { Plus, Filter, Search, GripVertical, X } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
@@ -216,22 +216,21 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
         data-task-id={task.id}
       >
         <div className="space-y-3">
-          <div className="flex items-start gap-2">
-            <button
-              type="button"
-              className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-              aria-label={`Drag ${task.title}`}
-              onClick={(event) => event.stopPropagation()}
-              onPointerDown={(event) => event.stopPropagation()}
-              {...attributes}
-              {...listeners}
-            >
-              <GripVertical size={16} />
-            </button>
-            <h4 className="font-medium text-neutral-900 dark:text-neutral-100 flex-1">{task.title}</h4>
-          </div>
-          
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-start gap-2 justify-between">
+            <div className="flex items-start gap-2 flex-1">
+              <button
+                type="button"
+                className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                aria-label={`Drag ${task.title}`}
+                onClick={(event) => event.stopPropagation()}
+                onPointerDown={(event) => event.stopPropagation()}
+                {...attributes}
+                {...listeners}
+              >
+                <GripVertical size={16} />
+              </button>
+              <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{task.title}</h4>
+            </div>
             <Badge
               variant={
                 task.priority === 'high'
@@ -244,11 +243,14 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
             >
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </Badge>
-            <span className="text-neutral-600 dark:text-neutral-400">{task.dueDate}</span>
           </div>
-
+          
+          {task.description && (
+            <p className="text-xs text-neutral-600 dark:text-neutral-400">{task.description}</p>
+          )}
+          
           <div className="flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-700">
-            <span className="text-xs text-neutral-600 dark:text-neutral-400">{task.assignee}</span>
+            <span className="text-xs text-neutral-600 dark:text-neutral-400">{task.dueDate}</span>
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-neutral-300 to-neutral-500 flex items-center justify-center text-xs font-semibold text-white dark:from-primary-400 dark:to-primary-600">
               {task.assignee.charAt(0)}
             </div>
@@ -277,6 +279,10 @@ const ColumnWrapper = ({ column, children }) => {
 const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPriorities, setSelectedPriorities] = useState(['high', 'medium', 'low']);
+  const [selectedAssignees, setSelectedAssignees] = useState([...assigneeOptions]);
+  const [dueDateSort, setDueDateSort] = useState('none');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isTaskSearchFocused, setIsTaskSearchFocused] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditingTask, setIsEditingTask] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
@@ -284,6 +290,7 @@ const Tasks = () => {
   const [taskActivity, setTaskActivity] = useState(() => readStoredJson(TASK_ACTIVITY_STORAGE_KEY, defaultTaskActivity));
   const [commentDraft, setCommentDraft] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
+  const filterMenuRef = useRef(null);
   const { addToast } = useToast();
   const { openModal } = useGlobalModal();
 
@@ -312,13 +319,59 @@ const Tasks = () => {
     }
   }, [taskActivity]);
 
-  // Filter tasks based on search term and priority
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+        setIsFilterOpen(false);
+      }
+    };
+
+    if (isFilterOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isFilterOpen]);
+
+  // Filter tasks based on search term, priority, assignee, and due date sorting
   const getFilteredTasks = (columnTasks) => {
-    return columnTasks.filter((task) => {
+    const filtered = columnTasks.filter((task) => {
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesPriority = selectedPriorities.includes(task.priority);
-      return matchesSearch && matchesPriority;
+      const matchesAssignee = selectedAssignees.includes(task.assignee);
+      return matchesSearch && matchesPriority && matchesAssignee;
     });
+
+    const parseDueDate = (task) => {
+      const timestamp = Date.parse(task.dueDate);
+      return Number.isNaN(timestamp) ? null : timestamp;
+    };
+
+    if (dueDateSort === 'nearest') {
+      return [...filtered].sort((a, b) => {
+        const aDate = parseDueDate(a);
+        const bDate = parseDueDate(b);
+        if (aDate === null && bDate === null) return 0;
+        if (aDate === null) return 1;
+        if (bDate === null) return -1;
+        return aDate - bDate;
+      });
+    }
+
+    if (dueDateSort === 'farthest') {
+      return [...filtered].sort((a, b) => {
+        const aDate = parseDueDate(a);
+        const bDate = parseDueDate(b);
+        if (aDate === null && bDate === null) return 0;
+        if (aDate === null) return 1;
+        if (bDate === null) return -1;
+        return bDate - aDate;
+      });
+    }
+
+    return filtered;
   };
 
   // Toggle priority filter
@@ -330,6 +383,32 @@ const Tasks = () => {
         return [...prev, priority];
       }
     });
+  };
+
+  const toggleAssignee = (assignee) => {
+    setSelectedAssignees((prev) => {
+      if (prev.includes(assignee)) {
+        return prev.filter((person) => person !== assignee);
+      }
+      return [...prev, assignee];
+    });
+  };
+
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 ||
+    selectedPriorities.length !== priorityOptions.length ||
+    selectedAssignees.length !== assigneeOptions.length ||
+    dueDateSort !== 'none';
+
+  const activeAdvancedFilterCount =
+    (selectedAssignees.length !== assigneeOptions.length ? 1 : 0) +
+    (dueDateSort !== 'none' ? 1 : 0);
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedPriorities([...priorityOptions]);
+    setSelectedAssignees([...assigneeOptions]);
+    setDueDateSort('none');
   };
 
   // Handle task click to open modal
@@ -705,10 +784,16 @@ const Tasks = () => {
   };
 
   return (
-    <MainLayout user={mockUser} activeTab="tasks">
+    <MainLayout 
+      user={mockUser} 
+      activeTab="tasks"
+      onNotifications={() => addToast({ title: 'Notifications', message: 'You have no new notifications', variant: 'default' })}
+      onLayout={() => addToast({ title: 'Layout', message: 'Grid view coming soon!', variant: 'default' })}
+      onMore={() => addToast({ title: 'More Options', message: 'Additional options coming soon!', variant: 'default' })}
+    >
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div id="tasks-overview">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Tasks</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize, prioritize, and track all your work in one place.</p>
           </div>
@@ -719,25 +804,112 @@ const Tasks = () => {
 
         <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
-            <div className="flex flex-col items-stretch gap-4 sm:flex-row">
-            <div className="flex-1">
-              <Input
-                type="text"
-                placeholder="Search tasks..."
-                icon={Search}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-              <Button variant="secondary" className="gap-2">
-              <Filter size={18} /> Filter
-              </Button>
+            <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="w-full sm:max-w-md lg:max-w-lg">
+                <div className={`flex w-full items-center gap-3 rounded-md border px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] transition-colors ${isTaskSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'}`}>
+                  <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
+                  <input
+                    type="text"
+                    placeholder="Search tasks by title"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onFocus={() => setIsTaskSearchFocused(true)}
+                    onBlur={() => setIsTaskSearchFocused(false)}
+                    className="w-full bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500"
+                  />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchTerm('')}
+                      className="flex-shrink-0 rounded-md p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                      aria-label="Clear task search"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div ref={filterMenuRef} className="relative">
+                <Button
+                  variant="secondary"
+                  className="gap-2"
+                  onClick={() => setIsFilterOpen((prev) => !prev)}
+                  title="Filter by assignee and due date"
+                >
+                  <Filter size={18} />
+                  Filters
+                  {activeAdvancedFilterCount > 0 && (
+                    <span className="rounded-full bg-neutral-900 px-2 py-0.5 text-xs font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900">
+                      {activeAdvancedFilterCount}
+                    </span>
+                  )}
+                </Button>
+
+                {isFilterOpen && (
+                  <div className="absolute right-0 z-20 mt-2 w-[19rem] rounded-md border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Assignee</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {assigneeOptions.map((assignee) => (
+                            <button
+                              key={assignee}
+                              type="button"
+                              onClick={() => toggleAssignee(assignee)}
+                              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                                selectedAssignees.includes(assignee)
+                                  ? 'border-primary-200 bg-primary-100 text-primary-700 dark:border-primary-600/50 dark:bg-primary-600/20 dark:text-primary-200'
+                                  : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                              }`}
+                            >
+                              {assignee}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Due Date</p>
+                        <div className="mt-2 grid grid-cols-1 gap-2">
+                          {[{ value: 'none', label: 'Default order' }, { value: 'nearest', label: 'Closest due date first' }, { value: 'farthest', label: 'Farthest due date first' }].map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setDueDateSort(option.value)}
+                              className={`rounded-md border px-3 py-2 text-left text-xs font-medium transition-all ${
+                                dueDateSort === option.value
+                                  ? 'border-primary-300 bg-primary-100 text-primary-700 dark:border-primary-600/60 dark:bg-primary-600/20 dark:text-primary-200'
+                                  : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
+                        <button
+                          type="button"
+                          onClick={handleResetFilters}
+                          className="text-xs font-semibold text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                        >
+                          Reset all filters
+                        </button>
+                        <Button size="sm" variant="secondary" onClick={() => setIsFilterOpen(false)}>
+                          Done
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-                <span className="self-center text-xs font-semibold text-neutral-500 dark:text-neutral-400">Priority:</span>
-              <div className="flex gap-2">
-              {['high', 'medium', 'low'].map((priority) => (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="self-center text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Priority</span>
+              <div className="flex flex-wrap gap-2">
+                {priorityOptions.map((priority) => (
                 <button
                   key={priority}
                   onClick={() => togglePriority(priority)}
@@ -753,8 +925,11 @@ const Tasks = () => {
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </button>
-              ))}
+                ))}
               </div>
+              <span className="ml-auto text-xs text-neutral-500 dark:text-neutral-400">
+                {hasActiveFilters ? 'Filtered view' : 'Showing all tasks'}
+              </span>
             </div>
           </div>
         </Card>

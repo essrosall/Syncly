@@ -15,7 +15,7 @@ const Workspaces = () => {
     <MainLayout user={mockUser} activeTab="workspaces">
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div id="workspaces-overview">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Workspaces</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize teams and manage projects across dedicated workspaces.</p>
           </div>
@@ -54,7 +54,11 @@ const Workspaces = () => {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {workspaces.map((ws) => (
-            <Card key={ws.id} className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] transition-transform hover:-translate-y-0.5 dark:border-neutral-700 dark:bg-neutral-800">
+            <Card
+              key={ws.id}
+              id={`workspace-${ws.name.toLowerCase().replace(/\s+/g, '-')}`}
+              className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] transition-transform hover:-translate-y-0.5 dark:border-neutral-700 dark:bg-neutral-800"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <Badge variant={ws.color} size="sm">{ws.status}</Badge>
