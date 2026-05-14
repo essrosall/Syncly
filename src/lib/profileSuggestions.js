@@ -1,0 +1,106 @@
+export const WORK_SUGGESTIONS = [
+  'Software Engineer',
+  'Frontend Developer',
+  'Backend Developer',
+  'Full Stack Developer',
+  'Product Manager',
+  'Project Manager',
+  'Designer',
+  'UX Designer',
+  'UI Designer',
+  'Data Scientist',
+  'Data Analyst',
+  'Business Analyst',
+  'QA Engineer',
+  'DevOps Engineer',
+  'Marketer',
+  'Sales Associate',
+  'Consultant',
+  'Teacher',
+  'Nurse',
+  'Doctor',
+  'Entrepreneur',
+  'Student',
+  'Researcher',
+  'Content Creator',
+  'Accountant',
+  'Engineer',
+];
+
+export const HOBBIES_SUGGESTIONS = [
+  'Photography',
+  'Gaming',
+  'Reading',
+  'Traveling',
+  'Cooking',
+  'Drawing',
+  'Painting',
+  'Cycling',
+  'Hiking',
+  'Writing',
+  'Music',
+  'Gardening',
+  'Baking',
+  'Swimming',
+  'Running',
+  'Yoga',
+  'Chess',
+  'Knitting',
+  'Fishing',
+  'Dancing',
+];
+
+export const INTERESTS_SUGGESTIONS = [
+  'Technology',
+  'Business',
+  'Design',
+  'Science',
+  'Health',
+  'Startups',
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Productivity',
+  'Finance',
+  'Marketing',
+  'Education',
+  'Space',
+  'Environment',
+  'Sports',
+  'Travel',
+  'Food',
+  'Culture',
+  'Psychology',
+  'Photography',
+];
+
+export const SCHOOL_SUGGESTIONS = [
+  'Harvard University',
+  'Stanford University',
+  'MIT',
+  'University of California, Berkeley',
+  'University of Oxford',
+  'University of Cambridge',
+  'National University of Singapore',
+  'University of Toronto',
+  'University of Washington',
+  'University of Sydney',
+  'University of the Philippines',
+  'Ateneo de Manila University',
+  'De La Salle University',
+  'University of Santo Tomas',
+  'Mapua University',
+  'Far Eastern University',
+  'Auckland University of Technology',
+  'University of Melbourne',
+  'University of Adelaide',
+  'University of Queensland',
+];
+
+export const filterSuggestions = (input, suggestions, existing = []) => {
+  const query = input.trim().toLowerCase();
+  return suggestions.filter((item) => {
+    const matches = !query || item.toLowerCase().includes(query);
+    const alreadySelected = existing.includes(item);
+    return matches && !alreadySelected;
+  });
+};

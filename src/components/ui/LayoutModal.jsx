@@ -37,7 +37,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
 
   const sidebarOptions = [
     { id: 'compact', name: 'Compact', width: 'w-56' },
-    { id: 'wide', name: 'Wide', width: 'w-72' },
+    { id: 'wide', name: 'Wide (Default)', width: 'w-72' },
     { id: 'full', name: 'Full Width', width: 'w-screen' },
   ];
 

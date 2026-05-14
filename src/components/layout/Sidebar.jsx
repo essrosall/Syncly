@@ -16,22 +16,25 @@ const readProfile = (fallbackUser) => {
     const stored = raw ? JSON.parse(raw) : null;
 
     const firstName = stored?.firstName || fallbackUser?.name?.split(' ')?.[0] || 'Sarah';
+    const middleName = stored?.middleName || '';
     const lastName = stored?.lastName || fallbackUser?.name?.split(' ')?.[1] || 'Johnson';
     const nickname = stored?.nickname || '';
     const gender = stored?.gender || 'female';
     const displayPreference = stored?.displayPreference || 'nickname';
 
     let displayName = stored?.name || `${firstName} ${lastName}`;
+    const middleInitial = middleName ? middleName[0].toUpperCase() + '.' : '';
     if (displayPreference === 'nickname' && nickname) displayName = nickname;
     else if (displayPreference === 'first' && firstName) displayName = firstName;
     else if (displayPreference === 'last' && lastName) displayName = lastName;
     else if (displayPreference === 'full' && firstName && lastName) {
       const prefix = gender === 'male' ? 'Mr.' : gender === 'female' ? 'Ms.' : '';
-      displayName = `${prefix ? prefix + ' ' : ''}${firstName} ${lastName}`.trim();
+      displayName = `${prefix ? prefix + ' ' : ''}${firstName} ${middleInitial ? middleInitial + ' ' : ''}${lastName}`.trim();
     }
 
     return {
       firstName,
+      middleName,
       lastName,
       nickname,
       gender,
@@ -39,11 +42,14 @@ const readProfile = (fallbackUser) => {
       name: stored?.name || `${firstName} ${lastName}`,
       displayName,
       email: stored?.email || fallbackUser?.email || 'sarah@example.com',
+      school: stored?.school || [],
+      graduatedFrom: stored?.graduatedFrom || [],
       profileImageUrl: stored?.profileImageUrl || null,
     };
   } catch {
     return {
       firstName: fallbackUser?.name?.split(' ')?.[0] || 'Sarah',
+      middleName: '',
       lastName: fallbackUser?.name?.split(' ')?.[1] || 'Johnson',
       nickname: '',
       gender: 'female',
@@ -51,6 +57,8 @@ const readProfile = (fallbackUser) => {
       name: fallbackUser?.name || 'Sarah Johnson',
       displayName: fallbackUser?.name || 'Sarah Johnson',
       email: fallbackUser?.email || 'sarah@example.com',
+      school: [],
+      graduatedFrom: [],
       profileImageUrl: null,
     };
   }

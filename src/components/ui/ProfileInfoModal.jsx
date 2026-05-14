@@ -1,4 +1,4 @@
-import { X, Mail, Briefcase, Heart, FileText } from 'lucide-react';
+import { X, Briefcase, Heart, FileText, GraduationCap } from 'lucide-react';
 import { Button } from './index';
 
 const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
@@ -49,7 +49,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
             </div>
 
             {/* Name details */}
-            <div className="grid grid-cols-3 gap-3 text-sm text-neutral-700 dark:text-neutral-300">
+            <div className="grid grid-cols-4 gap-3 text-sm text-neutral-700 dark:text-neutral-300">
               <div>
                 <div className="text-xs text-neutral-500">First name</div>
                 <div className="font-medium text-neutral-900 dark:text-neutral-100">{profile.firstName}</div>
@@ -57,6 +57,10 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
               <div>
                 <div className="text-xs text-neutral-500">Last name</div>
                 <div className="font-medium text-neutral-900 dark:text-neutral-100">{profile.lastName}</div>
+              </div>
+              <div>
+                <div className="text-xs text-neutral-500">Middle</div>
+                <div className="font-medium text-neutral-900 dark:text-neutral-100">{profile.middleName ? profile.middleName : '—'}</div>
               </div>
               <div>
                 <div className="text-xs text-neutral-500">Nickname</div>
@@ -126,8 +130,43 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
               </div>
             )}
 
+            {(profile.school?.length > 0 || profile.graduatedFrom?.length > 0) && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  <GraduationCap size={16} className="text-neutral-400 dark:text-neutral-500" />
+                  Education
+                </div>
+
+                {profile.school?.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-xs text-neutral-500">Current school / university</div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.school.map((item, index) => (
+                        <span key={index} className="inline-block rounded-full bg-neutral-100 px-3 py-1 text-sm text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {profile.graduatedFrom?.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-xs text-neutral-500">Graduated from</div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.graduatedFrom.map((item, index) => (
+                        <span key={index} className="inline-block rounded-full bg-neutral-100 px-3 py-1 text-sm text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* No additional info message */}
-            {!profile.bio && !profile.work?.length && !profile.hobbies?.length && !profile.interests?.length && (
+            {!profile.bio && !profile.work?.length && !profile.hobbies?.length && !profile.interests?.length && !profile.school?.length && !profile.graduatedFrom?.length && (
               <div className="rounded-md bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 dark:bg-neutral-700/50 dark:text-neutral-400">
                 No additional profile information added yet
               </div>
