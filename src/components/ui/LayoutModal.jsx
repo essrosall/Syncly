@@ -66,18 +66,21 @@ const LayoutModal = ({ isOpen, onClose }) => {
               <div className="grid grid-cols-2 gap-2">
                 {layoutOptions.map((option) => {
                   const Icon = option.icon;
+                  const isSelected = layoutMode === option.id;
                   return (
                     <button
                       key={option.id}
                       onClick={() => setLayoutMode(option.id)}
                       className={`flex flex-col items-center gap-2 rounded-lg border-2 px-3 py-4 transition-colors ${
-                        layoutMode === option.id
-                          ? 'border-primary-500 bg-primary-50 text-primary-950 dark:bg-primary-950/30 dark:text-primary-100'
-                          : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600'
+                        isSelected
+                          ? 'border-primary-500 bg-primary-50 text-primary-950 shadow-sm dark:bg-primary-900/30 dark:text-primary-50'
+                          : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
                       }`}
                     >
-                      <Icon size={20} className={layoutMode === option.id ? 'text-primary-500' : 'text-neutral-600 dark:text-neutral-400'} />
-                      <span className="text-xs font-medium">{option.name}</span>
+                      <Icon size={20} className={isSelected ? 'text-primary-600 dark:text-primary-300' : 'text-neutral-600 dark:text-neutral-400'} />
+                      <span className={`text-xs font-medium ${isSelected ? 'text-primary-950 dark:text-primary-50' : 'text-neutral-900 dark:text-neutral-100'}`}>
+                        {option.name}
+                      </span>
                     </button>
                   );
                 })}
@@ -94,8 +97,8 @@ const LayoutModal = ({ isOpen, onClose }) => {
                     onClick={() => setSidebarWidth(option.id)}
                     className={`w-full rounded-lg border-2 px-3 py-2 text-left text-sm font-medium transition-colors ${
                       sidebarWidth === option.id
-                        ? 'border-primary-500 bg-primary-50 text-primary-950 dark:bg-primary-950/30 dark:text-primary-100'
-                        : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:border-neutral-600'
+                                                  ? 'border-primary-500 bg-primary-50 text-primary-950 shadow-sm dark:bg-primary-900/30 dark:text-primary-50'
+                          : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
                     }`}
                   >
                     {option.name}
