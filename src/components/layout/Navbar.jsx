@@ -1,15 +1,29 @@
-import { Bell, MoreHorizontal, Search, LayoutGrid, X, CheckCircle, Briefcase, Settings, BookOpen, BarChart3 } from 'lucide-react';
+import { Bell, MoreHorizontal, Search, LayoutGrid, X, CheckCircle, Briefcase, Settings, BookOpen, BarChart3, ArrowRight, Menu } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import { useMobileNav } from '../../contexts/MobileNavContext';
+import { useLayout } from '../../contexts/LayoutContext';
+import { NotificationsPanel, LayoutModal, MoreMenu } from '../ui';
 
 const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () => {} }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isLayoutOpen, setIsLayoutOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
+  const { toggleSidebar } = useMobileNav();
+  const { sidebarWidth } = useLayout();
+
+  const navbarPaddingClass = {
+    compact: 'lg:pl-60',
+    wide: 'lg:pl-[19rem]',
+    full: 'lg:pl-[25rem]',
+  }[sidebarWidth] || 'lg:pl-[19rem]';
 
   // System-wide search data
   const systemData = {
@@ -30,12 +44,33 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
       { id: 2, type: 'resource', name: 'Tutorials', description: 'Learning materials', path: '/settings#settings-tutorials' },
       { id: 3, type: 'resource', name: 'Community', description: 'User forum and discussions', path: '/settings#settings-community' },
     ],
+    // Sections inside pages (sidebar sections, settings subsections, etc.)
+    sections: [
+      { id: 101, type: 'section', name: 'Profile', description: 'Edit your profile information', path: '/settings#settings-profile', parent: { id: 5, name: 'Settings' } },
+      { id: 102, type: 'section', name: 'Notifications', description: 'Manage notification preferences', path: '/settings#settings-notifications', parent: { id: 5, name: 'Settings' } },
+      { id: 103, type: 'section', name: 'Security', description: 'Password and security options', path: '/settings#settings-security', parent: { id: 5, name: 'Settings' } },
+      { id: 201, type: 'section', name: 'Tasks Overview', description: 'Your active and completed tasks', path: '/tasks#tasks-overview', parent: { id: 2, name: 'Tasks' } },
+      { id: 202, type: 'section', name: 'Create Task', description: 'Quick create a new task', path: '/tasks#task-create', parent: { id: 2, name: 'Tasks' } },
+      { id: 301, type: 'section', name: 'Workspace Members', description: 'Manage workspace members', path: '/workspaces#workspace-members', parent: { id: 3, name: 'Workspaces' } },
+    ],
   };
+
+  // Popular/most visited suggestions shown when search bar is focused (no search term)
+  const popularSuggestions = [
+    systemData.pages[1], // Tasks
+    systemData.sections[0], // Profile
+    systemData.pages[0], // Dashboard
+  ].slice(0, 3);
 
   // Generate system-wide suggestions based on search term
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setSuggestions([]);
+      // Show popular suggestions when search is focused but empty
+      if (isSearchFocused) {
+        setSuggestions(popularSuggestions);
+      } else {
+        setSuggestions([]);
+      }
       return;
     }
 
@@ -53,9 +88,14 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
       .filter(resource => resource.name.toLowerCase().includes(query) || resource.description.toLowerCase().includes(query))
       .slice(0, 2);
 
-    setSuggestions([...pageResults, ...workspaceResults, ...resourceResults]);
+    const sectionResults = (systemData.sections || [])
+      .filter(section => section.name.toLowerCase().includes(query) || section.description.toLowerCase().includes(query) || (section.parent && section.parent.name.toLowerCase().includes(query)))
+      .slice(0, 4);
+
+    // Combine results and prioritize pages, then sections (so users see subsections clearly)
+    setSuggestions([...pageResults, ...sectionResults, ...workspaceResults, ...resourceResults]);
     setActiveSuggestionIndex(-1);
-  }, [searchTerm]);
+  }, [searchTerm, isSearchFocused]);
 
   // Add Cmd+K / Ctrl+K keyboard shortcut for search
   useEffect(() => {
@@ -145,9 +185,18 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
 
   return (
     <nav className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/95 backdrop-blur-xl dark:border-neutral-700/80 dark:bg-neutral-800/85" role="navigation" aria-label="Top utilities">
-      <div className="flex h-20 w-full items-center gap-4 px-4 lg:pl-[19rem] lg:pr-5">
+      <div className={`flex h-20 w-full items-center gap-2 px-3 sm:gap-4 sm:px-4 lg:pr-5 ${navbarPaddingClass}`}>
+        {/* Mobile hamburger menu */}
+        <button
+          onClick={toggleSidebar}
+          className="inline-flex lg:hidden h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          aria-label="Toggle navigation menu"
+          title="Menu"
+        >
+          <Menu size={18} />
+        </button>
 
-        <div className="relative hidden flex-1 items-center md:flex">
+        <div className="relative hidden flex-1 items-center sm:flex">
           <div className={`flex w-full max-w-[640px] items-center gap-3 rounded-md border transition-colors ${isSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'} px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)]`}>
             <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
             <input
@@ -205,7 +254,27 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
                           {suggestion.type === 'page' && 'Page'}
                           {suggestion.type === 'workspace' && 'Workspace'}
                           {suggestion.type === 'resource' && 'Resource'}
+                          {suggestion.type === 'section' && `Section • ${suggestion.parent?.name || 'Unknown'}`}
                         </p>
+                        {suggestion.type === 'section' && (
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Located in {suggestion.parent?.name}</p>
+                        )}
+                      </div>
+
+                      {/* Right-side action: go-to icon */}
+                      <div className="ml-3 flex-shrink-0">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (suggestion.path) navigateToPath(suggestion.path);
+                          }}
+                          aria-label={`Go to ${suggestion.name}`}
+                          title={`Go to ${suggestion.name}`}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                        >
+                          <ArrowRight size={16} />
+                        </button>
                       </div>
                     </div>
                   </button>
@@ -215,31 +284,50 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
           )}
         </div>
 
-        <div className="ml-auto flex items-center gap-2 lg:gap-3">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2 lg:gap-3 relative">
           <button 
-            onClick={onLayout}
+            onClick={() => {
+              setIsLayoutOpen(!isLayoutOpen);
+              setIsNotificationsOpen(false);
+              setIsMoreOpen(false);
+            }}
             className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
             aria-label="Layout"
             title="Toggle layout"
           >
             <LayoutGrid size={18} />
           </button>
+          <LayoutModal isOpen={isLayoutOpen} onClose={() => setIsLayoutOpen(false)} />
+
           <button 
-            onClick={onNotifications}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
+            onClick={() => {
+              setIsNotificationsOpen(!isNotificationsOpen);
+              setIsLayoutOpen(false);
+              setIsMoreOpen(false);
+            }}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 relative" 
             aria-label="Notifications"
             title="View notifications"
           >
             <Bell size={18} />
+            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
           </button>
+          <NotificationsPanel isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+
           <button 
-            onClick={onMore}
+            onClick={() => {
+              setIsMoreOpen(!isMoreOpen);
+              setIsLayoutOpen(false);
+              setIsNotificationsOpen(false);
+            }}
             className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
             aria-label="More actions"
             title="More options"
           >
             <MoreHorizontal size={18} />
           </button>
+          <MoreMenu isOpen={isMoreOpen} onClose={() => setIsMoreOpen(false)} />
+
           <ThemeToggle />
         </div>
       </div>

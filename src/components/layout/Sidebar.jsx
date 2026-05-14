@@ -4,6 +4,7 @@ import { LayoutDashboard, CheckSquare, Briefcase, BarChart3, Settings, Plus, Set
 import { Button } from '../ui';
 import { useCreateModal } from '../../contexts/CreateModalContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
+import { useLayout } from '../../contexts/LayoutContext';
 import TaskCreateForm from '../tasks/TaskCreateForm';
 import ProfileEditForm from '../profile/ProfileEditForm';
 
@@ -49,7 +50,14 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
   const { openCreate } = useCreateModal();
   const { openModal } = useGlobalModal();
+  const { sidebarWidth } = useLayout();
   const [profile, setProfile] = useState(() => readProfile(user));
+
+  const sidebarWidthClass = {
+    compact: 'lg:w-56',
+    wide: 'lg:w-72',
+    full: 'lg:w-96',
+  }[sidebarWidth] || 'lg:w-72';
 
   useEffect(() => {
     setProfile(readProfile(user));
@@ -68,7 +76,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
   }, [user]);
 
   return (
-    <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 w-72 flex-col border-r border-neutral-200 bg-white p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100">
+    <aside className={`hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 flex-col border-r border-neutral-200 bg-white p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 ${sidebarWidthClass}`}>
       <div className="space-y-4 border-b border-neutral-200 pb-4 dark:border-neutral-700">
         <div className="flex items-center gap-3 px-1">
           <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-neutral-950 shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:border dark:border-neutral-700">
@@ -147,7 +155,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-600 dark:text-neutral-300'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>
@@ -175,7 +183,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
-                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-white' : 'text-neutral-600 dark:text-neutral-300'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center ${isActive ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-600 dark:text-neutral-300'}`}>
                   <Icon size={16} />
                 </span>
                 <span className="font-medium">{item.label}</span>

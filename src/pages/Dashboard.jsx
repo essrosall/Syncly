@@ -1,8 +1,10 @@
 import { MainLayout } from '../components/layout';
 import { Card, Button, Badge } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, MoreHorizontal, ClipboardList, CheckCircle2, Layers3, AlertTriangle } from 'lucide-react';
+import { useLayout } from '../contexts/LayoutContext';
 
 const Dashboard = () => {
+  const { layoutMode } = useLayout();
   const mockUser = {
     name: 'Sarah Johnson',
     email: 'sarah@example.com',
@@ -54,7 +56,7 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.7fr_0.95fr]">
+        <div className={layoutMode === 'grid' ? 'grid gap-4 xl:grid-cols-[1.7fr_0.95fr]' : 'space-y-4'}>
           <Card className="rounded-md border-neutral-200 bg-neutral-100 p-6 shadow-[0_14px_40px_rgba(17,25,43,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-start">
               <div className="space-y-4">
@@ -67,11 +69,11 @@ const Dashboard = () => {
               <div className="rounded-md border border-neutral-200 bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700 dark:border-white/15 dark:bg-white/5 dark:text-neutral-100">{today}</div>
             </div>
 
-            <div className="mt-10 grid gap-3 md:grid-cols-3">
+            <div className={layoutMode === 'grid' ? 'mt-10 grid gap-3 md:grid-cols-3' : 'mt-10 grid gap-3 md:grid-cols-2'}>
               {topMetrics.map((metric) => {
                 const Icon = metric.icon;
                 return (
-                  <div key={metric.label} className="rounded-md bg-neutral-100 p-4 shadow-sm ring-1 ring-neutral-200/70 dark:bg-neutral-800/70 dark:ring-0 dark:border dark:border-neutral-700">
+                  <div key={metric.label} className={`rounded-md bg-neutral-100 p-4 shadow-sm ring-1 ring-neutral-200/70 dark:bg-neutral-800/70 dark:ring-0 dark:border dark:border-neutral-700 ${layoutMode === 'list' ? 'sm:p-5' : ''}`}>
                     <div className={`flex h-8 w-8 items-center justify-center rounded-full ${metric.tone}`.trim()}>
                       <Icon size={15} />
                     </div>
@@ -83,11 +85,11 @@ const Dashboard = () => {
             </div>
           </Card>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className={layoutMode === 'grid' ? 'grid gap-4 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2'}>
             {quickStats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <Card key={stat.label} className="rounded-md border-neutral-200 bg-neutral-100 p-5 shadow-[0_12px_30px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
+                <Card key={stat.label} className={`rounded-md border-neutral-200 bg-neutral-100 p-5 shadow-[0_12px_30px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800 ${layoutMode === 'list' ? 'min-h-[140px]' : ''}`}>
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{stat.label}</p>
@@ -103,7 +105,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.7fr_0.95fr]">
+        <div className={layoutMode === 'grid' ? 'grid gap-4 xl:grid-cols-[1.7fr_0.95fr]' : 'space-y-4'}>
           <Card className="rounded-md border-neutral-200 bg-neutral-100 p-5 shadow-[0_12px_30px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -168,7 +170,7 @@ const Dashboard = () => {
             </div>
             <MoreHorizontal size={18} className="text-neutral-400 dark:text-neutral-500" />
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className={layoutMode === 'grid' ? 'mt-5 grid gap-3 sm:grid-cols-2' : 'mt-5 grid gap-3 sm:grid-cols-2'}>
             <button className="w-full rounded-md rounded-md bg-neutral-100 px-4 py-4 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700">
               Create a new task
             </button>

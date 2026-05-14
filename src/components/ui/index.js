@@ -7,3 +7,6 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Alert } from './Alert';
 export { default as Modal } from './Modal';
 export { default as Toast } from './Toast';
+export { default as NotificationsPanel } from './NotificationsPanel';
+export { default as LayoutModal } from './LayoutModal';
+export { default as MoreMenu } from './MoreMenu';
