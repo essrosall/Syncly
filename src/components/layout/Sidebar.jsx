@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CheckSquare, Briefcase, BarChart3, Settings, Plus, Settings2 } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, CheckSquare, Briefcase, BarChart3, Settings, Plus, UserRound } from 'lucide-react';
 import { Button } from '../ui';
 import { useCreateModal } from '../../contexts/CreateModalContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
 import { useLayout } from '../../contexts/LayoutContext';
 import TaskCreateForm from '../tasks/TaskCreateForm';
-import ProfileEditForm from '../profile/ProfileEditForm';
+import ProfileInfoModal from '../ui/ProfileInfoModal';
 
 const STORAGE_KEY = 'syncly:demoSession';
 
@@ -15,14 +15,43 @@ const readProfile = (fallbackUser) => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const stored = raw ? JSON.parse(raw) : null;
 
+    const firstName = stored?.firstName || fallbackUser?.name?.split(' ')?.[0] || 'Sarah';
+    const lastName = stored?.lastName || fallbackUser?.name?.split(' ')?.[1] || 'Johnson';
+    const nickname = stored?.nickname || '';
+    const gender = stored?.gender || 'female';
+    const displayPreference = stored?.displayPreference || 'nickname';
+
+    let displayName = stored?.name || `${firstName} ${lastName}`;
+    if (displayPreference === 'nickname' && nickname) displayName = nickname;
+    else if (displayPreference === 'first' && firstName) displayName = firstName;
+    else if (displayPreference === 'last' && lastName) displayName = lastName;
+    else if (displayPreference === 'full' && firstName && lastName) {
+      const prefix = gender === 'male' ? 'Mr.' : gender === 'female' ? 'Ms.' : '';
+      displayName = `${prefix ? prefix + ' ' : ''}${firstName} ${lastName}`.trim();
+    }
+
     return {
-      name: stored?.name || fallbackUser?.name || 'Sarah Johnson',
+      firstName,
+      lastName,
+      nickname,
+      gender,
+      displayPreference,
+      name: stored?.name || `${firstName} ${lastName}`,
+      displayName,
       email: stored?.email || fallbackUser?.email || 'sarah@example.com',
+      profileImageUrl: stored?.profileImageUrl || null,
     };
   } catch {
     return {
+      firstName: fallbackUser?.name?.split(' ')?.[0] || 'Sarah',
+      lastName: fallbackUser?.name?.split(' ')?.[1] || 'Johnson',
+      nickname: '',
+      gender: 'female',
+      displayPreference: 'nickname',
       name: fallbackUser?.name || 'Sarah Johnson',
+      displayName: fallbackUser?.name || 'Sarah Johnson',
       email: fallbackUser?.email || 'sarah@example.com',
+      profileImageUrl: null,
     };
   }
 };
@@ -51,7 +80,9 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
   const { openCreate } = useCreateModal();
   const { openModal } = useGlobalModal();
   const { sidebarWidth } = useLayout();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(() => readProfile(user));
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const sidebarWidthClass = {
     compact: 'lg:w-56',
@@ -92,49 +123,53 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
           <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
           <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100">
-                  <span className="text-sm font-semibold">{getInitials(profile.name)}</span>
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-neutral-950 dark:text-neutral-100">{profile.name}</p>
-                  <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">{profile.email}</p>
-                </div>
+            <div className="flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => setShowProfileModal(true)}>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100 overflow-hidden">
+                  {profile.profileImageUrl ? (
+                    <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-semibold">{getInitials(profile.name)}</span>
+                  )}
               </div>
-              <button
-                type="button"
-                onClick={() => openModal(ProfileEditForm, { title: 'Edit Profile', user: profile })}
-                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-neutral-200 bg-neutral-100 px-2 py-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                aria-label="Edit profile"
-              >
-                <Settings2 size={14} />
-              </button>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-neutral-950 dark:text-neutral-100">{profile.displayName || profile.name}</p>
+                <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">{profile.email}</p>
+              </div>
             </div>
 
-            <Button
-              variant="primary"
-              className="mt-4 w-full justify-between rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
-              onClick={() => {
-                try {
-                  openModal(TaskCreateForm, { column: 'todo' });
-                } catch {
+            <div className="mt-4 flex items-center gap-2">
+              <Button
+                variant="primary"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                onClick={() => setShowProfileModal(true)}
+                aria-label="View profile"
+              >
+                <UserRound size={14} />
+              </Button>
+              <Button
+                variant="primary"
+                className="flex-1 justify-between rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                onClick={() => {
                   try {
-                    openCreate({ column: 'todo' });
+                    openModal(TaskCreateForm, { column: 'todo' });
                   } catch {
                     try {
-                      window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' }));
+                      openCreate({ column: 'todo' });
                     } catch {
-                      window.location.href = '/tasks';
-                      return;
+                      try {
+                        window.localStorage.setItem('syncly:createRequest', JSON.stringify({ column: 'todo' }));
+                      } catch {
+                        window.location.href = '/tasks';
+                        return;
+                      }
                     }
+                    if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
                   }
-                  if (window.location.pathname !== '/tasks') window.location.href = '/tasks';
-                }
-              }}
-            >
-              <span className="inline-flex items-center gap-2 text-sm"><Plus size={16} /> New Task</span>
-            </Button>
+                }}
+              >
+                <span className="inline-flex items-center gap-2 text-xs"><Plus size={14} /> New Task</span>
+              </Button>
+            </div>
           </div>
 
       <nav className="flex-1 py-8" aria-label="Primary">
@@ -201,6 +236,17 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
             <Button variant="secondary" size="sm" className="w-full rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600">View Tutorials</Button>
         </div>
       </div>
+
+      {showProfileModal && (
+        <ProfileInfoModal
+          profile={profile}
+          onClose={() => setShowProfileModal(false)}
+          onEdit={() => {
+            setShowProfileModal(false);
+            navigate('/settings');
+          }}
+        />
+      )}
     </aside>
   );
 };

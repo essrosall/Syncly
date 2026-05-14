@@ -10,3 +10,4 @@ export { default as Toast } from './Toast';
 export { default as NotificationsPanel } from './NotificationsPanel';
 export { default as LayoutModal } from './LayoutModal';
 export { default as MoreMenu } from './MoreMenu';
+export { default as ProfileInfoModal } from './ProfileInfoModal';
