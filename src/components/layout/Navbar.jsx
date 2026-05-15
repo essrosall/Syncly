@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useMobileNav } from '../../contexts/MobileNavContext';
 import { useLayout } from '../../contexts/LayoutContext';
+import { useNotifications } from '../../contexts/NotificationContext';
 import { NotificationsPanel, LayoutModal, MoreMenu } from '../ui';
 
 const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () => {} }) => {
@@ -18,6 +19,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
   const navigate = useNavigate();
   const { toggleSidebar } = useMobileNav();
   const { sidebarWidth } = useLayout();
+  const { unreadCount, refreshNotifications } = useNotifications();
 
   const navbarPaddingClass = {
     compact: 'lg:pl-60',
@@ -301,7 +303,12 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
 
           <button 
             onClick={() => {
-              setIsNotificationsOpen(!isNotificationsOpen);
+              const nextValue = !isNotificationsOpen;
+              setIsNotificationsOpen(nextValue);
+              if (nextValue) {
+                refreshNotifications();
+                onNotifications();
+              }
               setIsLayoutOpen(false);
               setIsMoreOpen(false);
             }}
@@ -310,7 +317,14 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
             title="View notifications"
           >
             <Bell size={18} />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+            {unreadCount > 0 && (
+              <>
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                <span className="absolute -top-1 -right-1 min-w-[1rem] rounded-full bg-red-500 px-1 text-center text-[10px] font-semibold leading-4 text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              </>
+            )}
           </button>
           <NotificationsPanel isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
 

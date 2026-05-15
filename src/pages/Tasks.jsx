@@ -5,6 +5,7 @@ import { useCreateModal } from '../contexts/CreateModalContext';
 import { Plus, Filter, Search, GripVertical, X } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
+import { useNotifications } from '../contexts/NotificationContext';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import {
   DndContext,
@@ -293,6 +294,7 @@ const Tasks = () => {
   const filterMenuRef = useRef(null);
   const { addToast } = useToast();
   const { openModal } = useGlobalModal();
+  const { addNotification, refreshNotifications } = useNotifications();
 
   const { createRequest, clearRequest } = useCreateModal();
   
@@ -310,6 +312,10 @@ const Tasks = () => {
       console.error('Unable to persist tasks:', error);
     }
   }, [tasks]);
+
+  useEffect(() => {
+    refreshNotifications();
+  }, [tasks, refreshNotifications]);
 
   useEffect(() => {
     try {
@@ -510,6 +516,50 @@ const Tasks = () => {
     return () => window.clearTimeout(timer);
   }, [createRequest, clearRequest]);
 
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const targetTaskId = params.get('taskId');
+
+      if (!targetTaskId) return;
+
+      let locatedTask = null;
+      let locatedColumnId = null;
+
+      Object.entries(tasks).some(([columnId, columnTasks]) => {
+        const match = (columnTasks || []).find((task) => String(task.id) === String(targetTaskId));
+        if (!match) return false;
+
+        locatedTask = match;
+        locatedColumnId = columnId;
+        return true;
+      });
+
+      if (locatedTask && locatedColumnId) {
+        setSelectedTask({ ...locatedTask, columnId: locatedColumnId });
+        setTaskForm(null);
+        setIsEditingTask(false);
+        setIsCreatingTask(false);
+        setCommentDraft('');
+
+        if (params.get('focus') === 'comment') {
+          window.setTimeout(() => {
+            document.getElementById('task-comment-input')?.focus();
+          }, 60);
+        }
+      }
+
+      params.delete('taskId');
+      params.delete('focus');
+
+      const nextSearch = params.toString();
+      const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`;
+      window.history.replaceState(null, '', nextUrl);
+    } catch {
+      return;
+    }
+  }, [tasks]);
+
   const addTaskActivityEntry = (taskId, entry) => {
     const taskKey = getTaskKey(taskId);
 
@@ -662,11 +712,23 @@ const Tasks = () => {
 
     if (!trimmedComment) return;
 
+    const createdAt = new Date().toISOString();
+
     addTaskActivityEntry(selectedTask.id, {
       type: 'comment',
       message: trimmedComment,
       author: mockUser.name,
-      timestamp: new Date().toISOString(),
+      timestamp: createdAt,
+    });
+
+    addNotification({
+      type: 'comment',
+      title: `New comment: ${selectedTask.title}`,
+      message: trimmedComment,
+      path: `/tasks?taskId=${selectedTask.id}&focus=comment`,
+      taskId: String(selectedTask.id),
+      sourceKey: `comment:${selectedTask.id}:${createdAt}`,
+      createdAt,
     });
 
     setCommentDraft('');
@@ -787,7 +849,7 @@ const Tasks = () => {
     <MainLayout 
       user={mockUser} 
       activeTab="tasks"
-      onNotifications={() => addToast({ title: 'Notifications', message: 'You have no new notifications', variant: 'default' })}
+      onNotifications={() => {}}
       onLayout={() => addToast({ title: 'Layout', message: 'Grid view coming soon!', variant: 'default' })}
       onMore={() => addToast({ title: 'More Options', message: 'Additional options coming soon!', variant: 'default' })}
     >
@@ -1099,6 +1161,7 @@ const Tasks = () => {
 
                     <div className="space-y-3">
                       <Textarea
+                        id="task-comment-input"
                         rows={3}
                         placeholder="Write a comment..."
                         value={commentDraft}

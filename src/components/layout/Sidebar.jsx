@@ -148,15 +148,16 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
             <div className="mt-4 flex items-center gap-2">
               <Button
                 variant="primary"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                size="sm"
+                className="!h-9 !w-9 !p-0 !gap-0 rounded-md bg-neutral-100 text-neutral-900 shadow-sm transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
                 onClick={() => setShowProfileModal(true)}
                 aria-label="View profile"
               >
-                <UserRound size={14} />
+                <UserRound size={16} strokeWidth={1.8} className="text-neutral-900 dark:text-neutral-100" />
               </Button>
               <Button
                 variant="primary"
-                className="flex-1 justify-between rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                className="flex-1 justify-between rounded-sm bg-neutral-100 text-neutral-900 shadow-sm transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
                 onClick={() => {
                   try {
                     openModal(TaskCreateForm, { column: 'todo' });
@@ -175,7 +176,10 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                   }
                 }}
               >
-                <span className="inline-flex items-center gap-2 text-xs"><Plus size={14} /> New Task</span>
+                <span className="inline-flex items-center gap-2 text-xs font-medium">
+                  <Plus size={14} strokeWidth={2.6} className="text-neutral-700 dark:text-neutral-100" />
+                  New Task
+                </span>
               </Button>
             </div>
           </div>
