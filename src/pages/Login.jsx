@@ -2,18 +2,30 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Button, Card } from '../components/ui';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { signIn, isSupabaseConfigured } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    window.localStorage.setItem(
-      'syncly:demoSession',
-      JSON.stringify({ email, signedInAt: new Date().toISOString() })
-    );
+
+    setSubmitting(true);
+    setErrorMessage('');
+
+    const { error } = await signIn({ email, password });
+
+    if (error) {
+      setErrorMessage(error.message || 'Unable to sign in. Please check your credentials.');
+      setSubmitting(false);
+      return;
+    }
+
     navigate('/');
   };
 
@@ -29,6 +41,12 @@ const Login = () => {
         </div>
 
         <Card className="space-y-6 rounded-md border-neutral-200 bg-white/90 shadow-[0_18px_50px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
+          {!isSupabaseConfigured && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
+              Supabase environment variables are not configured yet. Running in local demo auth mode.
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
@@ -54,6 +72,10 @@ const Login = () => {
               />
             </div>
 
+            {errorMessage && (
+              <p className="text-sm text-error-500">{errorMessage}</p>
+            )}
+
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
                 <input type="checkbox" className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700" />
@@ -64,7 +86,7 @@ const Login = () => {
               </a>
             </div>
 
-            <Button variant="primary" className="w-full bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600" type="submit">
+            <Button variant="primary" className="w-full bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600" type="submit" disabled={submitting}>
               Sign In <ArrowRight size={18} />
             </Button>
           </form>
