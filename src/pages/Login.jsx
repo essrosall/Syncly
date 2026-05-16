@@ -45,7 +45,7 @@ const Login = () => {
 
       {/* Right form - full height, minimal */}
       <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900">
-        <div className="w-full px-8 lg:px-12 py-10 lg:py-16 max-w-md mx-auto">
+        <div className="w-full px-12 lg:px-24 py-10 lg:py-16 max-w-lg xl:max-w-2xl mx-auto">
           <div className="mb-6">
             <h2 className="mt-4 text-3xl font-bold">Sign in to your account</h2>
             <p className="mt-2 text-sm text-neutral-600">Enter your credentials to access your workspace.</p>
@@ -104,12 +104,9 @@ const Login = () => {
 
           {/* Removed OAuth buttons for now — simple flow only */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-500 mb-3">Don&apos;t have an account? Create one to get started.</p>
-            <div className="flex justify-center">
-              <Link to="/signup">
-                <Button variant="outline" className="px-4 py-2 rounded-md text-sm text-neutral-900 border-neutral-300">Create an account</Button>
-              </Link>
-            </div>
+            <p className="text-sm text-neutral-500 mb-3">Don&apos;t have an account?{' '}
+              <Link to="/signup" className="font-medium text-neutral-900 hover:text-neutral-700">Create an account</Link>
+            </p>
           </div>
         </div>
       </div>
