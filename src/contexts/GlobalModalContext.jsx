@@ -30,7 +30,19 @@ export const GlobalModalProvider = ({ children }) => {
 
 export const useGlobalModal = () => {
   const ctx = useContext(GlobalModalContext);
-  if (!ctx) throw new Error('useGlobalModal must be used within GlobalModalProvider');
+  if (!ctx) {
+    // Fallback to a no-op implementation to avoid crashing if the provider
+    // isn't mounted (helps during dev and prevents a full white screen).
+    // Consumers should still prefer having the provider mounted.
+    // eslint-disable-next-line no-console
+    console.warn('useGlobalModal: GlobalModalProvider not found — returning noop methods');
+    return {
+      modal: null,
+      openModal: () => {},
+      closeModal: () => {},
+    };
+  }
+
   return ctx;
 };
 

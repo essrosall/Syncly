@@ -14,9 +14,9 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-lg border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
+          <div className="flex items-center justify-between border-b border-neutral-200/80 px-6 py-4 dark:border-neutral-700/80">
             <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">Profile Information</h2>
             <button
               onClick={onClose}
@@ -31,7 +31,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
           <div className="space-y-6 px-6 py-6">
             {/* Avatar and Name */}
             <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-700 dark:text-neutral-100 overflow-hidden">
+              <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-100">
                 {profile.profileImageUrl ? (
                   <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
                 ) : (
@@ -167,24 +167,24 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
             {/* No additional info message */}
             {!profile.bio && !profile.work?.length && !profile.hobbies?.length && !profile.interests?.length && !profile.school?.length && !profile.graduatedFrom?.length && (
-              <div className="rounded-md bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 dark:bg-neutral-700/50 dark:text-neutral-400">
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-400">
                 No additional profile information added yet
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="flex gap-3 border-t border-neutral-200 px-6 py-4 dark:border-neutral-700">
+          <div className="flex gap-3 border-t border-neutral-200/80 px-6 py-4 dark:border-neutral-700/80">
             <Button
               variant="secondary"
-              className="flex-1 rounded-md border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+              className="flex-1 justify-center rounded-md"
               onClick={onClose}
             >
               Close
             </Button>
             <Button
               variant="primary"
-              className="flex-1 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+              className="flex-1 justify-center rounded-md"
               onClick={onEdit}
             >
               Edit Profile

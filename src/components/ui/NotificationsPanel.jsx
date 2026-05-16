@@ -86,9 +86,14 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
           {sortedNotifications.length > 0 ? (
             <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {sortedNotifications.map((notif) => (
-                <button
+                <div
                   key={notif.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleOpenNotification(notif)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') handleOpenNotification(notif);
+                  }}
                   className={`w-full px-4 py-3 text-left transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700 ${
                     !notif.read ? 'bg-neutral-50 dark:bg-neutral-700/50' : ''
                   }`}
@@ -116,7 +121,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                       <Trash2 size={14} />
                     </button>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           ) : (

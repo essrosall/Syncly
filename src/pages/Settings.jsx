@@ -156,7 +156,7 @@ const Settings = () => {
         <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
           {/* Left column: categorized settings */}
           <div className="space-y-4">
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card id="settings-preferences" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Personal</h2>

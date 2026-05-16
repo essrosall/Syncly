@@ -42,17 +42,19 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4 overflow-y-auto">
         <div
-          className={`bg-white dark:bg-neutral-800 rounded-md shadow-xl max-w-lg w-full max-h-[calc(100vh-4rem)] overflow-y-auto ${className}`}
+          className={`w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.08)] dark:border-neutral-700 dark:bg-neutral-800 ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
+
+
           {/* Header */}
-          <div className="sticky top-0 flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+          <div className="sticky top-0 flex items-center justify-between border-b border-neutral-200/80 bg-white px-5 py-4 dark:border-neutral-700/80 dark:bg-neutral-800">
+            <h2 className="text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+              className="rounded-md p-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700"
               aria-label="Close modal"
             >
               <X size={20} className="text-neutral-600 dark:text-neutral-400" />
@@ -60,7 +62,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
           </div>
 
           {/* Content */}
-          <div className="p-6">
+          <div className="px-5 py-5">
             <ModalErrorBoundary onClose={onClose}>{children}</ModalErrorBoundary>
           </div>
         </div>
@@ -90,11 +92,11 @@ class ModalErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="p-6">
-          <div className="mb-4 text-sm text-red-600">An error occurred while rendering this content.</div>
+        <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          <div className="mb-4 text-sm text-red-600 dark:text-red-400">An error occurred while rendering this content.</div>
           <button
             onClick={this.props.onClose}
-            className="rounded-md bg-neutral-100 px-4 py-2 text-sm"
+            className="rounded-md bg-neutral-100 px-4 py-2 text-sm text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
           >
             Close
           </button>
