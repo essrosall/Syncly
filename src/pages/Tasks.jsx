@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
 import { MainLayout } from '../components/layout';
 import { Card, Badge, Button, Input, Modal, Textarea, Toast } from '../components/ui';
 import { useCreateModal } from '../contexts/CreateModalContext';
@@ -188,6 +190,23 @@ function createInitialTaskActivity() {
 
 const defaultTaskActivity = createInitialTaskActivity();
 
+const mapTaskRowToTask = (row) => ({
+  id: row.id,
+  title: row.title,
+  description: row.description || '',
+  priority: row.priority || 'medium',
+  assignee: row.assignee || 'You',
+  dueDate: row.due_date ? new Date(row.due_date).toISOString().slice(0, 10) : '',
+  columnId: row.status || 'todo',
+});
+
+const mapActivityRowToEntry = (row) => ({
+  type: row.action === 'comment' ? 'comment' : 'activity',
+  message: row.meta?.message || row.action || 'Activity',
+  author: row.meta?.author || 'System',
+  timestamp: row.created_at,
+});
+
 // Draggable task card component
 const DraggableTask = ({ task, columnId, onTaskClick }) => {
   const {
@@ -303,7 +322,52 @@ const Tasks = () => {
     email: 'sarah@example.com',
   };
 
+  const { user } = useAuth();
+
   const [tasks, setTasks] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+
+  // Load tasks from Supabase for authenticated users
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      if (!isSupabaseConfigured || !supabase || !user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+
+        if (error) return;
+        if (!mounted) return;
+
+        const grouped = data.reduce((acc, row) => {
+          const col = row.status || 'todo';
+          acc[col] = acc[col] || [];
+          acc[col].push({ ...mapTaskRowToTask(row), columnId: col });
+          return acc;
+        }, {});
+
+        // ensure all columns exist
+        const next = { ...defaultTasks };
+        Object.keys(grouped).forEach((k) => {
+          next[k] = grouped[k];
+        });
+
+        setTasks(next);
+      } catch (err) {
+        // ignore and keep local state
+      }
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   useEffect(() => {
     try {
@@ -324,6 +388,57 @@ const Tasks = () => {
       console.error('Unable to persist task activity:', error);
     }
   }, [taskActivity]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadTaskTimeline = async () => {
+      if (!selectedTask || !isSupabaseConfigured || !supabase || !user) return;
+
+      try {
+        const [activityResult, commentResult] = await Promise.all([
+          supabase
+            .from('activity_logs')
+            .select('*')
+            .eq('task_id', String(selectedTask.id))
+            .order('created_at', { ascending: true }),
+          supabase
+            .from('task_comments')
+            .select('*')
+            .eq('task_id', String(selectedTask.id))
+            .order('created_at', { ascending: true }),
+        ]);
+
+        if (!mounted) return;
+
+        const activityRows = activityResult.data || [];
+        const commentRows = commentResult.data || [];
+
+        const timeline = [
+          ...activityRows.map(mapActivityRowToEntry),
+          ...commentRows.map((row) => ({
+            type: 'comment',
+            message: row.body,
+            author: row.user_id === user.id ? 'You' : 'Member',
+            timestamp: row.created_at,
+          })),
+        ].sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+
+        setTaskActivity((prev) => ({
+          ...prev,
+          [getTaskKey(selectedTask.id)]: timeline,
+        }));
+      } catch {
+        // ignore and keep local activity/comments
+      }
+    };
+
+    loadTaskTimeline();
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedTask, user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -567,6 +682,26 @@ const Tasks = () => {
       ...prev,
       [taskKey]: [...(prev[taskKey] || []), entry],
     }));
+
+    if (isSupabaseConfigured && supabase && user) {
+      (async () => {
+        try {
+          await supabase.from('activity_logs').insert([
+            {
+              task_id: String(taskId),
+              user_id: user.id,
+              action: entry.type === 'comment' ? 'comment' : 'activity',
+              meta: {
+                message: entry.message,
+                author: entry.author,
+              },
+            },
+          ]);
+        } catch {
+          // keep local activity if DB write fails
+        }
+      })();
+    }
   };
 
   const handleStartEdit = () => {
@@ -611,9 +746,9 @@ const Tasks = () => {
     };
 
     if (isCreatingTask) {
-      const newTaskId = getNextTaskId(tasks);
+      const tempId = `local-${Date.now()}`;
       const newTask = {
-        id: newTaskId,
+        id: tempId,
         ...updatedTaskData,
         columnId: nextColumnId,
       };
@@ -623,9 +758,65 @@ const Tasks = () => {
         [nextColumnId]: [...(prevTasks[nextColumnId] || []), newTask],
       }));
 
+      // Persist to Supabase if configured
+      if (isSupabaseConfigured && supabase && user) {
+        (async () => {
+          try {
+            const { data, error } = await supabase.from('tasks').insert([
+              {
+                user_id: user.id,
+                title: newTask.title,
+                description: newTask.description,
+                status: newTask.columnId,
+                due_date: newTask.dueDate || null,
+                priority: newTask.priority || 'medium',
+                assignee: newTask.assignee || 'You',
+              },
+            ]).select().single();
+
+            if (!error && data) {
+              // replace temp id with real id
+              setTasks((prev) => {
+                const list = (prev[nextColumnId] || []).map((t) => (t.id === tempId ? { ...t, id: data.id } : t));
+                return { ...prev, [nextColumnId]: list };
+              });
+
+              setTaskActivity((prev) => {
+                const nextActivity = { ...prev };
+                const tempKey = getTaskKey(tempId);
+                const realKey = getTaskKey(data.id);
+                nextActivity[realKey] = nextActivity[tempKey] || nextActivity[realKey] || [];
+                if (nextActivity[tempKey]) {
+                  delete nextActivity[tempKey];
+                }
+                return nextActivity;
+              });
+
+              try {
+                await supabase.from('activity_logs').insert([
+                  {
+                    task_id: String(data.id),
+                    user_id: user.id,
+                    action: 'created',
+                    meta: {
+                      message: 'Task created',
+                      author: mockUser.name,
+                    },
+                  },
+                ]);
+              } catch {
+                // ignore
+              }
+            }
+          } catch {
+            // ignore DB errors, keep local task
+          }
+        })();
+      }
+
       setTaskActivity((prev) => ({
         ...prev,
-        [getTaskKey(newTaskId)]: [
+        [getTaskKey(tempId)]: [
           {
             type: 'activity',
             message: 'Task created',
@@ -700,6 +891,27 @@ const Tasks = () => {
       });
     }
 
+    // Persist update to Supabase if possible
+    if (isSupabaseConfigured && supabase && user) {
+      (async () => {
+        try {
+          const taskId = selectedTask.id;
+          if (taskId && typeof taskId === 'string') {
+            await supabase.from('tasks').update({
+              title: updatedTaskData.title,
+              description: updatedTaskData.description,
+              status: nextColumnId,
+              due_date: updatedTaskData.dueDate || null,
+              priority: updatedTaskData.priority || 'medium',
+              assignee: updatedTaskData.assignee || 'You',
+            }).eq('id', taskId);
+          }
+        } catch {
+          // ignore
+        }
+      })();
+    }
+
     setTaskForm(null);
     setIsEditingTask(false);
     setIsCreatingTask(false);
@@ -721,6 +933,22 @@ const Tasks = () => {
       timestamp: createdAt,
     });
 
+    if (isSupabaseConfigured && supabase && user) {
+      (async () => {
+        try {
+          await supabase.from('task_comments').insert([
+            {
+              task_id: String(selectedTask.id),
+              user_id: user.id,
+              body: trimmedComment,
+            },
+          ]);
+        } catch {
+          // ignore
+        }
+      })();
+    }
+
     addNotification({
       type: 'comment',
       title: `New comment: ${selectedTask.title}`,
@@ -741,12 +969,28 @@ const Tasks = () => {
 
     if (!shouldDelete) return;
 
+    const taskId = selectedTask.id;
+
     setTasks((prevTasks) => ({
       ...prevTasks,
       [selectedTask.columnId]: (prevTasks[selectedTask.columnId] || []).filter(
         (task) => String(task.id) !== String(selectedTask.id)
       ),
     }));
+
+    if (isSupabaseConfigured && supabase && user) {
+      (async () => {
+        try {
+          if (taskId && String(taskId).startsWith('local-') === false) {
+            await supabase.from('task_comments').delete().eq('task_id', taskId);
+            await supabase.from('activity_logs').delete().eq('task_id', taskId);
+            await supabase.from('tasks').delete().eq('id', taskId);
+          }
+        } catch {
+          // ignore
+        }
+      })();
+    }
     setTaskActivity((prev) => {
       const nextActivity = { ...prev };
       delete nextActivity[getTaskKey(selectedTask.id)];
@@ -798,6 +1042,9 @@ const Tasks = () => {
       return;
     }
 
+    let movedTaskId = null;
+    let nextColumnForMove = null;
+
     setTasks((prevTasks) => {
       try {
         const activeTasks = [...(prevTasks[activeColumnId] || [])];
@@ -820,6 +1067,8 @@ const Tasks = () => {
         if (activeColumnId === overColumnId) {
           console.log('Reordering in same column');
           const newTasks = arrayMove(activeTasks, activeTaskIndex, Math.max(0, overTaskIndex));
+          movedTaskId = activeTaskId;
+          nextColumnForMove = activeColumnId;
           return { ...prevTasks, [activeColumnId]: newTasks };
         }
 
@@ -829,6 +1078,9 @@ const Tasks = () => {
           const [movedTask] = activeTasks.splice(activeTaskIndex, 1);
           const newOverTasks = [...(prevTasks[overColumnId] || [])];
           newOverTasks.splice(overTaskIndex >= 0 ? overTaskIndex : newOverTasks.length, 0, movedTask);
+
+          movedTaskId = String(movedTask.id);
+          nextColumnForMove = overColumnId;
 
           return {
             ...prevTasks,
@@ -843,6 +1095,18 @@ const Tasks = () => {
         return prevTasks;
       }
     });
+
+    if (isSupabaseConfigured && supabase && user && movedTaskId && nextColumnForMove) {
+      (async () => {
+        try {
+          if (!String(movedTaskId).startsWith('local-')) {
+            await supabase.from('tasks').update({ status: nextColumnForMove }).eq('id', movedTaskId);
+          }
+        } catch {
+          // ignore
+        }
+      })();
+    }
   };
 
   return (

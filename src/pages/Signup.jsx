@@ -15,7 +15,7 @@ const Signup = () => {
     setSubmitting(true);
     setErrorMessage('');
 
-    const { error } = await signUp({
+    const { error, session } = await signUp({
       email: data.email,
       password: data.password,
       name: data.name,
@@ -23,6 +23,12 @@ const Signup = () => {
 
     if (error) {
       setErrorMessage(error.message || 'Unable to create account. Please try again.');
+      setSubmitting(false);
+      return;
+    }
+
+    if (!session) {
+      setErrorMessage('Account created. Please check your email and confirm your account before signing in.');
       setSubmitting(false);
       return;
     }
@@ -61,7 +67,7 @@ const Signup = () => {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Password</label>
-              <Input type="password" placeholder="Create password" {...register('password', { required: 'Password required', minLength: { value: 8, message: 'Minimum 8 characters' } })} error={errors.password && errors.password.message} />
+              <Input type="password" placeholder="Create password" showPasswordToggle {...register('password', { required: 'Password required', minLength: { value: 8, message: 'Minimum 8 characters' } })} error={errors.password && errors.password.message} />
             </div>
 
             {errorMessage && (

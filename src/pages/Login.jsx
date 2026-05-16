@@ -66,6 +66,7 @@ const Login = () => {
                 type="password"
                 placeholder="••••••••"
                 icon={Lock}
+                showPasswordToggle
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

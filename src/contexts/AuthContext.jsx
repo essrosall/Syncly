@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState, useCall
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 
 const DEMO_SESSION_KEY = 'syncly:demoSession';
+const DEMO_EMAIL = 'demo@syncly.app';
+const DEMO_PASSWORD = 'DemoPass123!';
 
 const AuthContext = createContext(null);
 
@@ -67,8 +69,11 @@ export const AuthProvider = ({ children }) => {
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
 
-      setSession(data.session || null);
-      setUser(data.session?.user || null);
+      const activeSession = data.session || null;
+      const demoUser = activeSession ? null : readDemoSession();
+
+      setSession(activeSession || (demoUser ? { user: demoUser } : null));
+      setUser(activeSession?.user || demoUser || null);
       setLoading(false);
     };
 
@@ -102,7 +107,20 @@ export const AuthProvider = ({ children }) => {
       return { error: null };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (!error) {
+      return { error: null, session: data?.session || null, user: data?.user || null };
+    }
+
+    if (email.trim().toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      writeDemoSession(email, 'Demo User');
+      const demoUser = readDemoSession();
+      setUser(demoUser);
+      setSession(demoUser ? { user: demoUser } : null);
+      return { error: null, session: demoUser ? { user: demoUser } : null, user: demoUser };
+    }
+
     return { error: error || null };
   }, []);
 
@@ -112,10 +130,10 @@ export const AuthProvider = ({ children }) => {
       const demoUser = readDemoSession();
       setUser(demoUser);
       setSession(demoUser ? { user: demoUser } : null);
-      return { error: null };
+      return { error: null, session: demoUser ? { user: demoUser } : null, user: demoUser };
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -125,7 +143,7 @@ export const AuthProvider = ({ children }) => {
       },
     });
 
-    return { error: error || null };
+    return { error: error || null, session: data?.session || null, user: data?.user || null };
   }, []);
 
   const signOut = useCallback(async () => {

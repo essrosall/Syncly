@@ -1,4 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
+import { useAuth } from './AuthContext';
 
 const NOTIFICATIONS_STORAGE_KEY = 'syncly:notifications';
 const TASKS_STORAGE_KEY = 'syncly:tasks';
@@ -88,6 +90,8 @@ const buildDueDateNotificationTemplates = (tasksByColumn) => {
 };
 
 export const NotificationProvider = ({ children }) => {
+  const { user } = useAuth();
+
   const [notifications, setNotifications] = useState(() => readStoredJson(NOTIFICATIONS_STORAGE_KEY, []));
 
   useEffect(() => {
@@ -98,7 +102,161 @@ export const NotificationProvider = ({ children }) => {
     }
   }, [notifications]);
 
+  // Load notifications from Supabase when available and user is signed in
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      if (!isSupabaseConfigured || !supabase || !user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (error) return;
+        if (!mounted) return;
+
+        const mapped = (data || []).map((row) => ({
+          id: row.id,
+          type: row.type || 'update',
+          title: row.payload?.title || '',
+          message: row.payload?.message || '',
+          path: row.payload?.path || null,
+          taskId: row.payload?.taskId || null,
+          sourceKey: row.payload?.sourceKey || null,
+          read: Boolean(row.is_read),
+          createdAt: row.created_at,
+        }));
+
+        setNotifications(mapped);
+      } catch (err) {
+        // ignore load errors and fall back to localStorage
+      }
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
+
+  // Realtime subscription for notifications
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase || !user) return undefined;
+
+    const channel = supabase
+      .channel(`public:notifications:user=${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
+        const { eventType, new: newRow, old: oldRow } = payload;
+
+        if (payload.eventType === 'INSERT' || payload.event === 'INSERT') {
+          const row = newRow || payload;
+          const mapped = {
+            id: row.id,
+            type: row.type || 'update',
+            title: row.payload?.title || '',
+            message: row.payload?.message || '',
+            path: row.payload?.path || null,
+            taskId: row.payload?.taskId || null,
+            sourceKey: row.payload?.sourceKey || null,
+            read: Boolean(row.is_read),
+            createdAt: row.created_at,
+          };
+
+          setNotifications((prev) => [mapped, ...prev].slice(0, 200));
+        }
+
+        if (payload.eventType === 'UPDATE' || payload.event === 'UPDATE') {
+          const row = newRow || payload;
+          setNotifications((prev) => prev.map((n) => (n.id === row.id ? { ...n, read: Boolean(row.is_read) } : n)));
+        }
+
+        if (payload.eventType === 'DELETE' || payload.event === 'DELETE') {
+          const row = oldRow || payload;
+          setNotifications((prev) => prev.filter((n) => n.id !== row.id));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [user]);
+
   const addNotification = useCallback((notification) => {
+    // If Supabase is available and user is signed in, persist to DB
+    if (isSupabaseConfigured && supabase && user) {
+      (async () => {
+        try {
+          const payload = {
+            title: notification.title || 'Notification',
+            message: notification.message || '',
+            path: notification.path || null,
+            taskId: notification.taskId || null,
+            sourceKey: notification.sourceKey || null,
+          };
+
+          const { data, error } = await supabase
+            .from('notifications')
+            .insert([
+              {
+                user_id: user.id,
+                type: notification.type || 'update',
+                payload,
+                is_read: Boolean(notification.read) || false,
+              },
+            ])
+            .select()
+            .single();
+
+          if (error || !data) return;
+
+          const mapped = {
+            id: data.id,
+            type: data.type,
+            title: data.payload?.title || '',
+            message: data.payload?.message || '',
+            path: data.payload?.path || null,
+            taskId: data.payload?.taskId || null,
+            sourceKey: data.payload?.sourceKey || null,
+            read: Boolean(data.is_read),
+            createdAt: data.created_at,
+          };
+
+          setNotifications((prev) => [mapped, ...prev].slice(0, 200));
+        } catch {
+          // fall back to localStorage behaviour on error
+          setNotifications((prev) => {
+            if (notification.sourceKey && prev.some((item) => item.sourceKey === notification.sourceKey)) {
+              return prev;
+            }
+
+            const nextNotification = {
+              id: createId(),
+              type: notification.type || 'update',
+              title: notification.title || 'Notification',
+              message: notification.message || '',
+              path: notification.path || null,
+              taskId: notification.taskId || null,
+              sourceKey: notification.sourceKey || null,
+              read: Boolean(notification.read),
+              createdAt: notification.createdAt || new Date().toISOString(),
+            };
+
+            return [nextNotification, ...prev].slice(0, 200);
+          });
+        }
+      })();
+
+      return;
+    }
+
+    // Fallback: local-only notification
     setNotifications((prev) => {
       if (notification.sourceKey && prev.some((item) => item.sourceKey === notification.sourceKey)) {
         return prev;
@@ -168,20 +326,60 @@ export const NotificationProvider = ({ children }) => {
   }, [refreshNotifications]);
 
   const markAsRead = useCallback((id) => {
+    if (isSupabaseConfigured && supabase && user) {
+      supabase.from('notifications').update({ is_read: true }).eq('id', id).then(() => {
+        setNotifications((prev) => prev.map((entry) => (entry.id === id ? { ...entry, read: true } : entry)));
+      }).catch(() => {
+        setNotifications((prev) => prev.map((entry) => (entry.id === id ? { ...entry, read: true } : entry)));
+      });
+
+      return;
+    }
+
     setNotifications((prev) =>
       prev.map((entry) => (entry.id === id ? { ...entry, read: true } : entry))
     );
   }, []);
 
   const markAllAsRead = useCallback(() => {
+    if (isSupabaseConfigured && supabase && user) {
+      supabase.from('notifications').update({ is_read: true }).eq('user_id', user.id).then(() => {
+        setNotifications((prev) => prev.map((entry) => ({ ...entry, read: true })));
+      }).catch(() => {
+        setNotifications((prev) => prev.map((entry) => ({ ...entry, read: true })));
+      });
+
+      return;
+    }
+
     setNotifications((prev) => prev.map((entry) => ({ ...entry, read: true })));
   }, []);
 
   const deleteNotification = useCallback((id) => {
+    if (isSupabaseConfigured && supabase && user) {
+      supabase.from('notifications').delete().eq('id', id).then(() => {
+        setNotifications((prev) => prev.filter((entry) => entry.id !== id));
+      }).catch(() => {
+        setNotifications((prev) => prev.filter((entry) => entry.id !== id));
+      });
+
+      return;
+    }
+
     setNotifications((prev) => prev.filter((entry) => entry.id !== id));
   }, []);
 
   const clearAll = useCallback(() => {
+    if (isSupabaseConfigured && supabase && user) {
+      supabase.from('notifications').delete().eq('user_id', user.id).then(() => {
+        setNotifications([]);
+      }).catch(() => {
+        setNotifications([]);
+      });
+
+      return;
+    }
+
     setNotifications([]);
   }, []);
 
