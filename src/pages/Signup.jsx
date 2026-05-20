@@ -6,8 +6,26 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logoUrl from '../assets/logo.svg';
 
+// Password strength helpers
+const ratePassword = (pw = '') => {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score += 1;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score += 1;
+  if (/[0-9]/.test(pw)) score += 1;
+  if (/[^A-Za-z0-9]/.test(pw)) score += 1;
+  // normalize to 0..3
+  if (score <= 1) return 0; // weak
+  if (score === 2) return 1; // so-so
+  if (score === 3) return 2; // good
+  return 3; // strong
+};
+
+const pwLabel = (score) => (score === 0 ? 'Weak' : score === 1 ? 'So-so' : score === 2 ? 'Good' : 'Strong');
+const pwColor = (score) => (score === 0 ? '#ef4444' : score === 1 ? '#f97316' : score === 2 ? '#f59e0b' : '#10b981');
+
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm();
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
@@ -18,12 +36,9 @@ const Signup = () => {
     setSubmitting(true);
     setErrorMessage('');
 
-    const fullName = [data.firstName, data.middleName, data.lastName].filter(Boolean).join(' ');
-
     const { error } = await signUp({
       email: data.email,
       password: data.password,
-      name: fullName,
     });
 
     if (error) {
@@ -62,20 +77,6 @@ const Signup = () => {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Name</label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <Input placeholder="First name" {...register('firstName', { required: 'First name is required' })} error={errors.firstName && errors.firstName.message} className="bg-white text-neutral-900" />
-                </div>
-                <div>
-                  <Input placeholder="Middle name" {...register('middleName')} className="bg-white text-neutral-900" />
-                </div>
-                <div>
-                  <Input placeholder="Last name" {...register('lastName', { required: 'Last name is required' })} error={errors.lastName && errors.lastName.message} className="bg-white text-neutral-900" />
-                </div>
-              </div>
-            </div>
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
@@ -84,7 +85,40 @@ const Signup = () => {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Password</label>
-              <Input type="password" placeholder="Create password" showPasswordToggle {...register('password', { required: 'Password required', minLength: { value: 8, message: 'Minimum 8 characters' } })} error={errors.password && errors.password.message} className="bg-white text-neutral-900" />
+              <Input
+                type="password"
+                placeholder="Create password"
+                showPasswordToggle
+                  {...register('password', {
+                    required: 'Password required',
+                    minLength: { value: 8, message: 'Minimum 8 characters' },
+                    validate: (val) => {
+                      const score = ratePassword(val);
+                      return score >= 2 || 'Password strength must be Good or Strong';
+                    }
+                  })}
+                error={errors.password && errors.password.message}
+                className="bg-white text-neutral-900"
+              />
+
+              {/* Password strength indicator (moving line) */}
+              <div className="mt-3">
+                <div className="h-2 w-full bg-neutral-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-2 rounded-full transition-all"
+                    style={{ width: `${Math.round((ratePassword(watch('password') || '') / 3) * 100)}%`, backgroundColor: pwColor(ratePassword(watch('password') || '')) }}
+                  />
+                </div>
+                <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(watch('password') || ''))}</span></p>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-neutral-700">Confirm password</label>
+              <Input type="password" placeholder="Confirm password" showPasswordToggle {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (val) => val === getValues('password') || 'Passwords do not match'
+              })} error={errors.confirmPassword && errors.confirmPassword.message} className="bg-white text-neutral-900" />
             </div>
 
             <div className="flex items-start gap-3">
