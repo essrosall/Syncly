@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "ai-commit": "node scripts/ai-commit.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
