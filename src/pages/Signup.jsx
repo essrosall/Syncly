@@ -21,8 +21,9 @@ const ratePassword = (pw = '') => {
   return 3; // strong
 };
 
-const pwLabel = (score) => (score === 0 ? 'Weak' : score === 1 ? 'So-so' : score === 2 ? 'Good' : 'Strong');
+const pwLabel = (score) => (score === 0 ? 'Weak' : score === 1 ? 'Fair' : score === 2 ? 'Good' : 'Strong');
 const pwColor = (score) => (score === 0 ? '#ef4444' : score === 1 ? '#f97316' : score === 2 ? '#f59e0b' : '#10b981');
+const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ? 66 : 100);
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm();
@@ -103,10 +104,15 @@ const Signup = () => {
 
               {/* Password strength indicator (moving line) */}
               <div className="mt-3">
-                <div className="h-2 w-full bg-neutral-200 rounded-full overflow-hidden">
+                <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
                   <div
-                    className="h-2 rounded-full transition-all"
-                    style={{ width: `${Math.round((ratePassword(watch('password') || '') / 3) * 100)}%`, backgroundColor: pwColor(ratePassword(watch('password') || '')) }}
+                    className="h-0.5 rounded-full transform origin-left transition-all duration-150 ease-linear"
+                    style={{ transform: `scaleX(${(pwPercent(ratePassword(watch('password') || '')) / 100)})`, backgroundColor: pwColor(ratePassword(watch('password') || '')) }}
+                    role="progressbar"
+                    aria-valuenow={ratePassword(watch('password') || '')}
+                    aria-valuemin={0}
+                    aria-valuemax={3}
+                    aria-label="Password strength"
                   />
                 </div>
                 <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(watch('password') || ''))}</span></p>
