@@ -133,10 +133,15 @@ export const AuthProvider = ({ children }) => {
       return { error: null, session: demoUser ? { user: demoUser } : null, user: demoUser };
     }
 
+    const emailRedirectTo = typeof window !== 'undefined'
+      ? `${window.location.origin}/confirm-email`
+      : undefined;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo,
         data: {
           full_name: name,
         },
