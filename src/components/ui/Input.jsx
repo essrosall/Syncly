@@ -31,7 +31,9 @@ const Input = React.forwardRef(({
         <button
           type="button"
           onClick={() => setIsPasswordVisible((visible) => !visible)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+          disabled={props.disabled}
+          aria-disabled={props.disabled}
+          className={`absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-medium ${props.disabled ? 'text-neutral-400 cursor-not-allowed' : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200'}`}
           aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
         >
           {isPasswordVisible ? 'Hide' : 'Show'}

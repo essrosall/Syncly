@@ -27,6 +27,8 @@ const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ?
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm();
+  const password = watch('password', '');
+  const confirm = watch('confirmPassword', '');
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
@@ -90,41 +92,51 @@ const Signup = () => {
                 type="password"
                 placeholder="Create password"
                 showPasswordToggle
-                  {...register('password', {
-                    required: 'Password required',
-                    minLength: { value: 8, message: 'Minimum 8 characters' },
-                    validate: (val) => {
-                      const score = ratePassword(val);
-                      return score >= 2 || 'Password strength must be Good or Strong';
-                    }
-                  })}
+                {...register('password', {
+                  required: 'Password required',
+                  minLength: { value: 8, message: 'Minimum 8 characters' },
+                  validate: (val) => {
+                    const score = ratePassword(val);
+                    return score >= 2 || 'Password strength must be Good or Strong';
+                  }
+                })}
                 error={errors.password && errors.password.message}
-                className="bg-white text-neutral-900"
+                className={`bg-white text-neutral-900 ${password && password === confirm ? 'ring-2 ring-emerald-300' : ''}`}
               />
 
               {/* Password strength indicator (moving line) */}
-              <div className="mt-3">
-                <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-0.5 rounded-full transform origin-left transition-all duration-150 ease-linear"
-                    style={{ transform: `scaleX(${(pwPercent(ratePassword(watch('password') || '')) / 100)})`, backgroundColor: pwColor(ratePassword(watch('password') || '')) }}
-                    role="progressbar"
-                    aria-valuenow={ratePassword(watch('password') || '')}
-                    aria-valuemin={0}
-                    aria-valuemax={3}
-                    aria-label="Password strength"
-                  />
-                </div>
-                <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(watch('password') || ''))}</span></p>
+              <div className="mt-3 min-h-6">
+                  <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-0.5 rounded-full transform origin-left transition-all duration-150 ease-linear"
+                      style={{ transform: `scaleX(${(pwPercent(ratePassword(password)) / 100)})`, backgroundColor: pwColor(ratePassword(password)) }}
+                      role="progressbar"
+                      aria-valuenow={ratePassword(password)}
+                      aria-valuemin={0}
+                      aria-valuemax={3}
+                      aria-label="Password strength"
+                    />
+                  </div>
+                  <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(password))}</span></p>
               </div>
             </div>
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Confirm password</label>
-              <Input type="password" placeholder="Confirm password" showPasswordToggle {...register('confirmPassword', {
-                required: 'Please confirm your password',
-                validate: (val) => val === getValues('password') || 'Passwords do not match'
-              })} error={errors.confirmPassword && errors.confirmPassword.message} className="bg-white text-neutral-900" />
+              <Input
+                type="password"
+                placeholder="Confirm password"
+                showPasswordToggle
+                {...register('confirmPassword', {
+                  required: 'Please confirm your password',
+                  validate: (val) => val === getValues('password') || 'Passwords do not match'
+                })}
+                error={errors.confirmPassword && errors.confirmPassword.message}
+                className={`bg-white text-neutral-900 ${password && confirm && password === confirm ? 'ring-2 ring-emerald-300' : ''}`}
+                 className={`bg-white text-neutral-900 ${password && confirm && password === confirm ? 'ring-2 ring-emerald-300' : ''} ${!password ? 'opacity-60 bg-neutral-50 cursor-not-allowed' : ''}`}
+                 disabled={!password}
+                 aria-disabled={!password}
+              />
             </div>
 
             <div className="flex items-start gap-3">
