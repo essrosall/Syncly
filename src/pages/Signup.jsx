@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Button } from '../components/ui';
 import PolicyModal from '../components/ui/PolicyModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logoUrl from '../assets/logo.svg';
 
@@ -27,8 +27,31 @@ const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ?
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm();
+  const email = watch('email', '');
   const password = watch('password', '');
   const confirm = watch('confirmPassword', '');
+  const termsAccepted = watch('terms', false);
+  const [confirmFocused, setConfirmFocused] = useState(false);
+  const confirmState = confirmFocused && confirm.length > 0
+    ? (confirm === password ? 'match' : 'mismatch')
+    : 'idle';
+  const canSubmit =
+    email.trim().length > 0 &&
+    password.length > 0 &&
+    confirm.length > 0 &&
+    ratePassword(password) >= 2 &&
+    confirm === password &&
+    Boolean(termsAccepted);
+
+  useEffect(() => {
+    // If password is empty or strength drops below Good, clear confirmPassword
+    if (!password || ratePassword(password) < 2) {
+      const current = getValues('confirmPassword');
+      if (current) {
+        setValue('confirmPassword', '', { shouldDirty: true, shouldValidate: true });
+      }
+    }
+  }, [password, setValue, getValues]);
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
@@ -101,23 +124,26 @@ const Signup = () => {
                   }
                 })}
                 error={errors.password && errors.password.message}
-                className={`bg-white text-neutral-900 ${password && password === confirm ? 'ring-2 ring-emerald-300' : ''}`}
+                className={`bg-white text-neutral-900`}
               />
 
               {/* Password strength indicator (moving line) */}
-              <div className="mt-3 min-h-6">
-                  <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-0.5 rounded-full transform origin-left transition-all duration-150 ease-linear"
-                      style={{ transform: `scaleX(${(pwPercent(ratePassword(password)) / 100)})`, backgroundColor: pwColor(ratePassword(password)) }}
-                      role="progressbar"
-                      aria-valuenow={ratePassword(password)}
-                      aria-valuemin={0}
-                      aria-valuemax={3}
-                      aria-label="Password strength"
-                    />
-                  </div>
-                  <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(password))}</span></p>
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-out ${password ? 'max-h-16 opacity-100 translate-y-0 mt-3' : 'max-h-0 opacity-0 -translate-y-1 mt-0 pointer-events-none'}`}
+                aria-hidden={!password}
+              >
+                <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-0.5 rounded-full transform origin-left transition-all duration-200 ease-linear"
+                    style={{ transform: `scaleX(${password ? (pwPercent(ratePassword(password)) / 100) : 0})`, backgroundColor: pwColor(ratePassword(password)) }}
+                    role="progressbar"
+                    aria-valuenow={ratePassword(password)}
+                    aria-valuemin={0}
+                    aria-valuemax={3}
+                    aria-label="Password strength"
+                  />
+                </div>
+                <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(password))}</span></p>
               </div>
             </div>
 
@@ -132,10 +158,12 @@ const Signup = () => {
                   validate: (val) => val === getValues('password') || 'Passwords do not match'
                 })}
                 error={errors.confirmPassword && errors.confirmPassword.message}
-                className={`bg-white text-neutral-900 ${password && confirm && password === confirm ? 'ring-2 ring-emerald-300' : ''}`}
-                 className={`bg-white text-neutral-900 ${password && confirm && password === confirm ? 'ring-2 ring-emerald-300' : ''} ${!password ? 'opacity-60 bg-neutral-50 cursor-not-allowed' : ''}`}
-                 disabled={!password}
-                 aria-disabled={!password}
+                className={`bg-white text-neutral-900 ${( !password || ratePassword(password) < 2) ? 'opacity-60 bg-neutral-50 cursor-not-allowed' : ''}`}
+                style={confirmState === 'match' ? { borderColor: '#10b981', boxShadow: '0 0 0 1px #10b981', transition: 'border-color 150ms ease, box-shadow 150ms ease' } : confirmState === 'mismatch' ? { borderColor: '#ef4444', boxShadow: '0 0 0 1px #ef4444', transition: 'border-color 150ms ease, box-shadow 150ms ease' } : { transition: 'border-color 150ms ease, box-shadow 150ms ease' }}
+                disabled={!password || ratePassword(password) < 2}
+                aria-disabled={!password || ratePassword(password) < 2}
+                onFocus={() => setConfirmFocused(true)}
+                onBlur={() => setConfirmFocused(false)}
               />
             </div>
 
@@ -175,7 +203,7 @@ const Signup = () => {
               variant="primary"
               className="w-full bg-neutral-900 text-white hover:brightness-95 py-3 rounded-md"
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !canSubmit}
             >
               Create account
             </Button>
