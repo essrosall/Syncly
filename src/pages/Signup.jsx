@@ -76,7 +76,7 @@ const Signup = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
-  const { signUp, isSupabaseConfigured, debugMessage } = useAuth();
+  const { signUp, isSupabaseConfigured } = useAuth();
   const [confirmationEmail, setConfirmationEmail] = useState('');
 
   const pageTitle = 'Create your account';
@@ -250,10 +250,6 @@ const Signup = () => {
               <p className="text-sm text-error-500">{errorMessage}</p>
             )}
 
-              {debugMessage && (
-                <pre className="mt-3 p-2 text-xs bg-neutral-100 text-neutral-900 rounded">{debugMessage}</pre>
-              )}
-
             <Button
               variant="primary"
               className="w-full bg-neutral-900 text-white hover:brightness-95 py-3 rounded-md"
@@ -265,6 +261,13 @@ const Signup = () => {
             >
               Create account
             </Button>
+
+            <p className="text-center text-sm text-neutral-600">
+              Already have an account?{' '}
+              <Link to="/login" className="font-medium text-neutral-900">
+                Sign in
+              </Link>
+            </p>
           </form>
           ) : (
             <div className="space-y-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm">
@@ -280,7 +283,6 @@ const Signup = () => {
                 <ul className="mt-2 space-y-2 list-disc pl-5">
                   <li>Check your inbox and spam folder.</li>
                   <li>Click the confirmation link in the message.</li>
-                  <li>Come back here and press <span className="font-medium text-neutral-900">Sign in</span>.</li>
                 </ul>
               </div>
 
