@@ -106,7 +106,7 @@ const Signup = () => {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
-              <Input type="email" placeholder="you@example.com" {...register('email', { required: 'Email is required', pattern: { value: /\\S+@\\S+\\.\\S+/, message: 'Invalid email' } })} error={errors.email && errors.email.message} className="bg-white text-neutral-900" />
+              <Input type="email" placeholder="you@example.com" {...register('email', { required: 'Email is required', setValueAs: v => (typeof v === 'string' ? v.trim() : v), pattern: { value: /\\S+@\\S+\\.\\S+/, message: 'Invalid email' } })} error={errors.email && errors.email.message} className="bg-white text-neutral-900" />
             </div>
 
             <div>
