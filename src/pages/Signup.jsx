@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Input, Button } from '../components/ui';
 import PolicyModal from '../components/ui/PolicyModal';
 import { useState, useEffect } from 'react';
@@ -26,7 +26,7 @@ const pwColor = (score) => (score === 0 ? '#ef4444' : score === 1 ? '#f97316' : 
 const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ? 66 : 100);
 
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues, clearErrors } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues, clearErrors, trigger } = useForm({ mode: 'onChange' });
   const email = watch('email', '');
   const password = watch('password', '');
   const confirm = watch('confirmPassword', '');
@@ -53,9 +53,22 @@ const Signup = () => {
     }
   }, [password, setValue, getValues]);
 
+  // Re-run confirm password validation whenever either password field changes.
+  useEffect(() => {
+    if (!confirm) return;
+
+    if (confirm === password) {
+      clearErrors('confirmPassword');
+      return;
+    }
+
+    trigger('confirmPassword');
+  }, [password, confirm, clearErrors, trigger]);
+
   // Clear email validation error as user types a valid email
   useEffect(() => {
-    const emailValid = /\S+@\S+\.\S+/.test(email);
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : email;
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
     if (errors.email && emailValid) {
       clearErrors('email');
     }
@@ -64,7 +77,10 @@ const Signup = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
   const { signUp, isSupabaseConfigured, debugMessage } = useAuth();
-  const navigate = useNavigate();
+  const [confirmationEmail, setConfirmationEmail] = useState('');
+
+  const pageTitle = 'Create your account';
+  const pageSubtitle = 'Start collaborating with your team.';
 
   const onSubmit = async (data) => {
     try { console.log('[Signup] onSubmit start', { data }); } catch (e) {}
@@ -72,7 +88,7 @@ const Signup = () => {
     setErrorMessage('');
 
     const { error } = await signUp({
-      email: data.email,
+      email: typeof data.email === 'string' ? data.email.trim().toLowerCase() : data.email,
       password: data.password,
     });
 
@@ -82,8 +98,8 @@ const Signup = () => {
       return;
     }
 
-    // Navigate to confirmation screen where user is instructed to check email
-    navigate('/confirm-email', { state: { email: data.email } });
+    setConfirmationEmail(typeof data.email === 'string' ? data.email.trim().toLowerCase() : data.email);
+    setSubmitting(false);
   };
 
   const onInvalid = (validationErrors) => {
@@ -109,8 +125,8 @@ const Signup = () => {
       <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900">
         <div className="w-full px-12 lg:px-24 py-10 lg:py-16 max-w-lg xl:max-w-2xl mx-auto">
           <div className="mb-6">
-            <h2 className="mt-4 text-3xl font-bold">Create your account</h2>
-            <p className="mt-2 text-sm text-neutral-600">Start collaborating with your team.</p>
+            <h2 className="mt-4 text-3xl font-bold">{pageTitle}</h2>
+            <p className="mt-2 text-sm text-neutral-600">{pageSubtitle}</p>
           </div>
 
           {!isSupabaseConfigured && (
@@ -119,11 +135,29 @@ const Signup = () => {
             </div>
           )}
 
+          {!confirmationEmail ? (
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} onSubmitCapture={() => { try { console.log('[Signup] form onSubmitCapture'); } catch (e) {} }} className="space-y-5">
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
-              <Input type="email" placeholder="you@example.com" {...register('email', { required: 'Email is required', setValueAs: v => (typeof v === 'string' ? v.trim() : v), pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' } })} error={errors.email && errors.email.message} className="bg-white text-neutral-900" />
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                {...register('email', {
+                  required: 'Email is required',
+                  setValueAs: (v) => (typeof v === 'string' ? v.trim().toLowerCase() : v),
+                  validate: (val) => {
+                    if (!val) return 'Email is required';
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email';
+                  },
+                })}
+                error={errors.email && errors.email.message}
+                className="bg-white text-neutral-900"
+              />
             </div>
 
             <div>
@@ -232,12 +266,41 @@ const Signup = () => {
               Create account
             </Button>
           </form>
+          ) : (
+            <div className="space-y-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm">
+              <div>
+                <h3 className="text-2xl font-bold text-neutral-900">Check your email</h3>
+                <p className="mt-2 text-sm text-neutral-600">
+                  We sent a confirmation link to <span className="font-medium text-neutral-900">{confirmationEmail}</span>. Open it to verify your account and finish signing in.
+                </p>
+              </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-500 mb-3">Already have an account?{' '}
-              <Link to="/login" className="font-medium text-neutral-900 hover:text-neutral-700">Sign in</Link>
-            </p>
-          </div>
+              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
+                <p className="font-medium text-neutral-900">What to do next</p>
+                <ul className="mt-2 space-y-2 list-disc pl-5">
+                  <li>Check your inbox and spam folder.</li>
+                  <li>Click the confirmation link in the message.</li>
+                  <li>Come back here and press <span className="font-medium text-neutral-900">Sign in</span>.</li>
+                </ul>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link to="/login" className="inline-flex w-full sm:w-auto items-center justify-center rounded-md bg-neutral-900 px-4 py-3 text-sm font-medium text-white hover:brightness-95">
+                  Sign in
+                </Link>
+                <button
+                  type="button"
+                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border border-neutral-300 bg-white px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-50"
+                  onClick={() => {
+                    setConfirmationEmail('');
+                    setErrorMessage('');
+                  }}
+                >
+                  Back to signup
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

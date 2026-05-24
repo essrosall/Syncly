@@ -11,7 +11,6 @@ import Workspaces from './pages/Workspaces';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Signup from './pages/Signup';
-import ConfirmEmail from './pages/ConfirmEmail';
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/confirm-email" element={<ConfirmEmail />} />
             </Route>
 
             <Route element={<ProtectedRoute />}>
