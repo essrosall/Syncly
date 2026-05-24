@@ -13,3 +13,13 @@ export const supabase = isSupabaseConfigured
       },
     })
   : null;
+
+// Lightweight runtime debug info (does not print secret values)
+try {
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('[supabaseClient] isSupabaseConfigured=', isSupabaseConfigured, 'supabaseUrlPresent=', Boolean(supabaseUrl));
+  }
+} catch (e) {
+  // ignore
+}

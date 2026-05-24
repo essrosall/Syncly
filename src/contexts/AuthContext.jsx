@@ -51,11 +51,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [debugMessage, setDebugMessage] = useState(null);
 
   useEffect(() => {
     let mounted = true;
 
     const boot = async () => {
+      // Debug: surface config status at boot
+      try {
+        // eslint-disable-next-line no-console
+        if (typeof window !== 'undefined') console.log('[AuthContext] boot isSupabaseConfigured=', isSupabaseConfigured);
+        if (typeof window !== 'undefined') setDebugMessage(`boot: isSupabaseConfigured=${isSupabaseConfigured}`);
+      } catch (e) {}
+
       if (!isSupabaseConfigured || !supabase) {
         const demoUser = readDemoSession();
         if (mounted) {
@@ -125,6 +133,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const signUp = useCallback(async ({ email, password, name }) => {
+    // Debug: indicate which signup path is used
+    try {
+      // eslint-disable-next-line no-console
+      if (typeof window !== 'undefined') console.log('[AuthContext] signUp called, isSupabaseConfigured=', isSupabaseConfigured, 'email=', email);
+      if (typeof window !== 'undefined') setDebugMessage(`signUp called: isSupabaseConfigured=${isSupabaseConfigured} email=${email}`);
+    } catch (e) {}
+
     if (!isSupabaseConfigured || !supabase) {
       writeDemoSession(email, name);
       const demoUser = readDemoSession();
@@ -148,6 +163,13 @@ export const AuthProvider = ({ children }) => {
       },
     });
 
+    // Log Supabase signup response for debugging (do not log secrets)
+    try {
+      // eslint-disable-next-line no-console
+      if (typeof window !== 'undefined') console.log('[AuthContext] signUp response error=', error ? (error.message || error) : null, 'hasData=', Boolean(data));
+      if (typeof window !== 'undefined') setDebugMessage(`signUp response: error=${error ? (error.message || error) : 'none'} hasData=${Boolean(data)}`);
+    } catch (e) {}
+
     return { error: error || null, session: data?.session || null, user: data?.user || null };
   }, []);
 
@@ -170,11 +192,12 @@ export const AuthProvider = ({ children }) => {
       loading,
       isAuthenticated: Boolean(user),
       isSupabaseConfigured,
+      debugMessage,
       signIn,
       signUp,
       signOut,
     }),
-    [user, session, loading, signIn, signUp, signOut]
+    [user, session, loading, isSupabaseConfigured, debugMessage, signIn, signUp, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

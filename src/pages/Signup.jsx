@@ -26,7 +26,7 @@ const pwColor = (score) => (score === 0 ? '#ef4444' : score === 1 ? '#f97316' : 
 const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ? 66 : 100);
 
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue, watch, getValues, clearErrors } = useForm({ mode: 'onChange' });
   const email = watch('email', '');
   const password = watch('password', '');
   const confirm = watch('confirmPassword', '');
@@ -52,13 +52,22 @@ const Signup = () => {
       }
     }
   }, [password, setValue, getValues]);
+
+  // Clear email validation error as user types a valid email
+  useEffect(() => {
+    const emailValid = /\S+@\S+\.\S+/.test(email);
+    if (errors.email && emailValid) {
+      clearErrors('email');
+    }
+  }, [email, errors.email, clearErrors]);
   const [errorMessage, setErrorMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPolicy, setShowPolicy] = useState(null); // 'terms' | 'privacy' | null
-  const { signUp, isSupabaseConfigured } = useAuth();
+  const { signUp, isSupabaseConfigured, debugMessage } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+    try { console.log('[Signup] onSubmit start', { data }); } catch (e) {}
     setSubmitting(true);
     setErrorMessage('');
 
@@ -75,6 +84,14 @@ const Signup = () => {
 
     // Navigate to confirmation screen where user is instructed to check email
     navigate('/confirm-email', { state: { email: data.email } });
+  };
+
+  const onInvalid = (validationErrors) => {
+    const summary = Object.entries(validationErrors || {})
+      .map(([key, value]) => `${key}: ${value?.message || 'invalid'}`)
+      .join(' | ');
+    try { console.log('[Signup] validation blocked submit', validationErrors, summary); } catch (e) {}
+    setErrorMessage(summary ? `Validation blocked submit: ${summary}` : 'Validation blocked the submit. Check the console for details.');
   };
 
   return (
@@ -102,11 +119,11 @@ const Signup = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} onSubmitCapture={() => { try { console.log('[Signup] form onSubmitCapture'); } catch (e) {} }} className="space-y-5">
 
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
-              <Input type="email" placeholder="you@example.com" {...register('email', { required: 'Email is required', setValueAs: v => (typeof v === 'string' ? v.trim() : v), pattern: { value: /\\S+@\\S+\\.\\S+/, message: 'Invalid email' } })} error={errors.email && errors.email.message} className="bg-white text-neutral-900" />
+              <Input type="email" placeholder="you@example.com" {...register('email', { required: 'Email is required', setValueAs: v => (typeof v === 'string' ? v.trim() : v), pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' } })} error={errors.email && errors.email.message} className="bg-white text-neutral-900" />
             </div>
 
             <div>
@@ -199,11 +216,18 @@ const Signup = () => {
               <p className="text-sm text-error-500">{errorMessage}</p>
             )}
 
+              {debugMessage && (
+                <pre className="mt-3 p-2 text-xs bg-neutral-100 text-neutral-900 rounded">{debugMessage}</pre>
+              )}
+
             <Button
               variant="primary"
               className="w-full bg-neutral-900 text-white hover:brightness-95 py-3 rounded-md"
               type="submit"
               disabled={submitting || !canSubmit}
+              onClick={() => {
+                try { console.log('[Signup] Create account clicked', { submitting, canSubmit }); } catch (e) {}
+              }}
             >
               Create account
             </Button>

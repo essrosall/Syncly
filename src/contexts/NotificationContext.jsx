@@ -106,8 +106,16 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
+    const looksLikeDemoId = (id) => typeof id === 'string' && id.includes('@');
+
     const load = async () => {
       if (!isSupabaseConfigured || !supabase || !user) return;
+
+      // If the user id looks like an email (demo session), skip server queries.
+      if (looksLikeDemoId(user.id)) {
+        // keep localStorage notifications only
+        return;
+      }
 
       try {
         const { data, error } = await supabase
@@ -148,6 +156,9 @@ export const NotificationProvider = ({ children }) => {
   // Realtime subscription for notifications
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase || !user) return undefined;
+
+    const looksLikeDemoId = (id) => typeof id === 'string' && id.includes('@');
+    if (looksLikeDemoId(user.id)) return undefined;
 
     const channel = supabase
       .channel(`public:notifications:user=${user.id}`)
