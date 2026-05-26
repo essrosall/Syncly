@@ -2,9 +2,12 @@ import { MainLayout } from '../components/layout';
 import { Card, Button, Badge } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, MoreHorizontal, ClipboardList, CheckCircle2, Layers3, AlertTriangle } from 'lucide-react';
 import { useLayout } from '../contexts/LayoutContext';
+import useTheme from '../hooks/useTheme';
 
 const Dashboard = () => {
   const { layoutMode } = useLayout();
+  const { theme } = useTheme();
+  const isDarkTheme = theme === 'dark';
   const mockUser = {
     name: 'Sarah Johnson',
     email: 'sarah@example.com',
@@ -45,45 +48,58 @@ const Dashboard = () => {
       onLayout={() => {}}
       onMore={() => {}}
     >
-      <div className="space-y-6 animate-fade-in-up">
+      <div className="dashboard-shell space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Dashboard Overview</h1>
             <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">Overview of your active workspaces, recent tasks, and team productivity.</p>
           </div>
-          <Button variant="primary" size="sm">
+          <Button variant="primary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800">
             Import Tasks
           </Button>
         </div>
 
         <div className={layoutMode === 'grid' ? 'grid gap-4 xl:grid-cols-[1.7fr_0.95fr]' : 'space-y-4'}>
-          <Card className="rounded-md border-neutral-200 bg-neutral-100 p-6 shadow-[0_14px_40px_rgba(17,25,43,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
+          <div
+            className={`dashboard-welcome-card relative overflow-hidden border p-6 ${isDarkTheme ? 'border-neutral-200 bg-white text-neutral-950' : 'border-neutral-800 bg-neutral-950 text-neutral-100'}`}
+          >
+            <div
+              aria-hidden="true"
+              className="welcome-card-orb"
+              style={{
+                background: isDarkTheme
+                  ? 'radial-gradient(circle, rgba(24,24,27,0.42) 0%, rgba(24,24,27,0.14) 36%, rgba(24,24,27,0) 72%)'
+                  : 'radial-gradient(circle, rgba(229,231,235,0.46) 0%, rgba(229,231,235,0.16) 36%, rgba(229,231,235,0) 72%)',
+                opacity: isDarkTheme ? 0.22 : 0.36,
+                mixBlendMode: isDarkTheme ? 'multiply' : 'soft-light',
+              }}
+            />
             <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-start">
               <div className="space-y-4">
-                <div className="h-3 w-24 rounded-full bg-neutral-200 dark:bg-white/20" />
+                <div className={`welcome-card-accent h-3 w-24 rounded-full ${isDarkTheme ? 'bg-neutral-200' : 'bg-white/15'}`} />
                 <div>
-                  <p className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-white">Welcome back, Sarah Johnson!</p>
-                  <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-200">Here is your live snapshot for tasks, progress, and team activity today.</p>
+                  <p className={`welcome-card-title text-3xl font-semibold tracking-tight ${isDarkTheme ? 'text-neutral-950' : 'text-white'}`}>Welcome back, Sarah Johnson!</p>
+                  <p className={`welcome-card-copy mt-1 text-sm ${isDarkTheme ? 'text-neutral-600' : 'text-neutral-200'}`}>Here is your live snapshot for tasks, progress, and team activity today.</p>
                 </div>
               </div>
-              <div className="rounded-md border border-neutral-200 bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700 dark:border-white/15 dark:bg-white/5 dark:text-neutral-100">{today}</div>
+              <div className={`welcome-card-pill rounded-md px-4 py-3 text-sm font-medium ${isDarkTheme ? 'border border-neutral-200 bg-neutral-100 text-neutral-700' : 'border border-white/15 bg-white/10 text-white/90'}`}>{today}</div>
             </div>
 
             <div className={layoutMode === 'grid' ? 'mt-10 grid gap-3 md:grid-cols-3' : 'mt-10 grid gap-3 md:grid-cols-2'}>
               {topMetrics.map((metric) => {
                 const Icon = metric.icon;
                 return (
-                  <div key={metric.label} className={`rounded-md bg-neutral-100 p-4 shadow-sm ring-1 ring-neutral-200/70 dark:bg-neutral-800/70 dark:ring-0 dark:border dark:border-neutral-700 ${layoutMode === 'list' ? 'sm:p-5' : ''}`}>
+                  <div key={metric.label} className={`welcome-card-metric rounded-md p-4 ${isDarkTheme ? 'bg-neutral-50 ring-1 ring-neutral-200/70' : 'bg-white/10 ring-1 ring-white/10'} ${layoutMode === 'list' ? 'sm:p-5' : ''}`}>
                     <div className={`flex h-8 w-8 items-center justify-center rounded-full ${metric.tone}`.trim()}>
                       <Icon size={15} />
                     </div>
-                    <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400">{metric.label}</p>
-                    <p className="mt-1 text-2xl font-semibold text-neutral-950 dark:text-neutral-100">{metric.value}</p>
+                    <p className={`welcome-card-stat-label mt-6 text-sm ${isDarkTheme ? 'text-neutral-600' : 'text-neutral-200'}`}>{metric.label}</p>
+                    <p className={`welcome-card-stat-value mt-1 text-2xl font-semibold ${isDarkTheme ? 'text-neutral-950' : 'text-white'}`}>{metric.value}</p>
                   </div>
                 );
               })}
             </div>
-          </Card>
+          </div>
 
           <div className={layoutMode === 'grid' ? 'grid gap-4 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2'}>
             {quickStats.map((stat) => {
@@ -112,12 +128,12 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Recent Tasks</h2>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">Latest updates across your team to help you prioritize what matters most.</p>
               </div>
-              <a href="/tasks" className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm dark:bg-neutral-800 dark:text-neutral-200">View All Tasks</a>
+              <a href="/tasks" className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-neutral-800">View All Tasks</a>
             </div>
 
             <div className="mt-5 space-y-3">
               {recentTasks.map((task) => {
-                const priorityVariant = task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'default';
+                const priorityVariant = task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'success';
                 const statusVariant = task.status === 'In progress' ? 'primary' : task.status === 'Done' ? 'success' : task.status === 'Pending' ? 'warning' : 'default';
                 return (
                 <div key={task.id} className="rounded-md rounded-md bg-neutral-100 p-4 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700">
@@ -171,10 +187,10 @@ const Dashboard = () => {
             <MoreHorizontal size={18} className="text-neutral-400 dark:text-neutral-500" />
           </div>
           <div className={layoutMode === 'grid' ? 'mt-5 grid gap-3 sm:grid-cols-2' : 'mt-5 grid gap-3 sm:grid-cols-2'}>
-            <button className="w-full rounded-md rounded-md bg-neutral-100 px-4 py-4 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700">
+            <button className="w-full rounded-md rounded-md bg-neutral-900 px-4 py-4 text-left text-sm font-medium text-white transition-colors hover:bg-neutral-800">
               Create a new task
             </button>
-            <button className="w-full rounded-md rounded-md bg-neutral-100 px-4 py-4 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700">
+            <button className="w-full rounded-md rounded-md bg-neutral-900 px-4 py-4 text-left text-sm font-medium text-white transition-colors hover:bg-neutral-800">
               Review blocked items
             </button>
           </div>

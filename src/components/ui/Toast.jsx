@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 const VARIANT_STYLES = {
-  success: 'bg-emerald-600 text-white',
-  error: 'bg-rose-600 text-white',
-  warn: 'bg-amber-500 text-black',
-  info: 'bg-neutral-900 text-white',
+  success: 'bg-success-600 text-white shadow-lg shadow-success-950/20',
+  error: 'bg-error-600 text-white shadow-lg shadow-error-950/20',
+  warn: 'bg-warning-500 text-neutral-950 shadow-lg shadow-warning-950/15',
+  info: 'bg-info-600 text-white shadow-lg shadow-info-950/20',
 };
 
 const Toast = ({ title, message, variant = 'info', duration = 3000, onClose }) => {

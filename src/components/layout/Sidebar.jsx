@@ -9,21 +9,18 @@ import TaskCreateForm from '../tasks/TaskCreateForm';
 import ProfileInfoModal from '../ui/ProfileInfoModal';
 
 const STORAGE_KEY = 'syncly:demoSession';
-
 const readProfile = (fallbackUser) => {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const stored = raw ? JSON.parse(raw) : null;
 
     const firstName = stored?.firstName || fallbackUser?.name?.split(' ')?.[0] || 'Sarah';
-    const middleName = stored?.middleName || '';
     const lastName = stored?.lastName || fallbackUser?.name?.split(' ')?.[1] || 'Johnson';
     const nickname = stored?.nickname || '';
     const gender = stored?.gender || 'female';
     const displayPreference = stored?.displayPreference || 'nickname';
 
     let displayName = stored?.name || `${firstName} ${lastName}`;
-    const middleInitial = middleName ? middleName[0].toUpperCase() + '.' : '';
     if (displayPreference === 'nickname' && nickname) displayName = nickname;
     else if (displayPreference === 'first' && firstName) displayName = firstName;
     else if (displayPreference === 'last' && lastName) displayName = lastName;
@@ -149,15 +146,15 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               <Button
                 variant="primary"
                 size="sm"
-                className="!h-9 !w-9 !p-0 !gap-0 rounded-md bg-neutral-100 text-neutral-900 shadow-sm transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                className="!h-9 !w-9 !p-0 !gap-0 rounded-md !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => setShowProfileModal(true)}
                 aria-label="View profile"
               >
-                <UserRound size={16} strokeWidth={1.8} className="text-neutral-900 dark:text-neutral-100" />
+                <UserRound size={16} strokeWidth={1.8} className="text-white dark:text-white" />
               </Button>
               <Button
                 variant="primary"
-                className="flex-1 justify-between rounded-sm bg-neutral-100 text-neutral-900 shadow-sm transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+                className="flex-1 justify-between rounded-sm !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => {
                   try {
                     openModal(TaskCreateForm, { column: 'todo' });
@@ -177,7 +174,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 }}
               >
                 <span className="inline-flex items-center gap-2 text-xs font-medium">
-                  <Plus size={14} strokeWidth={2.6} className="text-neutral-700 dark:text-neutral-100" />
+                  <Plus size={14} strokeWidth={2.6} className="text-white dark:text-white" />
                   New Task
                 </span>
               </Button>
@@ -245,7 +242,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
       <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
           <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">Need help getting started?</p>
-            <Button variant="secondary" size="sm" className="w-full rounded-md bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600">View Tutorials</Button>
+            <Button variant="secondary" size="sm" className="w-full rounded-md !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800">View Tutorials</Button>
         </div>
       </div>
 

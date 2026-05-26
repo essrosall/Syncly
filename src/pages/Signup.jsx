@@ -5,25 +5,7 @@ import PolicyModal from '../components/ui/PolicyModal';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import logoUrl from '../assets/logo.svg';
-
-// Password strength helpers
-const ratePassword = (pw = '') => {
-  if (!pw) return 0;
-  let score = 0;
-  if (pw.length >= 8) score += 1;
-  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score += 1;
-  if (/[0-9]/.test(pw)) score += 1;
-  if (/[^A-Za-z0-9]/.test(pw)) score += 1;
-  // normalize to 0..3
-  if (score <= 1) return 0; // weak
-  if (score === 2) return 1; // so-so
-  if (score === 3) return 2; // good
-  return 3; // strong
-};
-
-const pwLabel = (score) => (score === 0 ? 'Weak' : score === 1 ? 'Fair' : score === 2 ? 'Good' : 'Strong');
-const pwColor = (score) => (score === 0 ? '#ef4444' : score === 1 ? '#f97316' : score === 2 ? '#f59e0b' : '#10b981');
-const pwPercent = (score) => (score === 0 ? 8 : score === 1 ? 33 : score === 2 ? 66 : 100);
+import { ratePassword, pwLabel, pwColor, pwPercent } from '../lib/passwordStrength';
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, setValue, watch, getValues, clearErrors, trigger } = useForm({ mode: 'onChange' });
@@ -251,8 +233,8 @@ const Signup = () => {
             )}
 
             <Button
-              variant="primary"
-              className="w-full bg-neutral-900 text-white hover:brightness-95 py-3 rounded-md"
+              variant="success"
+              className="w-full py-3 rounded-md"
               type="submit"
               disabled={submitting || !canSubmit}
               onClick={() => {

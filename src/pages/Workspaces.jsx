@@ -19,7 +19,7 @@ const Workspaces = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Workspaces</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize teams and manage projects across dedicated workspaces.</p>
           </div>
-          <Button variant="primary" size="sm" className="bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600">
+          <Button variant="primary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800">
             <FolderKanban size={18} /> Create Workspace
           </Button>
         </div>
@@ -82,7 +82,7 @@ const Workspaces = () => {
 
               <div className="mt-6 flex items-center justify-between">
                 <span className="text-sm text-neutral-500 dark:text-neutral-400">View workspace details</span>
-                <Button variant="secondary" size="sm">Manage</Button>
+                <Button variant="secondary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800">Manage</Button>
               </div>
             </Card>
           ))}

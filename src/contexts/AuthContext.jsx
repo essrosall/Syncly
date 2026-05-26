@@ -4,6 +4,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 const DEMO_SESSION_KEY = 'syncly:demoSession';
 const DEMO_EMAIL = 'demo@syncly.app';
 const DEMO_PASSWORD = 'DemoPass123!';
+const DEMO_RESET_CODE = '123456';
 
 const AuthContext = createContext(null);
 
@@ -173,6 +174,51 @@ export const AuthProvider = ({ children }) => {
     return { error: error || null, session: data?.session || null, user: data?.user || null };
   }, []);
 
+  const requestPasswordReset = useCallback(async ({ email }) => {
+    if (!isSupabaseConfigured || !supabase) {
+      return { error: null, demoCode: DEMO_RESET_CODE };
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/login` : undefined,
+    });
+
+    return { error: error || null };
+  }, []);
+
+  const verifyPasswordResetOtp = useCallback(async ({ email, token }) => {
+    if (!isSupabaseConfigured || !supabase) {
+      if (token !== DEMO_RESET_CODE) {
+        return { error: { message: 'Invalid demo reset code.' } };
+      }
+
+      return { error: null };
+    }
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'recovery',
+    });
+
+    if (!error && data?.session) {
+      setSession(data.session);
+      setUser(data.session.user || null);
+    }
+
+    return { error: error || null, session: data?.session || null, user: data?.user || null };
+  }, []);
+
+  const updatePassword = useCallback(async ({ password }) => {
+    if (!isSupabaseConfigured || !supabase) {
+      return { error: null };
+    }
+
+    const { data, error } = await supabase.auth.updateUser({ password });
+
+    return { error: error || null, user: data?.user || null };
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) {
       clearDemoSession();
@@ -195,9 +241,12 @@ export const AuthProvider = ({ children }) => {
       debugMessage,
       signIn,
       signUp,
+      requestPasswordReset,
+      verifyPasswordResetOtp,
+      updatePassword,
       signOut,
     }),
-    [user, session, loading, isSupabaseConfigured, debugMessage, signIn, signUp, signOut]
+    [user, session, loading, isSupabaseConfigured, debugMessage, signIn, signUp, requestPasswordReset, verifyPasswordResetOtp, updatePassword, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,11 +5,11 @@ const Badge = ({
   className = '',
 }) => {
   const variants = {
-    default: 'bg-success-500 text-white dark:bg-success-600',
-    primary: 'bg-white text-neutral-700 border border-neutral-200 dark:bg-primary-500/15 dark:text-primary-200 dark:border-primary-500/25',
-    success: 'bg-success-500 text-white dark:bg-success-600',
-    warning: 'bg-warning-500 text-white dark:bg-warning-600',
-    error: 'bg-error-500 text-white dark:bg-error-600',
+    default: 'bg-success-50 text-success-800 border border-success-200 dark:bg-success-950/35 dark:text-success-100 dark:border-success-800',
+    primary: 'bg-info-50 text-info-800 border border-info-200 dark:bg-info-950/35 dark:text-info-100 dark:border-info-800',
+    success: 'bg-success-50 text-success-800 border border-success-200 dark:bg-success-950/35 dark:text-success-100 dark:border-success-800',
+    warning: 'bg-warning-50 text-warning-800 border border-warning-200 dark:bg-warning-950/35 dark:text-warning-100 dark:border-warning-800',
+    error: 'bg-error-50 text-error-800 border border-error-200 dark:bg-error-950/35 dark:text-error-100 dark:border-error-800',
   };
 
   const sizes = {

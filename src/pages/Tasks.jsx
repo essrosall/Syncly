@@ -1123,7 +1123,7 @@ const Tasks = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Tasks</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize, prioritize, and track all your work in one place.</p>
           </div>
-          <Button size="sm" variant="primary" className="gap-2 bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+          <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
             <Plus size={16} /> New Task
           </Button>
         </div>
@@ -1141,10 +1141,10 @@ const Tasks = () => {
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                           selectedPriorities.includes(priority)
                             ? priority === 'high'
-                              ? 'border-red-200 bg-red-100 text-red-700'
+                              ? 'border-red-500 bg-red-500 text-white'
                               : priority === 'medium'
-                              ? 'border-amber-200 bg-amber-100 text-amber-700'
-                              : 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                              ? 'border-orange-500 bg-orange-500 text-white'
+                              : 'border-green-500 bg-green-500 text-white'
                             : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
                         }`}
                       >
@@ -1182,7 +1182,7 @@ const Tasks = () => {
               <div ref={filterMenuRef} className="relative self-start justify-self-end lg:self-center">
                 <Button
                   variant="secondary"
-                  className="gap-2"
+                  className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
                   onClick={() => setIsFilterOpen((prev) => !prev)}
                   title="Filter by assignee and due date"
                 >
@@ -1358,7 +1358,7 @@ const Tasks = () => {
                             ? 'error'
                             : selectedTask.priority === 'medium'
                             ? 'warning'
-                            : 'default'
+                            : 'success'
                         }
                       >
                         {selectedTask.priority.charAt(0).toUpperCase() + selectedTask.priority.slice(1)}
@@ -1529,10 +1529,10 @@ const Tasks = () => {
                       </Button>
                     )}
                     <div className="flex gap-3">
-                      <Button variant="secondary" onClick={handleCancelEdit}>
+                      <Button variant="secondary" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={handleCancelEdit}>
                         {isCreatingTask ? 'Cancel' : 'Cancel'}
                       </Button>
-                      <Button variant="primary" type="submit">
+                      <Button variant="primary" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" type="submit">
                         {isCreatingTask ? 'Create Task' : 'Save Changes'}
                       </Button>
                     </div>

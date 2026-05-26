@@ -73,12 +73,12 @@ const LayoutModal = ({ isOpen, onClose }) => {
                       onClick={() => setLayoutMode(option.id)}
                       className={`flex flex-col items-center gap-2 rounded-lg border-2 px-3 py-4 transition-colors ${
                         isSelected
-                          ? 'border-primary-500 bg-primary-50 text-primary-950 shadow-sm dark:bg-primary-900/30 dark:text-primary-50'
+                          ? 'border-success-500 bg-success-50 text-success-950 shadow-sm dark:bg-success-950/35 dark:text-success-50 dark:border-success-700'
                           : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
                       }`}
                     >
-                      <Icon size={20} className={isSelected ? 'text-primary-600 dark:text-primary-300' : 'text-neutral-600 dark:text-neutral-400'} />
-                      <span className={`text-xs font-medium ${isSelected ? 'text-primary-950 dark:text-primary-50' : 'text-neutral-900 dark:text-neutral-100'}`}>
+                      <Icon size={20} className={isSelected ? 'text-success-700 dark:text-success-300' : 'text-neutral-600 dark:text-neutral-400'} />
+                      <span className={`text-xs font-medium ${isSelected ? 'text-success-950 dark:text-success-50' : 'text-neutral-900 dark:text-neutral-100'}`}>
                         {option.name}
                       </span>
                     </button>
@@ -97,7 +97,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
                     onClick={() => setSidebarWidth(option.id)}
                     className={`w-full rounded-lg border-2 px-3 py-2 text-left text-sm font-medium transition-colors ${
                       sidebarWidth === option.id
-                                                  ? 'border-primary-500 bg-primary-50 text-primary-950 shadow-sm dark:bg-primary-900/30 dark:text-primary-50'
+                                                  ? 'border-success-500 bg-success-50 text-success-950 shadow-sm dark:bg-success-950/35 dark:text-success-50 dark:border-success-700'
                           : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
                     }`}
                   >
@@ -165,7 +165,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
           <div className="flex gap-2 border-t border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
             <button
               onClick={onClose}
-              className="flex-1 rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-white hover:bg-primary-600 dark:bg-primary-600 dark:hover:bg-primary-700"
+              className="flex-1 rounded-lg bg-success-600 px-3 py-2 text-sm font-medium text-white hover:bg-success-700 dark:bg-success-600 dark:hover:bg-success-700"
             >
               Done
             </button>

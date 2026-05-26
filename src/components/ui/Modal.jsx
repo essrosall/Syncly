@@ -34,7 +34,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
     <>
       {/* Backdrop - cover full viewport so entire app darkens */}
       <div
-        className="fixed inset-0 bg-black/50 z-[9999] transition-opacity"
+        className="fixed inset-0 z-[9999] bg-[radial-gradient(circle_at_top_left,rgba(93,165,108,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(120,144,168,0.12),transparent_28%),rgba(3,7,18,0.58)] backdrop-blur-[2px] transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -42,19 +42,20 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4 overflow-y-auto">
         <div
-          className={`w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.08)] dark:border-neutral-700 dark:bg-neutral-800 ${className}`}
+          className={`relative w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl border border-neutral-200/80 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.98),rgba(250,250,250,0.98))] shadow-[0_30px_80px_rgba(15,23,42,0.14)] dark:border-neutral-700 dark:bg-[linear-gradient(to_bottom,rgba(24,24,27,0.98),rgba(18,18,20,0.98))] ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-success-500 via-info-500 to-warning-500" />
 
 
           {/* Header */}
-          <div className="sticky top-0 flex items-center justify-between border-b border-neutral-200/80 bg-white px-5 py-4 dark:border-neutral-700/80 dark:bg-neutral-800">
+          <div className="sticky top-0 flex items-center justify-between border-b border-neutral-200/80 bg-white/90 px-5 py-4 backdrop-blur-sm dark:border-neutral-700/80 dark:bg-neutral-800/90">
             <h2 className="text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="rounded-md p-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700"
+              className="rounded-full border border-neutral-200 bg-neutral-50 p-2 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600"
               aria-label="Close modal"
             >
               <X size={20} className="text-neutral-600 dark:text-neutral-400" />
@@ -62,7 +63,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
           </div>
 
           {/* Content */}
-          <div className="px-5 py-5">
+          <div className="px-5 py-5 sm:px-6 sm:py-6">
             <ModalErrorBoundary onClose={onClose}>{children}</ModalErrorBoundary>
           </div>
         </div>
@@ -92,11 +93,11 @@ class ModalErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-          <div className="mb-4 text-sm text-red-600 dark:text-red-400">An error occurred while rendering this content.</div>
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          <div className="mb-4 text-sm text-error-700 dark:text-error-300">An error occurred while rendering this content.</div>
           <button
             onClick={this.props.onClose}
-            className="rounded-md bg-neutral-100 px-4 py-2 text-sm text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+            className="rounded-md bg-success-500 px-4 py-2 text-sm text-white hover:bg-success-600"
           >
             Close
           </button>

@@ -183,7 +183,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
               Close
             </Button>
             <Button
-              variant="primary"
+              variant="success"
               className="flex-1 justify-center rounded-md"
               onClick={onEdit}
             >

@@ -9,10 +9,10 @@ const Alert = ({
   action,
 }) => {
   const styles = {
-    info: 'bg-info-500/10 border border-info-500/20 text-info-400',
-    success: 'bg-success-500/10 border border-success-500/20 text-success-400',
-    warning: 'bg-warning-500/10 border border-warning-500/20 text-warning-400',
-    error: 'bg-error-500/10 border border-error-500/20 text-error-400',
+    info: 'bg-info-50 border border-info-200 text-info-800 dark:bg-info-950/40 dark:border-info-800 dark:text-info-100',
+    success: 'bg-success-50 border border-success-200 text-success-800 dark:bg-success-950/35 dark:border-success-800 dark:text-success-100',
+    warning: 'bg-warning-50 border border-warning-200 text-warning-800 dark:bg-warning-950/35 dark:border-warning-800 dark:text-warning-100',
+    error: 'bg-error-50 border border-error-200 text-error-800 dark:bg-error-950/35 dark:border-error-800 dark:text-error-100',
   };
 
   return (
@@ -27,7 +27,7 @@ const Alert = ({
           {onClose && (
             <button
               onClick={onClose}
-              className="text-neutral-400 hover:text-neutral-300 transition-colors"
+              className="text-current/60 hover:text-current transition-colors"
             >
               <X size={18} />
             </button>

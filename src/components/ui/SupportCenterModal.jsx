@@ -145,7 +145,7 @@ const SupportCenterModal = ({ onClose }) => {
           <Button variant="secondary" className="flex-1 justify-center rounded-md" onClick={onClose}>
             Close
           </Button>
-          <Button variant="primary" className="flex-1 justify-center rounded-md" onClick={openEmailClient}>
+          <Button variant="success" className="flex-1 justify-center rounded-md" onClick={openEmailClient}>
             <ExternalLink size={16} />
             Contact support
           </Button>

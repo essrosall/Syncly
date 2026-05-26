@@ -138,13 +138,13 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
             <div className="flex gap-2">
               <button
                 onClick={markAllAsRead}
-                className="flex-1 rounded-md px-3 py-2 text-xs font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                className="flex-1 rounded-md bg-success-50 px-3 py-2 text-xs font-medium text-success-800 hover:bg-success-100 dark:bg-success-950/35 dark:text-success-100 dark:hover:bg-success-950/50"
               >
                 Mark all read
               </button>
               <button
                 onClick={clearAll}
-                className="flex-1 rounded-md px-3 py-2 text-xs font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                className="flex-1 rounded-md bg-error-50 px-3 py-2 text-xs font-medium text-error-800 hover:bg-error-100 dark:bg-error-950/35 dark:text-error-100 dark:hover:bg-error-950/50"
               >
                 Clear All
               </button>

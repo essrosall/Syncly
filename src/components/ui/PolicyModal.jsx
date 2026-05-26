@@ -112,8 +112,8 @@ const PolicyModal = ({ initialSection = 'terms', isOpen, onClose, onAccept }) =>
           }}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
             activeSection === 'terms'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              ? 'bg-success-600 text-white shadow-sm'
+              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
           }`}
         >
           Terms of Service
@@ -127,8 +127,8 @@ const PolicyModal = ({ initialSection = 'terms', isOpen, onClose, onAccept }) =>
           }}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
             activeSection === 'privacy'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              ? 'bg-success-600 text-white shadow-sm'
+              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
           }`}
         >
           Privacy Policy
@@ -155,7 +155,7 @@ const PolicyModal = ({ initialSection = 'terms', isOpen, onClose, onAccept }) =>
           type="button"
           onClick={handleAccept}
           disabled={!canAccept}
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-success-600 px-4 py-2 text-sm font-medium text-white hover:bg-success-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           I have read and accept both
         </button>
