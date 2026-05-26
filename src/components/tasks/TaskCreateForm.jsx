@@ -41,6 +41,7 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
 
     const nextTasks = { ...tasks, [column]: [...(tasks[column] || []), newTask] };
     try { window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(nextTasks)); } catch (e) {}
+    try { window.dispatchEvent(new Event('syncly:tasks-updated')); } catch (e) {}
 
     // activity
     try {

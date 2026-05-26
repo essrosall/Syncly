@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { MainLayout } from '../components/layout';
@@ -38,6 +39,29 @@ const assigneeOptions = ['You', 'Alex', 'Mike', 'Sarah', 'Admin'];
 
 const priorityOptions = ['high', 'medium', 'low'];
 
+const WORKSPACES_STORAGE_KEY = 'syncly:workspaces';
+
+const defaultWorkspaces = [
+  {
+    id: 1,
+    name: 'Product Design',
+    description: 'Design direction, wireframes, and polish for the main product experience.',
+    keywords: ['design', 'ui', 'ux', 'landing', 'product'],
+  },
+  {
+    id: 2,
+    name: 'Mobile App',
+    description: 'Mobile UI, responsive flows, and cross-device testing.',
+    keywords: ['mobile', 'app', 'responsive', 'ios', 'android'],
+  },
+  {
+    id: 3,
+    name: 'Backend Services',
+    description: 'API work, auth flows, and server-side reliability.',
+    keywords: ['backend', 'api', 'auth', 'database', 'server'],
+  },
+];
+
 const TASKS_STORAGE_KEY = 'syncly:tasks';
 const TASK_ACTIVITY_STORAGE_KEY = 'syncly:taskActivity';
 
@@ -68,6 +92,38 @@ const readStoredJson = (key, fallback) => {
   } catch {
     return fallback;
   }
+};
+
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const getWorkspaceTokens = (workspace) => {
+  const tokens = new Set([
+    ...(workspace?.name || '').toLowerCase().split(/\s+/),
+    ...(workspace?.description || '').toLowerCase().split(/\s+/),
+    ...(workspace?.keywords || []).map((item) => String(item).toLowerCase()),
+  ]);
+
+  return [...tokens].filter((item) => item && item.length > 2);
+};
+
+const workspaceMatchesTask = (workspace, task) => {
+  const haystack = `${task.title} ${task.description || ''} ${task.assignee || ''}`.toLowerCase();
+  const tokens = getWorkspaceTokens(workspace);
+
+  if (tokens.some((token) => haystack.includes(token))) {
+    return true;
+  }
+
+  const workspaceName = (workspace?.name || '').toLowerCase();
+  if (workspaceName.includes('design')) return haystack.includes('design') || haystack.includes('landing') || haystack.includes('ui');
+  if (workspaceName.includes('mobile')) return haystack.includes('mobile') || haystack.includes('responsive') || haystack.includes('app');
+  if (workspaceName.includes('backend')) return haystack.includes('api') || haystack.includes('auth') || haystack.includes('database') || haystack.includes('server');
+
+  return false;
 };
 
 const createTaskForm = (task) => ({
@@ -311,6 +367,8 @@ const Tasks = () => {
   const [commentDraft, setCommentDraft] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const filterMenuRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
   const { addToast } = useToast();
   const { openModal } = useGlobalModal();
   const { addNotification, refreshNotifications } = useNotifications();
@@ -325,6 +383,12 @@ const Tasks = () => {
   const { user } = useAuth();
 
   const [tasks, setTasks] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+  const [workspaceList, setWorkspaceList] = useState(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
+  const workspaceSlug = useMemo(() => new URLSearchParams(location.search).get('workspace') || '', [location.search]);
+  const activeWorkspace = useMemo(
+    () => workspaceList.find((workspace) => slugify(workspace.name) === workspaceSlug) || defaultWorkspaces.find((workspace) => slugify(workspace.name) === workspaceSlug) || null,
+    [workspaceList, workspaceSlug]
+  );
 
   // Load tasks from Supabase for authenticated users
   useEffect(() => {
@@ -370,8 +434,21 @@ const Tasks = () => {
   }, [user]);
 
   useEffect(() => {
+    const syncWorkspaces = () => setWorkspaceList(readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
+
+    window.addEventListener('storage', syncWorkspaces);
+    window.addEventListener('syncly:workspaces-updated', syncWorkspaces);
+
+    return () => {
+      window.removeEventListener('storage', syncWorkspaces);
+      window.removeEventListener('syncly:workspaces-updated', syncWorkspaces);
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      window.dispatchEvent(new Event('syncly:tasks-updated'));
     } catch (error) {
       console.error('Unable to persist tasks:', error);
     }
@@ -462,7 +539,8 @@ const Tasks = () => {
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesPriority = selectedPriorities.includes(task.priority);
       const matchesAssignee = selectedAssignees.includes(task.assignee);
-      return matchesSearch && matchesPriority && matchesAssignee;
+      const matchesWorkspace = activeWorkspace ? workspaceMatchesTask(activeWorkspace, task) : true;
+      return matchesSearch && matchesPriority && matchesAssignee && matchesWorkspace;
     });
 
     const parseDueDate = (task) => {
@@ -519,17 +597,22 @@ const Tasks = () => {
     searchTerm.trim().length > 0 ||
     selectedPriorities.length !== priorityOptions.length ||
     selectedAssignees.length !== assigneeOptions.length ||
-    dueDateSort !== 'none';
+    dueDateSort !== 'none' ||
+    Boolean(activeWorkspace);
 
   const activeAdvancedFilterCount =
     (selectedAssignees.length !== assigneeOptions.length ? 1 : 0) +
-    (dueDateSort !== 'none' ? 1 : 0);
+    (dueDateSort !== 'none' ? 1 : 0) +
+    (activeWorkspace ? 1 : 0);
 
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedPriorities([...priorityOptions]);
     setSelectedAssignees([...assigneeOptions]);
     setDueDateSort('none');
+    if (activeWorkspace) {
+      navigate('/tasks');
+    }
   };
 
   // Handle task click to open modal
@@ -1127,6 +1210,21 @@ const Tasks = () => {
             <Plus size={16} /> New Task
           </Button>
         </div>
+
+        {activeWorkspace && (
+          <Card className="rounded-md border-neutral-200 bg-white p-4 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Workspace filter</p>
+                <h2 className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{activeWorkspace.name}</h2>
+                <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Showing tasks that match this workspace’s focus area and keywords.</p>
+              </div>
+              <Button variant="secondary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={() => navigate('/tasks')}>
+                Clear filter
+              </Button>
+            </div>
+          </Card>
+        )}
 
         <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
