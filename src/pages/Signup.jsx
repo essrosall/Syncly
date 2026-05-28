@@ -93,8 +93,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="hidden lg:flex w-1/2 min-h-screen bg-neutral-900">
+    <div className="min-h-screen flex bg-white text-neutral-00 dark:bg-neutral-900 dark:text-neutral-100 pb-20 sm:pb-0">
+      <div className="hidden lg:flex w-1/2 min-h-screen bg-neutral-900 text-neutral-50">
         <div className="h-full flex flex-col justify-center items-start px-12">
           <div className="w-20 h-20 mb-6">
             <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
@@ -104,15 +104,15 @@ const Signup = () => {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900">
+      <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <div className="w-full px-12 lg:px-24 py-10 lg:py-16 max-w-lg xl:max-w-2xl mx-auto">
           <div className="mb-6">
-            <h2 className="mt-4 text-3xl font-bold">{pageTitle}</h2>
-            <p className="mt-2 text-sm text-neutral-600">{pageSubtitle}</p>
+            <h2 className="mt-4 text-3xl font-bold text-neutral-100 dark:text-neutral-900">{pageTitle}</h2>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">{pageSubtitle}</p>
           </div>
 
           {!isSupabaseConfigured && (
-            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4">
+            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
               Supabase environment variables are not configured yet. Running in local demo auth mode.
             </div>
           )}
@@ -121,7 +121,7 @@ const Signup = () => {
           <form onSubmit={handleSubmit(onSubmit, onInvalid)} onSubmitCapture={() => { try { console.log('[Signup] form onSubmitCapture'); } catch (e) {} }} className="space-y-5">
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
@@ -138,12 +138,12 @@ const Signup = () => {
                   },
                 })}
                 error={errors.email && errors.email.message}
-                className="bg-white text-neutral-900"
+                className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Password</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Password</label>
               <Input
                 type="password"
                 placeholder="Create password"
@@ -157,15 +157,14 @@ const Signup = () => {
                   }
                 })}
                 error={errors.password && errors.password.message}
-                className={`bg-white text-neutral-900`}
+                className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
               />
 
-              {/* Password strength indicator (moving line) */}
               <div
                 className={`overflow-hidden transition-all duration-300 ease-out ${password ? 'max-h-16 opacity-100 translate-y-0 mt-3' : 'max-h-0 opacity-0 -translate-y-1 mt-0 pointer-events-none'}`}
                 aria-hidden={!password}
               >
-                <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
+                <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden dark:bg-neutral-700">
                   <div
                     className="h-0.5 rounded-full transform origin-left transition-all duration-200 ease-linear"
                     style={{ transform: `scaleX(${password ? (pwPercent(ratePassword(password)) / 100) : 0})`, backgroundColor: pwColor(ratePassword(password)) }}
@@ -176,12 +175,12 @@ const Signup = () => {
                     aria-label="Password strength"
                   />
                 </div>
-                <p className="text-xs mt-2 text-neutral-600">Password strength: <span className="font-medium">{pwLabel(ratePassword(password))}</span></p>
+                <p className="text-xs mt-2 text-neutral-600 dark:text-neutral-400">Password strength: <span className="font-medium">{pwLabel(ratePassword(password))}</span></p>
               </div>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Confirm password</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Confirm password</label>
               <Input
                 type="password"
                 placeholder="Confirm password"
@@ -191,7 +190,7 @@ const Signup = () => {
                   validate: (val) => val === getValues('password') || 'Passwords do not match'
                 })}
                 error={errors.confirmPassword && errors.confirmPassword.message}
-                className={`bg-white text-neutral-900 ${( !password || ratePassword(password) < 2) ? 'opacity-60 bg-neutral-50 cursor-not-allowed' : ''}`}
+                className={`bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100 ${( !password || ratePassword(password) < 2) ? 'opacity-60 bg-neutral-50 cursor-not-allowed dark:bg-neutral-800' : ''}`}
                 style={confirmState === 'match' ? { borderColor: '#10b981', boxShadow: '0 0 0 1px #10b981', transition: 'border-color 150ms ease, box-shadow 150ms ease' } : confirmState === 'mismatch' ? { borderColor: '#ef4444', boxShadow: '0 0 0 1px #ef4444', transition: 'border-color 150ms ease, box-shadow 150ms ease' } : { transition: 'border-color 150ms ease, box-shadow 150ms ease' }}
                 disabled={!password || ratePassword(password) < 2}
                 aria-disabled={!password || ratePassword(password) < 2}
@@ -209,8 +208,8 @@ const Signup = () => {
                   className="h-4 w-4 rounded border-neutral-300"
                 />
               </div>
-                <label htmlFor="terms" className="text-sm text-neutral-600">
-                  I agree to the <button type="button" onClick={() => setShowPolicy('terms')} className="text-neutral-900 font-medium underline">Terms of Service</button> and <button type="button" onClick={() => setShowPolicy('privacy')} className="text-neutral-900 font-medium underline">Privacy Policy</button>.
+                <label htmlFor="terms" className="text-sm text-neutral-600 dark:text-neutral-400">
+                  I agree to the <button type="button" onClick={() => setShowPolicy('terms')} className="text-neutral-900 font-medium underline dark:text-neutral-100">Terms of Service</button> and <button type="button" onClick={() => setShowPolicy('privacy')} className="text-neutral-900 font-medium underline dark:text-neutral-100">Privacy Policy</button>.
                 </label>
             </div>
 
@@ -233,8 +232,8 @@ const Signup = () => {
             )}
 
             <Button
-              variant="success"
-              className="w-full py-3 rounded-md"
+              variant="primary"
+              className="w-full rounded-md bg-neutral-900 py-3 text-white hover:bg-neutral-800"
               type="submit"
               disabled={submitting || !canSubmit}
               onClick={() => {
@@ -252,16 +251,16 @@ const Signup = () => {
             </p>
           </form>
           ) : (
-            <div className="space-y-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm">
+            <div className="space-y-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
               <div>
-                <h3 className="text-2xl font-bold text-neutral-900">Check your email</h3>
-                <p className="mt-2 text-sm text-neutral-600">
-                  We sent a confirmation link to <span className="font-medium text-neutral-900">{confirmationEmail}</span>. Open it to verify your account and finish signing in.
+                <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Check your email</h3>
+                <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                  We sent a confirmation link to <span className="font-medium text-neutral-900 dark:text-neutral-100">{confirmationEmail}</span>. Open it to verify your account and finish signing in.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
-                <p className="font-medium text-neutral-900">What to do next</p>
+              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                <p className="font-medium text-neutral-900 dark:text-neutral-100">What to do next</p>
                 <ul className="mt-2 space-y-2 list-disc pl-5">
                   <li>Check your inbox and spam folder.</li>
                   <li>Click the confirmation link in the message.</li>
@@ -274,7 +273,7 @@ const Signup = () => {
                 </Link>
                 <button
                   type="button"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border border-neutral-300 bg-white px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-50"
+                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border border-neutral-300 bg-white px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
                   onClick={() => {
                     setConfirmationEmail('');
                     setErrorMessage('');

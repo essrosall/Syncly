@@ -11,12 +11,16 @@ import Workspaces from './pages/Workspaces';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Signup from './pages/Signup';
+import { ThemeToggle } from './components/layout';
 
 function App() {
   return (
     <LayoutProvider>
       <MobileNavProvider>
         <Router>
+          <div className="fixed bottom-3 right-3 z-[10001] sm:bottom-4 sm:right-4">
+            <ThemeToggle className="h-10 w-10 border border-neutral-200 bg-white text-neutral-900 shadow-[0_12px_30px_rgba(17,25,43,0.12)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 sm:h-12 sm:w-12" />
+          </div>
           <Routes>
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />

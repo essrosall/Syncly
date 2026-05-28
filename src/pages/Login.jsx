@@ -70,7 +70,7 @@ const OtpCodeInput = ({ value, onChange, disabled = false }) => {
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className="h-14 rounded-xl border border-neutral-200 bg-white text-center text-xl font-semibold tracking-[0.25em] text-neutral-900 shadow-sm outline-none transition focus:border-success-500 focus:ring-2 focus:ring-success-200 disabled:cursor-not-allowed disabled:bg-neutral-50"
+          className="h-14 rounded-xl border border-neutral-200 bg-white text-center text-xl font-semibold tracking-[0.25em] text-neutral-900 shadow-sm outline-none transition focus:border-success-500 focus:ring-2 focus:ring-success-200 disabled:cursor-not-allowed disabled:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-success-400 dark:focus:ring-success-900/50 dark:disabled:bg-neutral-800"
           aria-label={`One-time code digit ${index + 1}`}
         />
       ))}
@@ -329,9 +329,8 @@ const Login = () => {
   }, [resetStep, resendSeconds]);
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left hero - full height visual (black background, logo) */}
-      <div className="hidden lg:flex w-1/2 min-h-screen bg-neutral-900">
+    <div className="min-h-screen flex bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100 pb-20 sm:pb-0">
+      <div className="hidden lg:flex w-1/2 min-h-screen bg-neutral-900 text-neutral-50">
         <div className="h-full flex flex-col justify-center items-start px-12">
           <div className="w-20 h-20 mb-6">
             <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
@@ -341,12 +340,12 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right form - full height, minimal */}
-      <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900">
+      <div className="w-full lg:w-1/2 min-h-screen flex items-center bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <div className="w-full px-12 lg:px-24 py-10 lg:py-16 max-w-lg xl:max-w-2xl mx-auto">
           <div className="mb-6">
-            <h2 className="mt-4 text-3xl font-bold">Sign in to your account</h2>
-            <p className="mt-2 text-sm text-neutral-600">Enter your credentials to access your workspace.</p>
+            <img src={logoUrl} alt="Logo" className="w-10 h-10 mb-4 lg:hidden filter invert dark:invert-0" />
+            <h2 className="mt-4 text-3xl font-bold text-neutral-900 dark:text-neutral-100">Sign in to your account</h2>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">Enter your credentials to access your workspace.</p>
           </div>
 
           {formNotice && (
@@ -356,49 +355,49 @@ const Login = () => {
           )}
 
           {!isSupabaseConfigured && (
-            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4">
+            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
               Supabase environment variables are not configured yet. Running in local demo auth mode.
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
                 icon={Mail}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-white text-neutral-900"
+                className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                 required
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-neutral-700">Password</label>
+              <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Password</label>
               <Input
                 type="password"
                 icon={Lock}
                 showPasswordToggle
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-white text-neutral-900"
+                className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                 required
               />
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-neutral-700">
+              <label className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-neutral-600 bg-neutral-800"
+                  className="h-4 w-4 rounded border-neutral-600 bg-neutral-800 dark:border-neutral-300 dark:bg-white"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 Remember me on this device
               </label>
-              <button type="button" onClick={openForgotPassword} className="font-medium text-neutral-700 hover:text-neutral-900">
+              <button type="button" onClick={openForgotPassword} className="font-medium text-neutral-700 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100">
                 Forgot password?
               </button>
             </div>
@@ -413,10 +412,9 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* Removed OAuth buttons for now — simple flow only */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-neutral-500 mb-3">Don&apos;t have an account?{' '}
-              <Link to="/signup" className="font-medium text-neutral-900 hover:text-neutral-700">Create an account</Link>
+            <p className="text-sm text-neutral-500 mb-3 dark:text-neutral-400">Don&apos;t have an account?{' '}
+              <Link to="/signup" className="font-medium text-neutral-900 hover:text-neutral-700 dark:text-neutral-100 dark:hover:text-neutral-300">Create an account</Link>
             </p>
           </div>
         </div>
@@ -429,21 +427,21 @@ const Login = () => {
         className="max-w-xl"
       >
         <div className="space-y-5">
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
-            <p className="font-medium text-neutral-900">How this works</p>
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+            <p className="font-medium text-neutral-900 dark:text-neutral-100">How this works</p>
             <p className="mt-2">
               Enter your email, verify the 6-digit code sent to that inbox, then set a new password here.
             </p>
           </div>
 
           {resetMessage && (
-            <div className="rounded-xl border border-success-200 bg-success-50 px-4 py-3 text-sm text-success-700">
+              <div className="rounded-xl border border-success-200 bg-success-50 px-4 py-3 text-sm text-success-700 dark:border-success-900 dark:bg-success-950/30 dark:text-success-200">
               {resetMessage}
             </div>
           )}
 
           {resetError && (
-            <div className="rounded-xl border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700">
+            <div className="rounded-xl border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700 dark:border-error-900 dark:bg-error-950/30 dark:text-error-200">
               {resetError}
             </div>
           )}
@@ -451,14 +449,14 @@ const Login = () => {
           {resetStep === 'email' && (
             <form className="space-y-4" onSubmit={handleSendResetCode}>
               <div>
-                <label className="mb-2 block text-sm font-medium text-neutral-700">Email</label>
+                <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
                 <Input
                   type="email"
                   placeholder="you@example.com"
                   icon={Mail}
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
-                  className="bg-white text-neutral-900"
+                  className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                   required
                 />
               </div>
@@ -477,11 +475,11 @@ const Login = () => {
           {resetStep === 'otp' && (
             <form className="space-y-4" onSubmit={handleVerifyResetCode}>
               <div>
-                <label className="mb-2 block text-sm font-medium text-neutral-700">Code sent to {resetEmail}</label>
+                <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Code sent to {resetEmail}</label>
                 <OtpCodeInput value={resetCode} onChange={setResetCode} disabled={resetSubmitting} />
               </div>
 
-              <div className="flex items-center justify-between gap-3 text-sm text-neutral-600">
+              <div className="flex items-center justify-between gap-3 text-sm text-neutral-600 dark:text-neutral-400">
                 <span>{resendSeconds > 0 ? `Resend available in 00:${String(resendSeconds).padStart(2, '0')}` : 'Didn’t get a code?'}</span>
                 <button
                   type="button"
@@ -497,7 +495,7 @@ const Login = () => {
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
                 <button
                   type="button"
-                  className="text-sm font-medium text-neutral-700 hover:text-neutral-900"
+                  className="text-sm font-medium text-neutral-700 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
                   onClick={() => {
                     setResetStep('email');
                     setResetCode('');
@@ -524,14 +522,14 @@ const Login = () => {
           {resetStep === 'password' && (
             <form className="space-y-4" onSubmit={handleCompleteReset}>
               <div>
-                <label className="mb-2 block text-sm font-medium text-neutral-700">New password</label>
+                <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">New password</label>
                 <Input
                   type="password"
                   placeholder="Create a new password"
                   showPasswordToggle
                   value={resetPassword}
                   onChange={(e) => setResetPassword(e.target.value)}
-                  className="bg-white text-neutral-900"
+                  className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                   required
                 />
 
@@ -550,21 +548,21 @@ const Login = () => {
                       aria-label="Password strength"
                     />
                   </div>
-                  <p className="text-xs mt-2 text-neutral-600">
+                  <p className="text-xs mt-2 text-neutral-600 dark:text-neutral-400">
                     Password strength: <span className="font-medium">{pwLabel(ratePassword(resetPassword))}</span>
                   </p>
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-neutral-700">Confirm new password</label>
+                  <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Confirm new password</label>
                 <Input
                   type="password"
                   placeholder="Retype the new password"
                   showPasswordToggle
                   value={resetConfirmPassword}
                   onChange={(e) => setResetConfirmPassword(e.target.value)}
-                  className="bg-white text-neutral-900"
+                    className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                   required
                 />
               </div>
@@ -572,7 +570,7 @@ const Login = () => {
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
                 <button
                   type="button"
-                  className="text-sm font-medium text-neutral-700 hover:text-neutral-900"
+                  className="text-sm font-medium text-neutral-700 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100"
                   onClick={() => {
                     setResetStep('otp');
                     setResetPassword('');
