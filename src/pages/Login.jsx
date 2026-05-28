@@ -8,6 +8,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { ratePassword, pwLabel, pwColor, pwPercent } from '../lib/passwordStrength';
 
 const REMEMBERED_EMAIL_KEY = 'syncly:rememberedEmail';
+const LOGIN_WELCOME_NOTICE_KEY = 'syncly:loginWelcomeNotice';
+const ACTIVE_LOGIN_SESSION_KEY = 'syncly:activeLoginSession';
 const RESET_RESEND_SECONDS = 45;
 
 const OtpCodeInput = ({ value, onChange, disabled = false }) => {
@@ -157,6 +159,18 @@ const Login = () => {
       setErrorMessage(error.message || 'Unable to sign in. Please check your credentials.');
       setSubmitting(false);
       return;
+    }
+
+    try {
+      const loginSession = {
+        email: normalizedEmail,
+        signedInAt: new Date().toISOString(),
+      };
+
+      window.sessionStorage.setItem(LOGIN_WELCOME_NOTICE_KEY, JSON.stringify(loginSession));
+      window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(loginSession));
+    } catch {
+      // ignore storage issues
     }
 
     try {

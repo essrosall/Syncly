@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState, useCall
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 
 const DEMO_SESSION_KEY = 'syncly:demoSession';
+const ACTIVE_LOGIN_SESSION_KEY = 'syncly:activeLoginSession';
 const DEMO_EMAIL = 'demo@syncly.app';
 const DEMO_PASSWORD = 'DemoPass123!';
 const DEMO_RESET_CODE = '123456';
@@ -46,6 +47,13 @@ const writeDemoSession = (email, name) => {
 const clearDemoSession = () => {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(DEMO_SESSION_KEY);
+};
+
+const clearActiveLoginSession = () => {
+  if (typeof window === 'undefined') return;
+
+  window.sessionStorage.removeItem(ACTIVE_LOGIN_SESSION_KEY);
+  window.sessionStorage.removeItem('syncly:loginWelcomeNotice');
 };
 
 export const AuthProvider = ({ children }) => {
@@ -222,12 +230,14 @@ export const AuthProvider = ({ children }) => {
   const signOut = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) {
       clearDemoSession();
+      clearActiveLoginSession();
       setUser(null);
       setSession(null);
       return { error: null };
     }
 
     const { error } = await supabase.auth.signOut();
+    clearActiveLoginSession();
     return { error: error || null };
   }, []);
 

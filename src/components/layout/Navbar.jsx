@@ -1,10 +1,11 @@
-import { Bell, MoreHorizontal, Search, LayoutGrid, X, CheckCircle, Briefcase, Settings, BookOpen, BarChart3, ArrowRight, Menu } from 'lucide-react';
+import { Bell, MoreHorizontal, Search, LayoutGrid, X, CheckCircle, Briefcase, Settings, BookOpen, BarChart3, ArrowRight, Menu, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
 import { useMobileNav } from '../../contexts/MobileNavContext';
 import { useLayout } from '../../contexts/LayoutContext';
 import { useNotifications } from '../../contexts/NotificationContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { NotificationsPanel, LayoutModal, MoreMenu } from '../ui';
 
 const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () => {} }) => {
@@ -20,6 +21,8 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
   const { toggleSidebar } = useMobileNav();
   const { sidebarWidth } = useLayout();
   const { unreadCount, refreshNotifications } = useNotifications();
+  const { signOut } = useAuth();
+  const { addToast } = useToast();
 
   const navbarPaddingClass = {
     compact: 'lg:pl-60',
@@ -185,6 +188,26 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+      if (error) throw error;
+
+      addToast({
+        title: 'Signed out',
+        message: 'You have been logged out successfully.',
+        variant: 'success',
+      });
+      navigate('/login');
+    } catch {
+      addToast({
+        title: 'Sign out failed',
+        message: 'Unable to sign out right now. Please try again.',
+        variant: 'error',
+      });
+    }
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/95 backdrop-blur-xl dark:border-neutral-700/80 dark:bg-neutral-800/85" role="navigation" aria-label="Top utilities">
       <div className={`flex h-20 w-full items-center gap-2 px-3 sm:gap-4 sm:px-4 lg:pr-5 ${navbarPaddingClass}`}>
@@ -342,7 +365,14 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
           </button>
           <MoreMenu isOpen={isMoreOpen} onClose={() => setIsMoreOpen(false)} />
 
-          <ThemeToggle />
+          <button
+            onClick={handleSignOut}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut size={18} />
+          </button>
         </div>
       </div>
     </nav>

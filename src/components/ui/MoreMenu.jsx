@@ -1,15 +1,14 @@
-import { Download, Settings, HelpCircle, LogOut, X } from 'lucide-react';
+import { Download, Settings, HelpCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { isSupabaseConfigured, supabase } from '../../lib/supabaseClient';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
-import LogoutConfirmModal from './LogoutConfirmModal';
 import SupportCenterModal from './SupportCenterModal';
 
 const MoreMenu = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
   const { openModal, closeModal } = useGlobalModal();
 
@@ -129,34 +128,6 @@ const MoreMenu = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleSignOut = async () => {
-    openModal(LogoutConfirmModal, {
-      title: 'Confirm logout',
-      onCancel: closeModal,
-      onConfirm: async () => {
-        try {
-          const { error } = await signOut();
-          if (error) throw error;
-
-          closeModal();
-          addToast({
-            title: 'Signed out',
-            message: 'You have been logged out successfully.',
-            variant: 'success',
-          });
-          navigate('/login');
-        } catch {
-          closeModal();
-          addToast({
-            title: 'Sign out failed',
-            message: 'Unable to sign out right now. Please try again.',
-            variant: 'error',
-          });
-        }
-      },
-    });
-  };
-
   const menuItems = [
     {
       id: 'export',
@@ -178,14 +149,6 @@ const MoreMenu = ({ isOpen, onClose }) => {
       description: 'Get help and contact support',
       icon: HelpCircle,
       action: handleSupport,
-    },
-    {
-      id: 'logout',
-      label: 'Sign Out',
-      description: 'Log out of your account',
-      icon: LogOut,
-      action: handleSignOut,
-      isDangerous: true,
     },
   ];
 
