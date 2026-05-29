@@ -20,7 +20,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
             <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">Profile Information</h2>
             <button
               onClick={onClose}
-              className="rounded-md p-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700"
+              className="rounded-base p-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700"
               aria-label="Close"
             >
               <X size={20} className="text-neutral-500" />
@@ -167,7 +167,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
             {/* No additional info message */}
             {!profile.bio && !profile.work?.length && !profile.hobbies?.length && !profile.interests?.length && !profile.school?.length && !profile.graduatedFrom?.length && (
-              <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-400">
+              <div className="rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-400">
                 No additional profile information added yet
               </div>
             )}
@@ -177,14 +177,14 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
           <div className="flex gap-3 border-t border-neutral-200/80 px-6 py-4 dark:border-neutral-700/80">
             <Button
               variant="secondary"
-              className="flex-1 justify-center rounded-md"
+              className="flex-1 justify-center rounded-base"
               onClick={onClose}
             >
               Close
             </Button>
             <Button
               variant="success"
-              className="flex-1 justify-center rounded-md"
+              className="flex-1 justify-center rounded-base"
               onClick={onEdit}
             >
               Edit Profile

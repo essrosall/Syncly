@@ -233,7 +233,7 @@ const Settings = () => {
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Work & Interests</h2>
@@ -274,7 +274,7 @@ const Settings = () => {
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Education</h2>
@@ -326,7 +326,7 @@ const Settings = () => {
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Preferences</h2>
@@ -339,7 +339,7 @@ const Settings = () => {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Gender</label>
                   <div className="relative">
-                    <select name="gender" value={profileData.gender} onChange={handleInputChange} className="w-full rounded-md border px-3 py-2 pr-10 text-sm">
+                    <select name="gender" value={profileData.gender} onChange={handleInputChange} className="w-full rounded-base border px-3 py-2 pr-10 text-sm">
                       <option value="female">Female</option>
                       <option value="male">Male</option>
                       <option value="other">Other</option>
@@ -350,7 +350,7 @@ const Settings = () => {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Display name</label>
                   <div className="relative">
-                    <select name="displayPreference" value={profileData.displayPreference} onChange={handleInputChange} className="w-full rounded-md border px-3 py-2 pr-10 text-sm">
+                    <select name="displayPreference" value={profileData.displayPreference} onChange={handleInputChange} className="w-full rounded-base border px-3 py-2 pr-10 text-sm">
                       <option value="nickname">Nickname</option>
                       <option value="first">First name</option>
                       <option value="last">Last name</option>
@@ -380,7 +380,7 @@ const Settings = () => {
           </div>
 
           <div className="space-y-4">
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Profile at a glance</h2>
@@ -398,32 +398,32 @@ const Settings = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-md bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
+                  <div className="rounded-base bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
                     <div className="text-xs text-neutral-500 dark:text-neutral-400">Work</div>
                     <div className="font-medium">{profileData.work.length} selected</div>
                   </div>
-                  <div className="rounded-md bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
+                  <div className="rounded-base bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
                     <div className="text-xs text-neutral-500 dark:text-neutral-400">Hobbies</div>
                     <div className="font-medium">{profileData.hobbies.length} selected</div>
                   </div>
-                  <div className="rounded-md bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
+                  <div className="rounded-base bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
                     <div className="text-xs text-neutral-500 dark:text-neutral-400">Interests</div>
                     <div className="font-medium">{profileData.interests.length} selected</div>
                   </div>
-                  <div className="rounded-md bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
+                  <div className="rounded-base bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
                     <div className="text-xs text-neutral-500 dark:text-neutral-400">Education</div>
                     <div className="font-medium">{profileData.educationStatus === 'studying' ? 'Studying now' : 'Graduated'}</div>
                   </div>
                 </div>
 
-                <div className="rounded-md border border-dashed border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                <div className="rounded-base border border-dashed border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                   {profileTip}
                 </div>
               </div>
             </Card>
 
             {/* Profile summary card on the right with avatar + upload */}
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Your Profile</h2>
@@ -440,7 +440,7 @@ const Settings = () => {
                     Upload a photo to personalize your workspace and make your profile easier to recognize.
                   </p>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <label className="relative flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-700/50 dark:hover:bg-neutral-700">
+                    <label className="relative flex cursor-pointer items-center gap-2 rounded-base border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-700/50 dark:hover:bg-neutral-700">
                       <Upload size={14} className="text-neutral-600 dark:text-neutral-400" />
                       <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">Change photo</span>
                       <input
@@ -472,7 +472,7 @@ const Settings = () => {
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Notifications</h2>
@@ -481,12 +481,12 @@ const Settings = () => {
                 <BellRing size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
               <div className="mt-5 space-y-3 text-sm text-neutral-700 dark:text-neutral-200">
-                <div className="rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Task reminders enabled</div>
-                <div className="rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Workspace mentions enabled</div>
+                <div className="rounded-base bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Task reminders enabled</div>
+                <div className="rounded-base bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Workspace mentions enabled</div>
               </div>
             </Card>
 
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Security</h2>
@@ -497,12 +497,12 @@ const Settings = () => {
               <p className="mt-5 text-sm text-neutral-600 dark:text-neutral-300">Your workspace access is protected with standard sign-in controls.</p>
             </Card>
 
-            <Card id="settings-documentation" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card id="settings-documentation" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Documentation</h2>
               <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Product docs, API usage notes, and setup guides.</p>
             </Card>
 
-            <Card id="settings-tutorials" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card id="settings-tutorials" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Tutorials</h2>
@@ -527,7 +527,7 @@ const Settings = () => {
               </div>
             </Card>
 
-            <Card id="settings-community" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card id="settings-community" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Community</h2>
               <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Get help, ask questions, and share feedback.</p>
             </Card>

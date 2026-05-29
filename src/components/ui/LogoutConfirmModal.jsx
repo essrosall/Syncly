@@ -19,7 +19,7 @@ const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-300">
+      <div className="rounded-base border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-300">
         <p className="font-medium text-neutral-900 dark:text-neutral-100">Quick note</p>
         <p className="mt-1 leading-6">
           This action will end your current session and return you to the login page.
@@ -29,7 +29,7 @@ const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
       <div className="flex gap-3 pt-1">
         <Button
           variant="secondary"
-          className="flex-1 justify-center rounded-md"
+          className="flex-1 justify-center rounded-base"
           onClick={onCancel}
           disabled={isSigningOut}
         >
@@ -37,7 +37,7 @@ const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
         </Button>
         <Button
           variant="danger"
-          className="flex-1 justify-center rounded-md shadow-sm"
+          className="flex-1 justify-center rounded-base shadow-sm"
           onClick={onConfirm}
           disabled={isSigningOut}
         >

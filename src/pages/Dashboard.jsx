@@ -356,9 +356,9 @@ const Dashboard = () => {
   }, [allTasks]);
 
   const topMetrics = useMemo(() => ([
-    { label: 'Active Tasks', value: String(activeTasks.length), tone: 'bg-neutral-100 text-neutral-950 rounded-md dark:bg-neutral-800 dark:text-neutral-100', icon: CheckCircle },
-    { label: 'Completed Tasks', value: String(completedTasks.length), tone: 'bg-neutral-100 text-neutral-950 rounded-md dark:bg-neutral-800 dark:text-neutral-100', icon: TrendingUp },
-    { label: 'Team Members', value: String(teamMembersCount), tone: 'bg-neutral-100 text-neutral-950 rounded-md dark:bg-neutral-800 dark:text-neutral-100', icon: Users },
+    { label: 'Active Tasks', value: String(activeTasks.length), tone: 'bg-neutral-100 text-neutral-950 rounded-base dark:bg-neutral-800 dark:text-neutral-100', icon: CheckCircle },
+    { label: 'Completed Tasks', value: String(completedTasks.length), tone: 'bg-neutral-100 text-neutral-950 rounded-base dark:bg-neutral-800 dark:text-neutral-100', icon: TrendingUp },
+    { label: 'Team Members', value: String(teamMembersCount), tone: 'bg-neutral-100 text-neutral-950 rounded-base dark:bg-neutral-800 dark:text-neutral-100', icon: Users },
   ]), [activeTasks.length, completedTasks.length, teamMembersCount]);
 
   const quickStats = useMemo(() => ([
@@ -395,7 +395,7 @@ const Dashboard = () => {
     >
       <div className="dashboard-shell space-y-6 animate-fade-in-up">
         {showDailyBanner && (
-          <Card className={`relative overflow-hidden rounded-3xl p-6 md:p-7 !bg-black !text-white !border-black dark:!bg-white dark:!text-black dark:!border-white ${dailyBrief.surfaceClass}`}>
+          <Card className={`relative overflow-hidden rounded-base p-6 md:p-7 !bg-black !text-white !border-black dark:!bg-white dark:!text-black dark:!border-white ${dailyBrief.surfaceClass}`}>
             <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.05),transparent_28%)]" />
             <div aria-hidden="true" className="absolute -right-12 top-8 h-28 w-28 rounded-full bg-white/10 blur-3xl dark:bg-black/10" />
             <div aria-hidden="true" className="absolute -bottom-10 left-8 h-28 w-28 rounded-full bg-white/8 blur-3xl dark:bg-black/10" />
@@ -436,9 +436,9 @@ const Dashboard = () => {
                 </Link>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-2xl border border-white/20 bg-white/5 p-4 shadow-sm dark:border-black/15 dark:bg-black/5">
+                <div className="rounded-base border border-white/20 bg-white/5 p-4 shadow-sm dark:border-black/15 dark:bg-black/5">
                   <div className="flex items-center gap-3">
-                    <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${dailyBrief.iconClass}`}>
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-base ${dailyBrief.iconClass}`}>
                       <dailyBrief.icon size={18} />
                     </span>
                     <div>
@@ -447,7 +447,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/20 bg-white/5 p-4 shadow-sm dark:border-black/15 dark:bg-black/5">
+                <div className="rounded-base border border-white/20 bg-white/5 p-4 shadow-sm dark:border-black/15 dark:bg-black/5">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/75 dark:text-black/60">Focus cue</p>
                   <p className="mt-2 text-sm leading-6 text-white/85 dark:text-black/72">
                     Start with the next visible task and keep the momentum simple.
@@ -469,7 +469,7 @@ const Dashboard = () => {
         </div>
 
         <div className={layoutMode === 'grid' ? 'grid gap-4 xl:grid-cols-[1.7fr_0.95fr]' : 'space-y-4'}>
-          <div className={`${isDarkTheme ? 'p-6 bg-white text-neutral-900 border border-neutral-200 shadow-sm rounded-2xl' : 'p-6 bg-black text-white border border-neutral-800 shadow-sm rounded-2xl'}`}>
+          <div className={`${isDarkTheme ? 'p-6 bg-white text-neutral-900 border border-neutral-200 shadow-sm rounded-base' : 'p-6 bg-black text-white border border-neutral-800 shadow-sm rounded-base'}`}>
             <div
               aria-hidden="true"
               className="welcome-card-orb"
@@ -489,14 +489,14 @@ const Dashboard = () => {
                   <p className={`welcome-card-copy mt-1 text-sm ${isDarkTheme ? 'text-neutral-700' : 'text-slate-300'}`}>Here is your live snapshot for tasks, progress, and team activity today.</p>
                 </div>
               </div>
-              <div className={`welcome-card-pill rounded-md px-4 py-3 text-sm font-medium ${isDarkTheme ? 'border border-neutral-200 bg-neutral-100 text-neutral-900' : 'border border-neutral-800 bg-neutral-900 text-white'}`}>{today}</div>
+              <div className={`welcome-card-pill rounded-base px-4 py-3 text-sm font-medium ${isDarkTheme ? 'border border-neutral-200 bg-neutral-100 text-neutral-900' : 'border border-neutral-800 bg-neutral-900 text-white'}`}>{today}</div>
             </div>
 
             <div className={layoutMode === 'grid' ? 'mt-10 grid gap-3 md:grid-cols-3' : 'mt-10 grid gap-3 md:grid-cols-2'}>
               {topMetrics.map((metric) => {
                 const Icon = metric.icon;
                 return (
-                  <div key={metric.label} className={`welcome-card-metric rounded-md p-4 ${isDarkTheme ? 'bg-neutral-50 ring-1 ring-neutral-200' : 'bg-neutral-900 ring-1 ring-neutral-800'} ${layoutMode === 'list' ? 'sm:p-5' : ''}`}>
+                  <div key={metric.label} className={`welcome-card-metric rounded-base p-4 ${isDarkTheme ? 'bg-neutral-50 ring-1 ring-neutral-200' : 'bg-neutral-900 ring-1 ring-neutral-800'} ${layoutMode === 'list' ? 'sm:p-5' : ''}`}>
                     <div className={`flex h-8 w-8 items-center justify-center rounded-full ${metric.tone}`.trim()}>
                       <Icon size={15} />
                     </div>
@@ -518,7 +518,7 @@ const Dashboard = () => {
                       <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{stat.label}</p>
                       <p className="mt-3 text-3xl font-semibold text-neutral-950 dark:text-neutral-100">{stat.value}</p>
                     </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white/70 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-200">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-base bg-white/70 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-200">
                       <Icon size={18} />
                     </div>
                   </div>
@@ -535,7 +535,7 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Recent Tasks</h2>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">Latest updates across your team to help you prioritize what matters most.</p>
               </div>
-              <a href="/tasks" className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-neutral-800">View All Tasks</a>
+              <a href="/tasks" className="rounded-base bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-neutral-800">View All Tasks</a>
             </div>
 
             <div className="mt-5 space-y-3">
@@ -543,7 +543,7 @@ const Dashboard = () => {
                 const priorityVariant = task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'success';
                 const statusVariant = task.status === 'In progress' ? 'primary' : task.status === 'Done' ? 'success' : task.status === 'Pending' ? 'warning' : 'default';
                 return (
-                <div key={task.id} className="rounded-md rounded-md bg-neutral-100 p-4 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700">
+                <div key={task.id} className="rounded-base bg-neutral-100 p-4 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
@@ -580,7 +580,7 @@ const Dashboard = () => {
                   const priorityVariant = task.priority === 'high' ? 'error' : task.priority === 'medium' ? 'warning' : 'success';
 
                   return (
-                    <div key={task.id} className="rounded-md border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+                    <div key={task.id} className="rounded-base border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="font-medium text-neutral-950 dark:text-neutral-100">{task.title}</p>
@@ -598,7 +598,7 @@ const Dashboard = () => {
                   );
                 })
               ) : (
-                <div className="rounded-md border border-dashed border-neutral-200 bg-neutral-100 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+                <div className="rounded-base border border-dashed border-neutral-200 bg-neutral-100 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
                   No upcoming deadlines yet.
                 </div>
               )}
@@ -614,7 +614,7 @@ const Dashboard = () => {
         >
           {loginWelcome && (
             <div className="space-y-5">
-              <div className={`rounded-2xl border p-4 ${loginWelcome.variant === 'error' ? 'border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-950/25' : loginWelcome.variant === 'warning' ? 'border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-950/25' : 'border-success-200 bg-success-50 dark:border-success-800 dark:bg-success-950/25'}`}>
+              <div className={`rounded-base border p-4 ${loginWelcome.variant === 'error' ? 'border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-950/25' : loginWelcome.variant === 'warning' ? 'border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-950/25' : 'border-success-200 bg-success-50 dark:border-success-800 dark:bg-success-950/25'}`}>
                 <div className="flex items-start gap-3">
                   <div className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-full ${loginWelcome.variant === 'error' ? 'bg-error-100 text-error-700 dark:bg-error-900 dark:text-error-100' : loginWelcome.variant === 'warning' ? 'bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-100' : 'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-100'}`}>
                     {loginWelcome.variant === 'error' ? <AlertTriangle size={18} /> : loginWelcome.variant === 'warning' ? <AlertTriangle size={18} /> : <PartyPopper size={18} />}
@@ -631,7 +631,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="space-y-2 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+              <div className="space-y-2 rounded-base border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                 <p className="font-medium text-neutral-950 dark:text-neutral-100">What to look at next</p>
                 <ul className="space-y-2">
                   {loginWelcome.details.map((detail) => (
@@ -646,7 +646,7 @@ const Dashboard = () => {
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <Link
                   to={loginWelcome.primaryHref}
-                  className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                  className="inline-flex items-center justify-center rounded-base bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                   onClick={() => setWelcomeModal(null)}
                 >
                   {loginWelcome.primaryLabel}

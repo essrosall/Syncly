@@ -51,7 +51,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Layout Options</h3>
             <button
               onClick={onClose}
-              className="rounded-md p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+              className="rounded-base p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
               aria-label="Close layout options"
             >
               <X size={18} />
@@ -71,7 +71,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
                     <button
                       key={option.id}
                       onClick={() => setLayoutMode(option.id)}
-                      className={`flex flex-col items-center gap-2 rounded-lg border-2 px-3 py-4 transition-colors ${
+                      className={`flex flex-col items-center gap-2 rounded-base border-2 px-3 py-4 transition-colors ${
                         isSelected
                           ? 'border-success-500 bg-success-50 text-success-950 shadow-sm dark:bg-success-950/35 dark:text-success-50 dark:border-success-700'
                           : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
@@ -95,7 +95,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
                   <button
                     key={option.id}
                     onClick={() => setSidebarWidth(option.id)}
-                    className={`w-full rounded-lg border-2 px-3 py-2 text-left text-sm font-medium transition-colors ${
+                    className={`w-full rounded-base border-2 px-3 py-2 text-left text-sm font-medium transition-colors ${
                       sidebarWidth === option.id
                                                   ? 'border-success-500 bg-success-50 text-success-950 shadow-sm dark:bg-success-950/35 dark:text-success-50 dark:border-success-700'
                           : 'border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-500'
@@ -108,7 +108,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
             </div>
 
             {/* Preview */}
-            <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-900">
+            <div className="rounded-base border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-900">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Preview</p>
                 <p className="text-[11px] text-neutral-500 dark:text-neutral-500">
@@ -116,9 +116,9 @@ const LayoutModal = ({ isOpen, onClose }) => {
                 </p>
               </div>
 
-              <div className="mt-3 overflow-hidden rounded-md border border-neutral-200 bg-white p-3 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="mt-3 overflow-hidden rounded-base border border-neutral-200 bg-white p-3 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="flex gap-2">
-                  <div className={`shrink-0 rounded-md bg-neutral-200 p-1.5 transition-all dark:bg-neutral-700 ${previewSidebarWidthClass}`}>
+                  <div className={`shrink-0 rounded-base bg-neutral-200 p-1.5 transition-all dark:bg-neutral-700 ${previewSidebarWidthClass}`}>
                     <div className="mb-1 h-1.5 w-full rounded-full bg-neutral-400/70" />
                     <div className="mb-1 h-1.5 w-3/4 rounded-full bg-neutral-400/70" />
                     <div className="h-1.5 w-2/3 rounded-full bg-neutral-400/70" />
@@ -134,16 +134,16 @@ const LayoutModal = ({ isOpen, onClose }) => {
                     {layoutMode === 'grid' ? (
                       <div className="grid grid-cols-2 gap-2">
                         {previewCards.map((cardClass, index) => (
-                          <div key={index} className={`rounded-md border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-800 ${cardClass}`}>
+                          <div key={index} className={`rounded-base border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-800 ${cardClass}`}>
                             <div className="h-2 w-2/3 rounded-full bg-neutral-200 dark:bg-neutral-700" />
-                            <div className="mt-2 h-8 rounded-md bg-primary-100 dark:bg-primary-950/40" />
+                            <div className="mt-2 h-8 rounded-base bg-primary-100 dark:bg-primary-950/40" />
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="space-y-2">
                         {previewCards.map((cardClass, index) => (
-                          <div key={index} className={`rounded-md border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-800 ${cardClass}`}>
+                          <div key={index} className={`rounded-base border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-800 ${cardClass}`}>
                             <div className="flex items-center gap-2">
                               <div className="h-7 w-7 rounded-full bg-primary-100 dark:bg-primary-950/40" />
                               <div className="flex-1">
@@ -165,7 +165,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
           <div className="flex gap-2 border-t border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
             <button
               onClick={onClose}
-              className="flex-1 rounded-lg bg-success-600 px-3 py-2 text-sm font-medium text-white hover:bg-success-700 dark:bg-success-600 dark:hover:bg-success-700"
+              className="flex-1 rounded-base bg-success-600 px-3 py-2 text-sm font-medium text-white hover:bg-success-700 dark:bg-success-600 dark:hover:bg-success-700"
             >
               Done
             </button>

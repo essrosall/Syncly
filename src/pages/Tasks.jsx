@@ -307,7 +307,7 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
             <div className="flex items-start gap-2 flex-1">
               <button
                 type="button"
-                className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-md border border-neutral-200 bg-white p-1 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing rounded-base border border-neutral-200 bg-white p-1 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                 aria-label={`Drag ${task.title}`}
                 onClick={(event) => event.stopPropagation()}
                 onPointerDown={(event) => event.stopPropagation()}
@@ -1264,7 +1264,7 @@ const Tasks = () => {
         </div>
 
         {activeWorkspace && (
-          <Card className="rounded-md border-neutral-200 bg-white p-4 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+          <Card className="rounded-base border-neutral-200 bg-white p-4 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Workspace filter</p>
@@ -1278,10 +1278,10 @@ const Tasks = () => {
           </Card>
         )}
 
-        <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+        <Card className="rounded-base border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
             <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)_auto] lg:items-center lg:gap-4 ">
-              <div className="flex flex-wrap items-center gap-2 rounded-md py-3 dark:border-neutral-700 dark:bg-neutral-800/70 lg:justify-start">
+              <div className="flex flex-wrap items-center gap-2 rounded-base py-3 dark:border-neutral-700 dark:bg-neutral-800/70 lg:justify-start">
                   <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Priority</span>
                   <div className="flex flex-wrap gap-2">
                     {priorityOptions.map((priority) => (
@@ -1305,7 +1305,7 @@ const Tasks = () => {
                 </div>
 
               <div className="w-full max-w-xl justify-self-center">
-                <div className={`flex w-full items-center gap-3 rounded-md border px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] transition-colors ${isTaskSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'}`}>
+                <div className={`flex w-full items-center gap-3 rounded-base border px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] transition-colors ${isTaskSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'}`}>
                   <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
                   <input
                     type="text"
@@ -1320,7 +1320,7 @@ const Tasks = () => {
                     <button
                       type="button"
                       onClick={() => setSearchTerm('')}
-                      className="flex-shrink-0 rounded-md p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                      className="flex-shrink-0 rounded-base p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                       aria-label="Clear task search"
                     >
                       <X size={16} />
@@ -1352,7 +1352,7 @@ const Tasks = () => {
                       role="dialog"
                       aria-label="Task filters"
                       style={filterDropdownStyle}
-                      className="z-50 rounded-md border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
+                      className="z-50 rounded-base border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
                     >
                       <div className="space-y-4">
                         <div>
@@ -1383,7 +1383,7 @@ const Tasks = () => {
                                 key={option.value}
                                 type="button"
                                 onClick={() => setDueDateSort(option.value)}
-                                className={`rounded-md border px-3 py-2 text-left text-xs font-medium transition-all ${
+                                className={`rounded-base border px-3 py-2 text-left text-xs font-medium transition-all ${
                                   dueDateSort === option.value
                                     ? 'border-primary-300 bg-primary-100 text-primary-700 dark:border-primary-600/60 dark:bg-primary-600/20 dark:text-primary-200'
                                     : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
@@ -1547,7 +1547,7 @@ const Tasks = () => {
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
                       Notes
                     </h3>
-                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
+                    <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap rounded-base border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
                       {selectedTask.description || 'No notes added yet.'}
                     </p>
                   </div>
@@ -1557,7 +1557,7 @@ const Tasks = () => {
                       Activity & Comments
                     </h3>
 
-                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
+                    <div className="space-y-3 max-h-64 overflow-y-auto rounded-base border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
                       {(taskActivity[getTaskKey(selectedTask.id)] || []).length > 0 ? (
                         (taskActivity[getTaskKey(selectedTask.id)] || []).map((entry, index) => (
                           <div key={`${entry.timestamp}-${index}`} className="flex gap-3">

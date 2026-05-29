@@ -82,13 +82,13 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
             This tour explains the main parts of the system in a simple step-by-step modal. Use Next to continue, Back to review, or Skip to close it anytime.
           </p>
         </div>
-        <div className="hidden rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 md:block">
+        <div className="hidden rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 md:block">
           Available after successful login
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="rounded-3xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="rounded-base border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
           {stepLabels.map((label, index) => {
             const isActive = index === stepIndex;
 
@@ -97,13 +97,13 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
                 key={label}
                 type="button"
                 onClick={() => setStepIndex(index)}
-                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-left text-sm transition-colors ${
+                className={`flex w-full items-center gap-3 rounded-base px-4 py-4 text-left text-sm transition-colors ${
                   isActive
                     ? 'bg-white text-neutral-950 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-neutral-600'
                     : 'text-neutral-600 hover:bg-white hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
                 }`}
               >
-                <span className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold ${isActive ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950' : 'bg-neutral-200 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'}`}>
+                <span className={`flex h-10 w-10 items-center justify-center rounded-base text-sm font-semibold ${isActive ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950' : 'bg-neutral-200 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'}`}>
                   {index + 1}
                 </span>
                 <span className="font-medium">{label}</span>
@@ -112,7 +112,7 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
           })}
         </div>
 
-        <div className="min-h-[24rem] rounded-base border border-neutral-200 bg-white p  -8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="min-h-[24rem] rounded-base border border-neutral-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="flex items-start justify-between gap-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
@@ -122,12 +122,12 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
               <h4 className="max-w-2xl text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">{currentStep.title}</h4>
               <p className="max-w-2xl text-base leading-8 text-neutral-600 dark:text-neutral-300">{currentStep.description}</p>
             </div>
-            <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">
+            <div className="rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">
               {stepIndex + 1}/{steps.length}
             </div>
           </div>
 
-          <div className="mt-8 rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900/40">
+          <div className="mt-8 rounded-base border border-dashed border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900/40">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">What to focus on</p>
             <p className="mt-3 text-base leading-7 text-neutral-700 dark:text-neutral-300">{currentStep.hint}</p>
           </div>
@@ -160,7 +160,7 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+      <div className="rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
         This tutorial opens only from the View Tutorial button after sign-in.
       </div>
     </div>

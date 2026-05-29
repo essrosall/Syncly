@@ -370,7 +370,7 @@ const Login = () => {
           )}
 
           {!isSupabaseConfigured && (
-            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
+            <div className="rounded-base border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
               Supabase environment variables are not configured yet. Running in local demo auth mode.
             </div>
           )}
@@ -398,6 +398,8 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
+                error={errorMessage}
+                aria-invalid={!!errorMessage}
                 required
               />
             </div>
@@ -419,7 +421,7 @@ const Login = () => {
 
             <Button
               variant="primary"
-              className="w-full rounded-md bg-neutral-900 py-3 text-white hover:bg-neutral-800"
+              className="w-full rounded-base bg-neutral-900 py-3 text-white hover:bg-neutral-800"
               type="submit"
               disabled={submitting}
             >
@@ -442,7 +444,7 @@ const Login = () => {
         className="max-w-xl"
       >
         <div className="space-y-5">
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          <div className="rounded-base border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
             <p className="font-medium text-neutral-900 dark:text-neutral-100">How this works</p>
             <p className="mt-2">
               Enter your email, verify the 6-digit code sent to that inbox, then set a new password here.
@@ -450,13 +452,13 @@ const Login = () => {
           </div>
 
           {resetMessage && (
-              <div className="rounded-xl border border-success-200 bg-success-50 px-4 py-3 text-sm text-success-700 dark:border-success-900 dark:bg-success-950/30 dark:text-success-200">
+              <div className="rounded-base border border-success-200 bg-success-50 px-4 py-3 text-sm text-success-700 dark:border-success-900 dark:bg-success-950/30 dark:text-success-200">
               {resetMessage}
             </div>
           )}
 
           {resetError && (
-            <div className="rounded-xl border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700 dark:border-error-900 dark:bg-error-950/30 dark:text-error-200">
+            <div className="rounded-base border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700 dark:border-error-900 dark:bg-error-950/30 dark:text-error-200">
               {resetError}
             </div>
           )}

@@ -75,7 +75,7 @@ const SearchableTagField = ({
           />
 
           {isOpen && (
-            <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-48 overflow-y-auto rounded-md border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:bg-neutral-800">
+            <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-48 overflow-y-auto rounded-base border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:bg-neutral-800">
               {suggestionsToShow.length > 0 ? (
                 suggestionsToShow.map((suggestion) => (
                   <button
@@ -104,7 +104,7 @@ const SearchableTagField = ({
         <button
           type="button"
           onClick={() => addValue(inputValue)}
-          className="inline-flex items-center justify-center rounded-md bg-neutral-100 px-3 py-2 text-neutral-900 transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+          className="inline-flex items-center justify-center rounded-base bg-neutral-100 px-3 py-2 text-neutral-900 transition-colors hover:bg-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
           aria-label={`Add ${label}`}
         >
           <Plus size={14} />

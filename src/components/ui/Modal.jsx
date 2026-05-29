@@ -93,11 +93,11 @@ class ModalErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        <div className="rounded-base border border-neutral-200 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
           <div className="mb-4 text-sm text-error-700 dark:text-error-300">An error occurred while rendering this content.</div>
           <button
             onClick={this.props.onClose}
-            className="rounded-md bg-success-500 px-4 py-2 text-sm text-white hover:bg-success-600"
+            className="rounded-base bg-success-500 px-4 py-2 text-sm text-white hover:bg-success-600"
           >
             Close
           </button>

@@ -74,7 +74,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden rounded-md p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            className="lg:hidden rounded-base p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
             aria-label="Close notifications"
           >
             <X size={18} />
@@ -115,7 +115,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                         e.stopPropagation();
                         deleteNotification(notif.id);
                       }}
-                      className="flex-shrink-0 rounded-md p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                      className="flex-shrink-0 rounded-base p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                       aria-label="Delete notification"
                     >
                       <Trash2 size={14} />
@@ -138,13 +138,13 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
             <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 onClick={markAllAsRead}
-                className="flex-1 rounded-md bg-success-50 px-3 py-2 text-xs font-medium text-success-800 hover:bg-success-100 dark:bg-success-950/35 dark:text-success-100 dark:hover:bg-success-950/50"
+                className="flex-1 rounded-base bg-success-50 px-3 py-2 text-xs font-medium text-success-800 hover:bg-success-100 dark:bg-success-950/35 dark:text-success-100 dark:hover:bg-success-950/50"
               >
                 Mark all read
               </button>
               <button
                 onClick={clearAll}
-                className="flex-1 rounded-md bg-error-50 px-3 py-2 text-xs font-medium text-error-800 hover:bg-error-100 dark:bg-error-950/35 dark:text-error-100 dark:hover:bg-error-950/50"
+                className="flex-1 rounded-base bg-error-50 px-3 py-2 text-xs font-medium text-error-800 hover:bg-error-100 dark:bg-error-950/35 dark:text-error-100 dark:hover:bg-error-950/50"
               >
                 Clear All
               </button>

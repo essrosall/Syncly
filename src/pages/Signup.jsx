@@ -112,7 +112,7 @@ const Signup = () => {
           </div>
 
           {!isSupabaseConfigured && (
-            <div className="rounded-md border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
+            <div className="rounded-base border border-neutral-700/60 bg-neutral-800/60 px-3 py-2 text-xs text-neutral-200 mb-4 dark:border-neutral-200/70 dark:bg-neutral-100 dark:text-neutral-700">
               Supabase environment variables are not configured yet. Running in local demo auth mode.
             </div>
           )}
@@ -233,7 +233,7 @@ const Signup = () => {
 
             <Button
               variant="primary"
-              className="w-full rounded-md bg-neutral-900 py-3 text-white hover:bg-neutral-800"
+              className="w-full rounded-base bg-neutral-900 py-3 text-white hover:bg-neutral-800"
               type="submit"
               disabled={submitting || !canSubmit}
               onClick={() => {
@@ -259,7 +259,7 @@ const Signup = () => {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+              <div className="rounded-base border border-neutral-200 bg-white p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                 <p className="font-medium text-neutral-900 dark:text-neutral-100">What to do next</p>
                 <ul className="mt-2 space-y-2 list-disc pl-5">
                   <li>Check your inbox and spam folder.</li>
@@ -268,12 +268,12 @@ const Signup = () => {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Link to="/login" className="inline-flex w-full sm:w-auto items-center justify-center rounded-md bg-neutral-900 px-4 py-3 text-sm font-medium text-white hover:brightness-95">
+                <Link to="/login" className="inline-flex w-full sm:w-auto items-center justify-center rounded-base bg-neutral-900 px-4 py-3 text-sm font-medium text-white hover:brightness-95">
                   Sign in
                 </Link>
                 <button
                   type="button"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border border-neutral-300 bg-white px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
+                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-base border border-neutral-300 bg-white px-4 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
                   onClick={() => {
                     setConfirmationEmail('');
                     setErrorMessage('');

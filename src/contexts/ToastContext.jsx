@@ -26,7 +26,7 @@ export const ToastProvider = ({ children }) => {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`w-80 transform transition-all duration-300 ease-out rounded-md px-4 py-3 shadow-lg ${
+            className={`w-80 transform transition-all duration-300 ease-out rounded-base px-4 py-3 shadow-lg ${
               t.variant === 'success'
                 ? 'bg-emerald-600 text-white'
                 : t.variant === 'error'

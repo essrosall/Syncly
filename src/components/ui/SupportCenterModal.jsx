@@ -95,7 +95,7 @@ const SupportCenterModal = ({ onClose }) => {
                 key={item.label}
                 type="button"
                 onClick={item.action}
-                className="flex w-full items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-left transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
+                className="flex w-full items-start gap-3 rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-left transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/80 dark:hover:bg-neutral-700"
               >
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-neutral-700 shadow-sm dark:bg-neutral-700 dark:text-neutral-200">
                   <Icon size={16} />
@@ -116,24 +116,24 @@ const SupportCenterModal = ({ onClose }) => {
           })}
         </div>
 
-        <div className="mt-4 rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-300">
+        <div className="mt-4 rounded-base border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-300">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="font-medium text-neutral-900 dark:text-neutral-100">Support email</p>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{SUPPORT_EMAIL}</p>
             </div>
-            <Button variant="secondary" size="sm" className="rounded-md" onClick={copyEmail}>
+            <Button variant="secondary" size="sm" className="rounded-base" onClick={copyEmail}>
               <Copy size={14} />
               {copied ? 'Copied' : 'Copy'}
             </Button>
           </div>
         </div>
 
-        <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800/90">
+        <div className="mt-4 rounded-base border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800/90">
           <p className="text-sm font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Quick FAQ</p>
           <div className="mt-3 space-y-3">
             {faqItems.map((item) => (
-              <div key={item.question} className="rounded-lg bg-neutral-50 px-3 py-3 dark:bg-neutral-800">
+              <div key={item.question} className="rounded-base bg-neutral-50 px-3 py-3 dark:bg-neutral-800">
                 <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{item.question}</p>
                 <p className="mt-1 text-xs leading-5 text-neutral-500 dark:text-neutral-400">{item.answer}</p>
               </div>
@@ -142,10 +142,10 @@ const SupportCenterModal = ({ onClose }) => {
         </div>
 
         <div className="mt-5 flex gap-3">
-          <Button variant="secondary" className="flex-1 justify-center rounded-md" onClick={onClose}>
+          <Button variant="secondary" className="flex-1 justify-center rounded-base" onClick={onClose}>
             Close
           </Button>
-          <Button variant="success" className="flex-1 justify-center rounded-md" onClick={openEmailClient}>
+          <Button variant="success" className="flex-1 justify-center rounded-base" onClick={openEmailClient}>
             <ExternalLink size={16} />
             Contact support
           </Button>

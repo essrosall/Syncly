@@ -214,7 +214,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
         {/* Mobile hamburger menu */}
         <button
           onClick={toggleSidebar}
-          className="inline-flex lg:hidden h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          className="inline-flex lg:hidden h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
           aria-label="Toggle navigation menu"
           title="Menu"
         >
@@ -238,18 +238,18 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
             {searchTerm && (
               <button
                 onClick={handleClearSearch}
-                className="flex-shrink-0 rounded-md p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                className="flex-shrink-0 rounded-base p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                 aria-label="Clear search"
               >
                 <X size={16} />
               </button>
             )}
-            <span className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-neutral-400 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">CTRL + K</span>
+            <span className="shrink-0 rounded-base px-2 py-1 text-xs font-medium text-neutral-400 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">CTRL + K</span>
           </div>
 
           {/* System-wide Suggestions Dropdown */}
           {isSearchFocused && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 w-full max-w-[640px] rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800 z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 w-full max-w-[640px] rounded-base border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800 z-50">
               <div className="max-h-96 overflow-y-auto">
                 {suggestions.map((suggestion, index) => (
                   <button
@@ -296,7 +296,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
                           }}
                           aria-label={`Go to ${suggestion.name}`}
                           title={`Go to ${suggestion.name}`}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-base text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                         >
                           <ArrowRight size={16} />
                         </button>
@@ -316,7 +316,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
               setIsNotificationsOpen(false);
               setIsMoreOpen(false);
             }}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
+            className="inline-flex h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
             aria-label="Layout"
             title="Toggle layout"
           >
@@ -335,7 +335,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
               setIsLayoutOpen(false);
               setIsMoreOpen(false);
             }}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 relative" 
+            className="inline-flex h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 relative" 
             aria-label="Notifications"
             title="View notifications"
           >
@@ -357,7 +357,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
               setIsLayoutOpen(false);
               setIsNotificationsOpen(false);
             }}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
+            className="inline-flex h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700" 
             aria-label="More actions"
             title="More options"
           >
@@ -367,7 +367,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
 
           <button
             onClick={handleSignOut}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
             aria-label="Sign out"
             title="Sign out"
           >

@@ -232,9 +232,9 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
-      <div className="rounded-3xl border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
+      <div className="rounded-base border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
         <div className="flex items-start gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-base bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
             <span className="text-sm font-semibold">+</span>
           </div>
           <div className="space-y-1">
@@ -289,16 +289,16 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-900/40">
+      <div className="rounded-base border border-dashed border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-900/40">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">What this workspace helps with</p>
         <div className="mt-3 grid gap-3 text-sm text-neutral-600 dark:text-neutral-300 md:grid-cols-3">
-          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="rounded-base border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
             Keep related tasks grouped together
           </div>
-          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="rounded-base border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
             Share access with the right people
           </div>
-          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="rounded-base border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
             Generate an invite code automatically
           </div>
         </div>
@@ -331,7 +331,7 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
 
   return (
     <div className="space-y-5">
-      <div className={`rounded-2xl border ${tone.border} ${tone.accentBg} p-5`}>
+      <div className={`rounded-base border ${tone.border} ${tone.accentBg} p-5`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className={`text-xs font-semibold uppercase tracking-wide ${tone.accentText}`}>Workspace overview</p>
@@ -348,7 +348,7 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
         </div>
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-900/40">
+      <div className="rounded-base border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-900/40">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Invite code</p>
@@ -379,30 +379,30 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Members</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{workspace.members?.length || 0}</p>
         </div>
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Matched tasks</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{summary.total}</p>
         </div>
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Progress</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{summary.progress}%</p>
         </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Active</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{summary.activeTasks.length}</p>
         </div>
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Completed</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{summary.completedTasks.length}</p>
         </div>
-        <div className="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
+        <div className="rounded-base bg-neutral-100 p-3 dark:bg-neutral-800">
           <p className="text-xs text-neutral-500 dark:text-neutral-400">Needs focus</p>
           <p className="mt-1 text-lg font-semibold text-neutral-950 dark:text-neutral-100">{summary.overdueTasks.length}</p>
         </div>
@@ -424,7 +424,7 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
             const priorityVariant = task.priority === 'high' ? 'error' : task.priority === 'medium' ? 'warning' : 'success';
 
             return (
-              <div key={task.id} className="flex items-start justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-800">
+              <div key={task.id} className="flex items-start justify-between gap-3 rounded-base border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="min-w-0">
                   <p className="font-medium text-neutral-950 dark:text-neutral-100">{task.title}</p>
                   <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{getRelativeDueLabel(task.dueDate)} • {task.assignee}</p>
@@ -435,7 +435,7 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
               </div>
             );
           }) : (
-            <div className="rounded-md border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+            <div className="rounded-base border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
               No tasks match this workspace yet.
             </div>
           )}
@@ -666,14 +666,14 @@ const Workspaces = () => {
           </Button>
         </div>
 
-        <Card className="rounded-md border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+        <Card className="rounded-base border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Workspace overview</h2>
               <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">The workspace section now stays in sync with the task board and keeps details live across the app.</p>
             </div>
             <div className="w-full lg:max-w-sm">
-              <div className="flex items-center gap-3 rounded-md border border-neutral-200 bg-white px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="flex items-center gap-3 rounded-base border border-neutral-200 bg-white px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800">
                 <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
                 <Input
                   value={searchTerm}
@@ -690,14 +690,14 @@ const Workspaces = () => {
           {workspaceMetrics.map((metric) => {
             const Icon = metric.icon;
             return (
-              <Card key={metric.label} className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+              <Card key={metric.label} className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm text-neutral-500 dark:text-neutral-400">{metric.label}</p>
                     <p className="mt-3 text-3xl font-semibold text-neutral-950 dark:text-neutral-100">{metric.value}</p>
                     <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">{metric.caption}</p>
                   </div>
-                  <div className="rounded-md bg-neutral-100 p-3 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+                  <div className="rounded-base bg-neutral-100 p-3 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
                     <Icon size={20} />
                   </div>
                 </div>
@@ -740,14 +740,14 @@ const Workspaces = () => {
                       <button
                         type="button"
                         onClick={() => setOpenMenuId((current) => (current === workspace.id ? null : workspace.id))}
-                        className="rounded-md border border-neutral-200 bg-neutral-50 p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
+                        className="rounded-base border border-neutral-200 bg-neutral-50 p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100"
                         aria-label={`Workspace actions for ${workspace.name}`}
                       >
                         <MoreHorizontal size={16} />
                       </button>
 
                       {openMenuId === workspace.id && (
-                        <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                        <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-base border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
                           {[
                             { label: 'Rename', icon: PencilLine, action: () => handleRenameWorkspace(workspace) },
                             { label: 'Duplicate', icon: Copy, action: () => handleDuplicateWorkspace(workspace) },
@@ -776,11 +776,11 @@ const Workspaces = () => {
                   </div>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <div className={`rounded-md ${tone.accentBg} p-3`}>
+                    <div className={`rounded-base ${tone.accentBg} p-3`}>
                       <p className={`text-xs font-semibold uppercase tracking-wide ${tone.accentText}`}>Focus</p>
                       <p className="mt-1 text-sm font-medium text-neutral-950 dark:text-neutral-100">{workspace.keywords?.slice(0, 3).join(', ') || 'General delivery'}</p>
                     </div>
-                    <div className={`rounded-md ${tone.accentBg} p-3`}>
+                    <div className={`rounded-base ${tone.accentBg} p-3`}>
                       <p className={`text-xs font-semibold uppercase tracking-wide ${tone.accentText}`}>Recent task</p>
                       <p
                         className="mt-1 truncate text-sm font-medium text-neutral-950 dark:text-neutral-100"
@@ -802,15 +802,15 @@ const Workspaces = () => {
                   </div>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-md bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
+                    <div className="rounded-base bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">Members</p>
                       <p className="mt-1 font-semibold text-neutral-950 dark:text-neutral-100">{memberCount}</p>
                     </div>
-                    <div className="rounded-md bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
+                    <div className="rounded-base bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">Active</p>
                       <p className="mt-1 font-semibold text-neutral-950 dark:text-neutral-100">{summary.activeTasks.length}</p>
                     </div>
-                    <div className="rounded-md bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
+                    <div className="rounded-base bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-700/40">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">Due soon</p>
                       <p className="mt-1 font-semibold text-neutral-950 dark:text-neutral-100">{summary.dueSoonTasks.length}</p>
                     </div>
@@ -834,7 +834,7 @@ const Workspaces = () => {
               );
             })
           ) : (
-            <Card className="rounded-md border border-dashed border-neutral-200 bg-white p-8 text-center dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-base border border-dashed border-neutral-200 bg-white p-8 text-center dark:border-neutral-700 dark:bg-neutral-800">
               <p className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">No workspaces match your search.</p>
               <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Try a different keyword or create a new workspace.</p>
               <div className="mt-4 flex justify-center">

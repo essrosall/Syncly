@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Modal from './Modal';
 
 const termsContent = (
-  <div className="bg-white p-6 rounded-md">
+  <div className="bg-white p-6 rounded-base">
     <div className="prose prose-neutral max-w-none text-sm text-neutral-700 dark:prose-invert dark:text-neutral-300">
       <h2>Terms of Service</h2>
       <p className="lead">These Terms of Service ("Terms") govern your use of Syncly (the "Service"). By creating an account or using the Service you agree to these Terms. If you do not agree, do not use the Service.</p>
@@ -40,7 +40,7 @@ const termsContent = (
 );
 
 const privacyContent = (
-  <div className="bg-white p-6 rounded-md">
+  <div className="bg-white p-6 rounded-base">
     <div className="prose prose-neutral max-w-none text-sm text-neutral-700 dark:prose-invert dark:text-neutral-300">
       <h2>Privacy Policy</h2>
       <p className="lead">Syncly is committed to protecting your privacy. This policy explains how we collect, use, and disclose personal information.</p>
@@ -155,7 +155,7 @@ const PolicyModal = ({ initialSection = 'terms', isOpen, onClose, onAccept }) =>
           type="button"
           onClick={handleAccept}
           disabled={!canAccept}
-          className="rounded-md bg-success-600 px-4 py-2 text-sm font-medium text-white hover:bg-success-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-base bg-success-600 px-4 py-2 text-sm font-medium text-white hover:bg-success-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           I have read and accept both
         </button>

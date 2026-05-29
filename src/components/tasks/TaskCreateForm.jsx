@@ -104,9 +104,9 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
-      <div className="rounded-3xl border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
+      <div className="rounded-base border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
         <div className="flex items-start gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-base bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
             <span className="text-sm font-semibold">+</span>
           </div>
           <div className="space-y-1">

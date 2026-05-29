@@ -148,7 +148,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
     <aside className={`fixed top-20 left-0 z-50 flex h-[calc(100vh-5rem)] w-[min(20rem,85vw)] -translate-x-full flex-col overflow-y-auto border-r border-neutral-200 bg-white p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.08)] transition-transform duration-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 lg:top-0 lg:h-screen lg:w-auto lg:translate-x-0 lg:overflow-visible lg:shadow-[0_18px_50px_rgba(17,25,43,0.05)] ${isSidebarOpen ? 'translate-x-0' : ''} ${sidebarWidthClass}`}>
       <div className="space-y-4 border-b border-neutral-200 pb-4 dark:border-neutral-700">
         <div className="flex items-center gap-3 px-1">
-          <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-neutral-950 shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:border dark:border-neutral-700">
+          <div className="flex h-11 w-11 items-center justify-center rounded-base bg-white text-neutral-950 shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:border dark:border-neutral-700">
             <span className="text-sm font-semibold">S</span>
           </div>
           <div>
@@ -161,7 +161,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
           <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
           <div className="rounded-base border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-            <div className="flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => setShowProfileModal(true)}>
+            <div className="flex cursor-pointer items-center gap-3 rounded-base p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => setShowProfileModal(true)}>
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100 overflow-hidden">
                   {profile.profileImageUrl ? (
                     <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
@@ -179,7 +179,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               <Button
                 variant="primary"
                 size="sm"
-                className="!h-9 !w-9 !p-0 !gap-0 rounded-md !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+                className="!h-9 !w-9 !p-0 !gap-0 rounded-base !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => setShowProfileModal(true)}
                 aria-label="View profile"
               >
@@ -187,7 +187,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               </Button>
               <Button
                 variant="primary"
-                className="flex-1 justify-between rounded-sm !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+                className="flex-1 justify-between rounded-base !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => {
                   try {
                     openModal(TaskCreateForm, { column: 'todo', title: 'Create Task', sizeClass: 'max-w-5xl' });
@@ -226,7 +226,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 key={item.id}
                 to={item.href}
                 onClick={closeSidebar}
-                className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
+                className={`flex items-center gap-3 rounded-base px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-100 text-neutral-900 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-0'
                     : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
@@ -255,7 +255,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 key={item.id}
                 to={item.href}
                 onClick={closeSidebar}
-                className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
+                className={`flex items-center gap-3 rounded-base px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-100 text-neutral-900 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-0'
                     : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
@@ -275,12 +275,12 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
       </nav>
 
       <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
-          <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="rounded-base border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">Need help getting started?</p>
             <Button
               variant="secondary"
               size="sm"
-              className="w-full rounded-md !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+              className="w-full rounded-base !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
               onClick={() => {
                 closeSidebar();
                 openTutorialTour(openModal);

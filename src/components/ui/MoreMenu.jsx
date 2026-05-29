@@ -170,7 +170,7 @@ const MoreMenu = ({ isOpen, onClose }) => {
           <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">More Options</h3>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-neutral-500 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700 lg:hidden"
+            className="rounded-base p-1 text-neutral-500 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700 lg:hidden"
             aria-label="Close menu"
           >
             <X size={18} />
