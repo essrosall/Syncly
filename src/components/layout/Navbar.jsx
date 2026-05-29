@@ -222,7 +222,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
         </button>
 
         <div className="relative hidden flex-1 items-center sm:flex">
-          <div className={`flex w-full max-w-[640px] items-center gap-3 rounded-md border transition-colors ${isSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'} px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)]`}>
+          <div className={`flex w-full max-w-[640px] items-center gap-3 rounded-base border transition-colors ${isSearchFocused ? 'border-primary-500 bg-white dark:border-primary-500 dark:bg-neutral-800' : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800'} px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)]`}>
             <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
             <input
               ref={searchInputRef}
@@ -272,7 +272,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
                         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                           {suggestion.name}
                         </p>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
+                        <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate" title={suggestion.description}>
                           {suggestion.description}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">

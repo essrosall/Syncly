@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
+const Modal = ({ isOpen, onClose, title, children, className = '', sizeClass = 'max-w-3xl' }) => {
   useEffect(() => {
     if (!isOpen) return undefined;
 
@@ -42,7 +42,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4 overflow-y-auto">
         <div
-          className={`relative w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl border border-neutral-200/80 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.98),rgba(250,250,250,0.98))] shadow-[0_30px_80px_rgba(15,23,42,0.14)] dark:border-neutral-700 dark:bg-[linear-gradient(to_bottom,rgba(24,24,27,0.98),rgba(18,18,20,0.98))] ${className}`}
+          className={`relative flex w-full max-h-[calc(100vh-2rem)] flex-col ${sizeClass} overflow-hidden rounded-base border border-neutral-200/80 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.98),rgba(250,250,250,0.98))] shadow-[0_30px_80px_rgba(15,23,42,0.14)] dark:border-neutral-700 dark:bg-[linear-gradient(to_bottom,rgba(24,24,27,0.98),rgba(18,18,20,0.98))] ${className}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-success-500 via-info-500 to-warning-500" />
@@ -63,7 +63,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
           </div>
 
           {/* Content */}
-          <div className="px-5 py-5 sm:px-6 sm:py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
             <ModalErrorBoundary onClose={onClose}>{children}</ModalErrorBoundary>
           </div>
         </div>

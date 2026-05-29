@@ -112,7 +112,7 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
           })}
         </div>
 
-        <div className="min-h-[24rem] rounded-3xl border border-neutral-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="min-h-[24rem] rounded-base border border-neutral-200 bg-white p  -8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="flex items-start justify-between gap-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">

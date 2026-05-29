@@ -14,16 +14,33 @@ export const GlobalModalProvider = ({ children }) => {
     setModal({ content, props });
   }, []);
 
-  const closeModal = useCallback(() => setModal(null), []);
+  const closeModal = useCallback(() => {
+    setModal((currentModal) => {
+      try {
+        currentModal?.props?.onClose?.();
+      } catch {
+        // ignore modal close callback errors
+      }
+
+      return null;
+    });
+  }, []);
 
   return (
     <GlobalModalContext.Provider value={{ modal, openModal, closeModal }}>
       {children}
-      {modal && (
-        <Modal isOpen={Boolean(modal)} onClose={closeModal} title={modal.props?.title || ''}>
+      {modal && modal.props?.shell === false ? (
+        <ModalContent content={modal.content} props={modal.props} />
+      ) : modal ? (
+        <Modal
+          isOpen={Boolean(modal)}
+          onClose={closeModal}
+          title={modal.props?.title || ''}
+          className={modal.props?.className || ''}
+        >
           <ModalContent content={modal.content} props={modal.props} />
         </Modal>
-      )}
+      ) : null}
     </GlobalModalContext.Provider>
   );
 };

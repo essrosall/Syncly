@@ -28,7 +28,7 @@ const Toast = ({ title, message, variant = 'info', duration = 3000, onClose }) =
   return (
     <div aria-live="polite" className="fixed right-6 top-6 z-50">
       <div
-        className={`w-[320px] transform transition-all duration-300 ease-out rounded-md px-4 py-3 shadow-lg ${VARIANT_STYLES[variant] || VARIANT_STYLES.info} ${
+        className={`w-[320px] transform transition-all duration-300 ease-out rounded-base px-4 py-3 shadow-lg ${VARIANT_STYLES[variant] || VARIANT_STYLES.info} ${
           visible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
         }`}
       >

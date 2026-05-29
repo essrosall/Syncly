@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,6 +10,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
+import { createPortal } from 'react-dom';
 import {
   DndContext,
   rectIntersection,
@@ -111,6 +112,17 @@ const getWorkspaceTokens = (workspace) => {
 };
 
 const workspaceMatchesTask = (workspace, task) => {
+  const workspaceName = (workspace?.name || '').toLowerCase();
+  const workspaceSlug = slugify(workspaceName);
+  const taskWorkspaceId = task.workspaceId != null ? String(task.workspaceId) : '';
+  const taskWorkspaceName = String(task.workspace || task.workspaceName || '').toLowerCase();
+
+  if (taskWorkspaceId && String(workspace?.id) === taskWorkspaceId) return true;
+  if (taskWorkspaceName) {
+    if (taskWorkspaceName === workspaceName) return true;
+    if (slugify(taskWorkspaceName) === workspaceSlug) return true;
+  }
+
   const haystack = `${task.title} ${task.description || ''} ${task.assignee || ''}`.toLowerCase();
   const tokens = getWorkspaceTokens(workspace);
 
@@ -118,7 +130,6 @@ const workspaceMatchesTask = (workspace, task) => {
     return true;
   }
 
-  const workspaceName = (workspace?.name || '').toLowerCase();
   if (workspaceName.includes('design')) return haystack.includes('design') || haystack.includes('landing') || haystack.includes('ui');
   if (workspaceName.includes('mobile')) return haystack.includes('mobile') || haystack.includes('responsive') || haystack.includes('app');
   if (workspaceName.includes('backend')) return haystack.includes('api') || haystack.includes('auth') || haystack.includes('database') || haystack.includes('server');
@@ -305,7 +316,9 @@ const DraggableTask = ({ task, columnId, onTaskClick }) => {
               >
                 <GripVertical size={16} />
               </button>
-              <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{task.title}</h4>
+              <h4 className="min-w-0 truncate font-medium text-neutral-900 dark:text-neutral-100" title={task.title}>
+                {task.title}
+              </h4>
             </div>
             <Badge
               variant={
@@ -345,7 +358,7 @@ const ColumnWrapper = ({ column, children }) => {
     <div
       ref={setNodeRef}
       data-column-id={column.id}
-      className="flex min-h-[24rem] min-w-max flex-col rounded-md border border-neutral-200 bg-white p-4 text-neutral-950 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 lg:min-w-0"
+      className="flex min-h-[24rem] min-w-max flex-col rounded-base border border-neutral-200 bg-white p-4 text-neutral-950 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 lg:min-w-0"
     >
       {children}
     </div>
@@ -367,6 +380,8 @@ const Tasks = () => {
   const [commentDraft, setCommentDraft] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const filterMenuRef = useRef(null);
+  const filterButtonRef = useRef(null);
+  const [filterDropdownStyle, setFilterDropdownStyle] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
@@ -530,6 +545,43 @@ const Tasks = () => {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isFilterOpen]);
+
+  // Position the portal dropdown relative to the filter button to avoid clipping/overlap
+  useLayoutEffect(() => {
+    if (!isFilterOpen || !filterButtonRef.current) {
+      setFilterDropdownStyle(null);
+      return;
+    }
+
+    const compute = () => {
+      try {
+        const btn = filterButtonRef.current;
+        const rect = btn.getBoundingClientRect();
+        const dropdownWidth = Math.min(304, window.innerWidth - 16); // 19rem ~= 304px
+        let left = rect.right - dropdownWidth;
+        if (left < 8) left = 8;
+        const top = rect.bottom + 8 + window.scrollY;
+
+        setFilterDropdownStyle({
+          position: 'absolute',
+          top: `${top}px`,
+          left: `${left + window.scrollX}px`,
+          width: `${dropdownWidth}px`,
+        });
+      } catch {
+        setFilterDropdownStyle(null);
+      }
+    };
+
+    compute();
+    window.addEventListener('resize', compute);
+    window.addEventListener('scroll', compute, true);
+
+    return () => {
+      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', compute, true);
     };
   }, [isFilterOpen]);
 
@@ -1206,7 +1258,7 @@ const Tasks = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Tasks</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize, prioritize, and track all your work in one place.</p>
           </div>
-          <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo' })}>
+          <Button size="sm" variant="primary" className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={() => openModal(TaskCreateForm, { column: 'todo', title: 'Create Task', sizeClass: 'max-w-5xl' })}>
             <Plus size={16} /> New Task
           </Button>
         </div>
@@ -1280,6 +1332,7 @@ const Tasks = () => {
               <div ref={filterMenuRef} className="relative self-start justify-self-end lg:self-center">
                 <Button
                   variant="secondary"
+                  ref={filterButtonRef}
                   className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
                   onClick={() => setIsFilterOpen((prev) => !prev)}
                   title="Filter by assignee and due date"
@@ -1293,64 +1346,71 @@ const Tasks = () => {
                   )}
                 </Button>
 
-                {isFilterOpen && (
-                  <div className="absolute right-0 z-20 mt-2 w-[19rem] rounded-md border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Assignee</p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {assigneeOptions.map((assignee) => (
-                            <button
-                              key={assignee}
-                              type="button"
-                              onClick={() => toggleAssignee(assignee)}
-                              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
-                                selectedAssignees.includes(assignee)
-                                  ? 'border-primary-200 bg-primary-100 text-primary-700 dark:border-primary-600/50 dark:bg-primary-600/20 dark:text-primary-200'
-                                  : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-                              }`}
-                            >
-                              {assignee}
-                            </button>
-                          ))}
+                {isFilterOpen && filterButtonRef.current &&
+                  createPortal(
+                    <div
+                      role="dialog"
+                      aria-label="Task filters"
+                      style={filterDropdownStyle}
+                      className="z-50 rounded-md border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Assignee</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {assigneeOptions.map((assignee) => (
+                              <button
+                                key={assignee}
+                                type="button"
+                                onClick={() => toggleAssignee(assignee)}
+                                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                                  selectedAssignees.includes(assignee)
+                                    ? 'border-primary-200 bg-primary-100 text-primary-700 dark:border-primary-600/50 dark:bg-primary-600/20 dark:text-primary-200'
+                                    : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                                }`}
+                              >
+                                {assignee}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Due Date</p>
+                          <div className="mt-2 grid grid-cols-1 gap-2">
+                            {[{ value: 'none', label: 'Default order' }, { value: 'nearest', label: 'Closest due date first' }, { value: 'farthest', label: 'Farthest due date first' }].map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => setDueDateSort(option.value)}
+                                className={`rounded-md border px-3 py-2 text-left text-xs font-medium transition-all ${
+                                  dueDateSort === option.value
+                                    ? 'border-primary-300 bg-primary-100 text-primary-700 dark:border-primary-600/60 dark:bg-primary-600/20 dark:text-primary-200'
+                                    : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
+                          <button
+                            type="button"
+                            onClick={handleResetFilters}
+                            className="text-xs font-semibold text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                          >
+                            Reset all filters
+                          </button>
+                          <Button size="sm" variant="secondary" onClick={() => setIsFilterOpen(false)}>
+                            Done
+                          </Button>
                         </div>
                       </div>
-
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Due Date</p>
-                        <div className="mt-2 grid grid-cols-1 gap-2">
-                          {[{ value: 'none', label: 'Default order' }, { value: 'nearest', label: 'Closest due date first' }, { value: 'farthest', label: 'Farthest due date first' }].map((option) => (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() => setDueDateSort(option.value)}
-                              className={`rounded-md border px-3 py-2 text-left text-xs font-medium transition-all ${
-                                dueDateSort === option.value
-                                  ? 'border-primary-300 bg-primary-100 text-primary-700 dark:border-primary-600/60 dark:bg-primary-600/20 dark:text-primary-200'
-                                  : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                              }`}
-                            >
-                              {option.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
-                        <button
-                          type="button"
-                          onClick={handleResetFilters}
-                          className="text-xs font-semibold text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                        >
-                          Reset all filters
-                        </button>
-                        <Button size="sm" variant="secondary" onClick={() => setIsFilterOpen(false)}>
-                          Done
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                    </div>,
+                    document.body
+                  )}
               </div>
             </div>
 
@@ -1422,7 +1482,7 @@ const Tasks = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <p className="text-sm text-neutral-500 dark:text-neutral-400">Task details</p>
-                      <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                      <h3 className="truncate text-xl font-semibold text-neutral-900 dark:text-neutral-100" title={selectedTask.title}>
                         {selectedTask.title}
                       </h3>
                     </div>

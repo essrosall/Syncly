@@ -4,6 +4,7 @@ import { MainLayout } from '../components/layout';
 import { Card, Button, Badge, Modal } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, ClipboardList, CheckCircle2, Layers3, AlertTriangle, Sparkles, PartyPopper, ArrowRight, X } from 'lucide-react';
 import { useLayout } from '../contexts/LayoutContext';
+import { useGlobalModal } from '../contexts/GlobalModalContext';
 import useTheme from '../hooks/useTheme';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
@@ -45,6 +46,10 @@ const readSessionJson = (key, fallback) => {
   if (typeof window === 'undefined') return fallback;
 
   try {
+    // Prefer localStorage for session persistence across refreshes, fall back to sessionStorage
+    const rawLocal = window.localStorage.getItem(key);
+    if (rawLocal) return JSON.parse(rawLocal);
+
     const storedValue = window.sessionStorage.getItem(key);
     return storedValue ? JSON.parse(storedValue) : fallback;
   } catch {
@@ -211,6 +216,7 @@ const buildWelcomeModal = ({ activeTasks, completedTasks, overdueTasks, dueSoonT
 
 const Dashboard = () => {
   const { layoutMode } = useLayout();
+  const { openModal } = useGlobalModal();
   const { theme } = useTheme();
   const isDarkTheme = theme === 'dark';
   const [welcomeModal, setWelcomeModal] = useState(null);

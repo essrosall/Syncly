@@ -52,8 +52,11 @@ const clearDemoSession = () => {
 const clearActiveLoginSession = () => {
   if (typeof window === 'undefined') return;
 
-  window.sessionStorage.removeItem(ACTIVE_LOGIN_SESSION_KEY);
-  window.sessionStorage.removeItem('syncly:loginWelcomeNotice');
+  // Remove both sessionStorage and localStorage keys to ensure full cleanup
+  try { window.sessionStorage.removeItem(ACTIVE_LOGIN_SESSION_KEY); } catch {}
+  try { window.sessionStorage.removeItem('syncly:loginWelcomeNotice'); } catch {}
+  try { window.localStorage.removeItem(ACTIVE_LOGIN_SESSION_KEY); } catch {}
+  try { window.localStorage.removeItem('syncly:loginWelcomeNotice'); } catch {}
 };
 
 export const AuthProvider = ({ children }) => {

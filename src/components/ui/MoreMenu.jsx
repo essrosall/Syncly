@@ -162,7 +162,7 @@ const MoreMenu = ({ isOpen, onClose }) => {
         />
       )}
 
-      <div className={`absolute top-full right-0 mt-2 w-[22rem] max-h-[480px] rounded-xl border border-neutral-200/80 bg-white shadow-xl shadow-black/5 dark:border-neutral-700/80 dark:bg-neutral-800 z-50 overflow-hidden transition-all duration-200 lg:w-[22rem] ${
+      <div className={`absolute top-full right-0 mt-2 w-[min(22rem,calc(100vw-1rem))] max-h-[min(30rem,calc(100vh-7rem))] rounded-base border border-neutral-200/80 bg-white shadow-xl shadow-black/5 dark:border-neutral-700/80 dark:bg-neutral-800 z-50 overflow-hidden transition-all duration-200 ${
         isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}>
         {/* Header */}
@@ -178,7 +178,7 @@ const MoreMenu = ({ isOpen, onClose }) => {
         </div>
 
         {/* Menu Items */}
-        <div className="overflow-y-auto max-h-[380px] divide-y divide-neutral-200/80 dark:divide-neutral-700/80">
+        <div className="max-h-[calc(100vh-14rem)] overflow-y-auto divide-y divide-neutral-200/80 dark:divide-neutral-700/80">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (

@@ -42,7 +42,7 @@ const LayoutModal = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className={`absolute right-0 top-full z-50 mt-2 w-[min(25rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xl transition-all duration-200 dark:border-neutral-700 dark:bg-neutral-800 ${
+    <div className={`absolute right-0 top-full z-50 mt-2 w-[min(25rem,calc(100vw-1.5rem))] overflow-hidden rounded-base border border-neutral-200 bg-white shadow-xl transition-all duration-200 dark:border-neutral-700 dark:bg-neutral-800 ${
       isOpen ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-1 opacity-0'
     }`}>
         <div className="w-full bg-white dark:bg-neutral-800">

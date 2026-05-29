@@ -72,7 +72,7 @@ const OtpCodeInput = ({ value, onChange, disabled = false }) => {
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className="h-14 rounded-xl border border-neutral-200 bg-white text-center text-xl font-semibold tracking-[0.25em] text-neutral-900 shadow-sm outline-none transition focus:border-success-500 focus:ring-2 focus:ring-success-200 disabled:cursor-not-allowed disabled:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-success-400 dark:focus:ring-success-900/50 dark:disabled:bg-neutral-800"
+          className="h-14 rounded-base border border-neutral-200 bg-white text-center text-xl font-semibold tracking-[0.25em] text-neutral-900 shadow-sm outline-none transition focus:border-success-500 focus:ring-2 focus:ring-success-200 disabled:cursor-not-allowed disabled:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-success-400 dark:focus:ring-success-900/50 dark:disabled:bg-neutral-800"
           aria-label={`One-time code digit ${index + 1}`}
         />
       ))}
@@ -167,8 +167,9 @@ const Login = () => {
         signedInAt: new Date().toISOString(),
       };
 
-      window.sessionStorage.setItem(LOGIN_WELCOME_NOTICE_KEY, JSON.stringify(loginSession));
-      window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(loginSession));
+      // persist across refreshes: use localStorage for active session and welcome notice
+      window.localStorage.setItem(LOGIN_WELCOME_NOTICE_KEY, JSON.stringify(loginSession));
+      window.localStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(loginSession));
     } catch {
       // ignore storage issues
     }

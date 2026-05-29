@@ -11,3 +11,5 @@ export { default as NotificationsPanel } from './NotificationsPanel';
 export { default as LayoutModal } from './LayoutModal';
 export { default as MoreMenu } from './MoreMenu';
 export { default as ProfileInfoModal } from './ProfileInfoModal';
+export { default as TutorialModal } from './TutorialModal';
+export { default as TutorialTourModal } from './TutorialTourModal';

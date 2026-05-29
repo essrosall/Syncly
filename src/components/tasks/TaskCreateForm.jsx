@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, Input, Textarea } from '../ui';
 import { useToast } from '../../contexts/ToastContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
 const TASK_ACTIVITY_STORAGE_KEY = 'syncly:taskActivity';
+const WORKSPACES_STORAGE_KEY = 'syncly:workspaces';
+
+const defaultWorkspaces = [
+  { id: 1, name: 'Product Design' },
+  { id: 2, name: 'Mobile App' },
+  { id: 3, name: 'Backend Services' },
+];
+
+const TASK_TYPE_OPTIONS = ['Feature', 'Bug', 'Research', 'Design', 'Support'];
 
 const readStoredJson = (key, fallback) => {
   try {
@@ -21,11 +30,26 @@ const getNextTaskId = (tasks) => {
 };
 
 const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', priority: initialPriority = 'medium' }) => {
-  const [title, setTitle] = useState('');
-  const [assignee, setAssignee] = useState(initialAssignee);
-  const [priority, setPriority] = useState(initialPriority);
-  const [dueDate, setDueDate] = useState('');
-  const [description, setDescription] = useState('');
+  const DRAFT_KEY = 'syncly:taskDraft';
+  const workspaceOptions = useMemo(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces), []);
+
+  const readDraft = () => {
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const [title, setTitle] = useState(() => readDraft()?.title || '');
+  const [assignee, setAssignee] = useState(() => readDraft()?.assignee || initialAssignee);
+  const [priority, setPriority] = useState(() => readDraft()?.priority || initialPriority);
+  const [dueDate, setDueDate] = useState(() => readDraft()?.dueDate || '');
+  const [description, setDescription] = useState(() => readDraft()?.description || '');
+  const [workspace, setWorkspace] = useState(() => readDraft()?.workspace || '');
+  const [workspaceId, setWorkspaceId] = useState(() => readDraft()?.workspaceId || '');
+  const [taskType, setTaskType] = useState(() => readDraft()?.taskType || 'Feature');
 
   const { addToast } = useToast();
   const { closeModal } = useGlobalModal();
@@ -37,7 +61,20 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
 
     const tasks = readStoredJson(TASKS_STORAGE_KEY, {}) || {};
     const nextId = getNextTaskId(tasks);
-    const newTask = { id: nextId, title: t, priority, assignee, dueDate, description };
+    const selectedWorkspace = workspaceOptions.find((item) => String(item.id) === String(workspaceId));
+    const workspaceName = selectedWorkspace?.name || workspace;
+
+    const newTask = {
+      id: nextId,
+      title: t,
+      priority,
+      assignee,
+      dueDate,
+      description,
+      workspace: workspaceName,
+      workspaceId: selectedWorkspace?.id || workspaceId || '',
+      taskType,
+    };
 
     const nextTasks = { ...tasks, [column]: [...(tasks[column] || []), newTask] };
     try { window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(nextTasks)); } catch (e) {}
@@ -52,18 +89,74 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
       window.localStorage.setItem(TASK_ACTIVITY_STORAGE_KEY, JSON.stringify(activity));
     } catch (e) {}
 
-    addToast({ title: 'Task created', message: `"${t}" added to ${column}`, variant: 'success' });
+    addToast({ title: 'Task created', message: `"${t}" added to ${workspaceName || column}`, variant: 'success' });
     closeModal();
+
+    // clear draft
+    try { window.localStorage.removeItem(DRAFT_KEY); } catch {}
   };
 
+  // autosave draft to localStorage
+  React.useEffect(() => {
+    const draft = { title, assignee, priority, dueDate, description, workspace, workspaceId, taskType };
+    try { window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch {}
+  }, [title, assignee, priority, dueDate, description, workspace, workspaceId, taskType]);
+
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="rounded-3xl border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
+            <span className="text-sm font-semibold">+</span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-primary-200">Quick setup</p>
+            <p className="text-sm font-medium text-neutral-950 dark:text-neutral-100">Name the work, pick the focus, and add a date.</p>
+            <p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+              A clear title, a workspace, and a due date make the task easier to route, review, and revisit later.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <label className="space-y-2">
         <span className="text-sm font-semibold">Title</span>
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task title" />
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Prepare login flow demo" />
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="space-y-2">
+          <span className="text-sm font-semibold">Task Type</span>
+          <select value={taskType} onChange={(e) => setTaskType(e.target.value)} className="input-base w-full">
+            {TASK_TYPE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-sm font-semibold">Workspace</span>
+          <select
+            value={workspaceId}
+            onChange={(e) => {
+              const nextId = e.target.value;
+              const selected = workspaceOptions.find((item) => String(item.id) === String(nextId));
+              setWorkspaceId(nextId);
+              setWorkspace(selected?.name || '');
+            }}
+            className="input-base w-full"
+          >
+            <option value="">Unassigned</option>
+            {workspaceOptions.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <label className="space-y-2">
           <span className="text-sm font-semibold">Priority</span>
           <select value={priority} onChange={(e) => setPriority(e.target.value)} className="input-base w-full">
@@ -88,11 +181,12 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
       <label className="space-y-2">
         <span className="text-sm font-semibold">Due Date</span>
         <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">Pick a date so the dashboard can highlight the task before it slips.</p>
       </label>
 
       <label className="space-y-2">
         <span className="text-sm font-semibold">Notes</span>
-        <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Add context, links, dependencies, or a quick checklist..." />
       </label>
 
       <div className="flex justify-end gap-3">

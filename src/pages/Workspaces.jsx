@@ -17,6 +17,7 @@ const defaultWorkspaces = [
     color: 'primary',
     status: 'Active',
     members: ['Sarah', 'Alex', 'Maya', 'You', 'Admin'],
+    inviteCode: 'DESIGN-1001',
     keywords: ['design', 'ui', 'ux', 'landing', 'product'],
   },
   {
@@ -26,6 +27,7 @@ const defaultWorkspaces = [
     color: 'warning',
     status: 'Review',
     members: ['Sarah', 'Mike', 'You'],
+    inviteCode: 'MOBILE-1002',
     keywords: ['mobile', 'app', 'responsive', 'ios', 'android'],
   },
   {
@@ -35,6 +37,7 @@ const defaultWorkspaces = [
     color: 'success',
     status: 'Active',
     members: ['Admin', 'You', 'Mike', 'Sarah'],
+    inviteCode: 'BACKEND-1003',
     keywords: ['backend', 'api', 'auth', 'database', 'server'],
   },
 ];
@@ -88,6 +91,12 @@ const writeStoredJson = (key, value) => {
   }
 };
 
+const generateInviteCode = (name, id) => {
+  const base = slugify(name).replace(/-/g, '').slice(0, 6).toUpperCase() || 'SYNC';
+  const suffix = String(id || Date.now()).slice(-4);
+  return `${base}-${suffix}`;
+};
+
 const slugify = (value) =>
   String(value || '')
     .toLowerCase()
@@ -132,6 +141,17 @@ const getWorkspaceTokens = (workspace) => {
 };
 
 const workspaceMatchesTask = (workspace, task) => {
+  const workspaceName = (workspace.name || '').toLowerCase();
+  const workspaceSlug = slugify(workspaceName);
+  const taskWorkspaceId = task.workspaceId != null ? String(task.workspaceId) : '';
+  const taskWorkspaceName = String(task.workspace || task.workspaceName || '').toLowerCase();
+
+  if (taskWorkspaceId && String(workspace.id) === taskWorkspaceId) return true;
+  if (taskWorkspaceName) {
+    if (taskWorkspaceName === workspaceName) return true;
+    if (slugify(taskWorkspaceName) === workspaceSlug) return true;
+  }
+
   const haystack = `${task.title} ${task.description || ''} ${task.assignee || ''}`.toLowerCase();
   const tokens = getWorkspaceTokens(workspace);
 
@@ -139,7 +159,6 @@ const workspaceMatchesTask = (workspace, task) => {
     return true;
   }
 
-  const workspaceName = (workspace.name || '').toLowerCase();
   if (workspaceName.includes('design')) return haystack.includes('design') || haystack.includes('landing') || haystack.includes('ui');
   if (workspaceName.includes('mobile')) return haystack.includes('mobile') || haystack.includes('responsive') || haystack.includes('app');
   if (workspaceName.includes('backend')) return haystack.includes('api') || haystack.includes('auth') || haystack.includes('database') || haystack.includes('server');
@@ -205,13 +224,29 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
       description: description.trim(),
       color,
       members,
+      inviteCode: generateInviteCode(nextName),
       keywords: getWorkspaceTokens({ name: nextName, description }),
       status: 'Active',
     });
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="rounded-3xl border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
+            <span className="text-sm font-semibold">+</span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-primary-200">Workspace setup</p>
+            <p className="text-sm font-medium text-neutral-950 dark:text-neutral-100">Create a shared space for a team, project, or area of work.</p>
+            <p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+              Add a name, describe what belongs here, and list the members who should have access. The invite code is generated automatically after you save.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-2">
         <label className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Workspace name</label>
         <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="E.g. Marketing Launch" />
@@ -222,15 +257,16 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
         <Textarea rows={4} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What will this workspace be used for?" />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Members</label>
-        <Input value={membersText} onChange={(event) => setMembersText(event.target.value)} placeholder="Comma-separated names" />
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">Example: You, Sarah, Alex</p>
-      </div>
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Members</label>
+          <Input value={membersText} onChange={(event) => setMembersText(event.target.value)} placeholder="Comma-separated names" />
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">Example: You, Sarah, Alex</p>
+        </div>
 
-      <div className="space-y-2">
-        <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Accent color</span>
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-2">
+          <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Accent color</span>
+          <div className="flex flex-wrap gap-2">
           {[
             { value: 'primary', label: 'Primary' },
             { value: 'warning', label: 'Warning' },
@@ -249,6 +285,22 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
               {option.label}
             </button>
           ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-900/40">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">What this workspace helps with</p>
+        <div className="mt-3 grid gap-3 text-sm text-neutral-600 dark:text-neutral-300 md:grid-cols-3">
+          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+            Keep related tasks grouped together
+          </div>
+          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+            Share access with the right people
+          </div>
+          <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
+            Generate an invite code automatically
+          </div>
         </div>
       </div>
 
@@ -283,12 +335,46 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className={`text-xs font-semibold uppercase tracking-wide ${tone.accentText}`}>Workspace overview</p>
-            <h3 className="mt-1 text-2xl font-semibold text-neutral-950 dark:text-neutral-100">{workspace.name}</h3>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">{workspace.description}</p>
+            <h3 className="mt-1 truncate text-2xl font-semibold text-neutral-950 dark:text-neutral-100" title={workspace.name}>
+              {workspace.name}
+            </h3>
+            <p className="mt-2 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400" title={workspace.description}>
+              {workspace.description}
+            </p>
           </div>
           <Badge variant={workspace.color} size="sm">
             {workspace.status || 'Active'}
           </Badge>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-900/40">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Invite code</p>
+            <p
+              className="mt-1 truncate text-lg font-semibold text-neutral-950 dark:text-neutral-100"
+              title={workspace.inviteCode || generateInviteCode(workspace.name, workspace.id)}
+            >
+              {workspace.inviteCode || generateInviteCode(workspace.name, workspace.id)}
+            </p>
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Share this code with teammates so they can join the right workspace.</p>
+          </div>
+          <Button
+            variant="secondary"
+            className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
+            onClick={async () => {
+              const code = workspace.inviteCode || generateInviteCode(workspace.name, workspace.id);
+              try {
+                await navigator.clipboard.writeText(code);
+                window.dispatchEvent(new Event('syncly:toast-copy-invite'));
+              } catch {
+                window.prompt('Copy invite code', code);
+              }
+            }}
+          >
+            <Copy size={16} /> Copy code
+          </Button>
         </div>
       </div>
 
@@ -396,6 +482,18 @@ const Workspaces = () => {
   }, []);
 
   useEffect(() => {
+    const nextWorkspaceList = workspaceList.map((workspace) => {
+      if (workspace.inviteCode) return workspace;
+      return { ...workspace, inviteCode: generateInviteCode(workspace.name, workspace.id) };
+    });
+
+    if (nextWorkspaceList.some((workspace, index) => workspace.inviteCode !== workspaceList[index]?.inviteCode)) {
+      setWorkspaceList(nextWorkspaceList);
+      writeStoredJson(WORKSPACES_STORAGE_KEY, nextWorkspaceList);
+    }
+  }, [workspaceList]);
+
+  useEffect(() => {
     writeStoredJson(WORKSPACES_STORAGE_KEY, workspaceList);
   }, [workspaceList]);
 
@@ -455,12 +553,14 @@ const Workspaces = () => {
   const handleOpenCreate = () => {
     openModal(WorkspaceCreateForm, {
       title: 'Create Workspace',
+      sizeClass: 'max-w-6xl',
       onClose: closeModal,
       onCreate: (workspace) => {
         const next = [
           {
             id: Date.now(),
             ...workspace,
+            inviteCode: workspace.inviteCode || generateInviteCode(workspace.name, workspace.id),
           },
           ...workspaceList,
         ];
@@ -518,6 +618,7 @@ const Workspaces = () => {
         id: Date.now(),
         name: duplicateName,
         status: 'Active',
+        inviteCode: generateInviteCode(duplicateName, Date.now()),
         keywords: getWorkspaceTokens({ name: duplicateName, description: workspace.description }),
       },
       ...workspaceList,
@@ -617,7 +718,7 @@ const Workspaces = () => {
                 <Card
                   key={workspace.id}
                   id={`workspace-${slugify(workspace.name)}`}
-                  className={`relative overflow-hidden rounded-md border bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] transition-transform hover:-translate-y-0.5 dark:bg-neutral-800 ${tone.border}`}
+                  className={`relative overflow-hidden rounded-base border bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] transition-transform hover:-translate-y-0.5 dark:bg-neutral-800 ${tone.border}`}
                 >
                   <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${tone.bar}`} />
 
@@ -681,7 +782,12 @@ const Workspaces = () => {
                     </div>
                     <div className={`rounded-md ${tone.accentBg} p-3`}>
                       <p className={`text-xs font-semibold uppercase tracking-wide ${tone.accentText}`}>Recent task</p>
-                      <p className="mt-1 truncate text-sm font-medium text-neutral-950 dark:text-neutral-100">{recentTask?.title || 'No linked tasks yet'}</p>
+                      <p
+                        className="mt-1 truncate text-sm font-medium text-neutral-950 dark:text-neutral-100"
+                        title={recentTask?.title || 'No linked tasks yet'}
+                      >
+                        {recentTask?.title || 'No linked tasks yet'}
+                      </p>
                     </div>
                   </div>
 

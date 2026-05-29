@@ -251,7 +251,7 @@ const Signup = () => {
             </p>
           </form>
           ) : (
-            <div className="space-y-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
+            <div className="space-y-5 rounded-base border border-neutral-200 bg-neutral-50 p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
               <div>
                 <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Check your email</h3>
                 <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">

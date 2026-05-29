@@ -69,7 +69,7 @@
 
   /* Card components */
   .card {
-    @apply bg-neutral-800 border border-neutral-700 rounded-md shadow-lg;
+    @apply bg-neutral-800 border border-neutral-700 rounded-base shadow-lg;
   }
 
   html.light .card {
@@ -166,6 +166,21 @@
 
   html.light .dashboard-welcome-card .welcome-card-accent {
     @apply bg-white/15;
+  }
+
+  /* Project-wide radius token and overrides */
+  :root {
+    --radius: 0.75rem; /* default radius (12px) - adjust if you prefer larger/smaller */
+  }
+
+  /* Normalize common Tailwind rounded utilities to a single radius for visual consistency.
+     Keep rounded-full for avatars/circles. Use !important to override Tailwind utility specificity. */
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl,
+  .rounded-2xl,
+  .rounded-3xl {
+    border-radius: var(--radius) !important;
   }
 
   .dashboard-welcome-card .welcome-card-title {

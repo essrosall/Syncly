@@ -61,11 +61,11 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
         />
       )}
 
-      <div className={`absolute top-full right-0 mt-2 w-96 max-h-[500px] rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800 z-50 overflow-hidden transition-all duration-200 ${
+      <div className={`absolute top-full right-0 mt-2 w-[min(24rem,calc(100vw-1rem))] max-h-[min(34rem,calc(100vh-7rem))] rounded-base border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800 z-50 overflow-hidden transition-all duration-200 ${
         isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}>
         {/* Header */}
-        <div className="sticky top-0 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800 flex items-center justify-between">
+        <div className="sticky top-0 flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-800">
           <div>
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Notifications</h3>
             {unreadCount > 0 && (
@@ -82,7 +82,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
         </div>
 
         {/* Notifications List */}
-        <div className="overflow-y-auto max-h-[400px]">
+        <div className="max-h-[calc(100vh-16rem)] overflow-y-auto">
           {sortedNotifications.length > 0 ? (
             <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
               {sortedNotifications.map((notif) => (
@@ -106,7 +106,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{notif.title}</p>
-                      <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2">{notif.message}</p>
+                      <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2" title={notif.message}>{notif.message}</p>
                       <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-500">{formatRelativeTime(notif.createdAt)}</p>
                     </div>
                     {!notif.read && <div className="mt-1 h-2 w-2 rounded-full bg-primary-500" />}
@@ -135,7 +135,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
         {/* Footer */}
         {sortedNotifications.length > 0 && (
           <div className="border-t border-neutral-200 bg-white px-4 py-2 dark:border-neutral-700 dark:bg-neutral-800">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 onClick={markAllAsRead}
                 className="flex-1 rounded-md bg-success-50 px-3 py-2 text-xs font-medium text-success-800 hover:bg-success-100 dark:bg-success-950/35 dark:text-success-100 dark:hover:bg-success-950/50"

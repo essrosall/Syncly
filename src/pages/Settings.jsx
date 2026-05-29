@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 // touch: trigger dev server refresh
 import { MainLayout } from '../components/layout';
-import { Card, Input, Button, Badge, Textarea } from '../components/ui';
+import { Card, Input, Button, Badge, Textarea, TutorialModal } from '../components/ui';
 import { UserRound, BellRing, ShieldCheck, Upload, ChevronDown, Briefcase } from 'lucide-react';
 import SearchableTagField from '../components/profile/SearchableTagField';
+import { useGlobalModal } from '../contexts/GlobalModalContext';
 import {
   HOBBIES_SUGGESTIONS,
   INTERESTS_SUGGESTIONS,
@@ -12,6 +13,7 @@ import {
 } from '../lib/profileSuggestions';
 
 const Settings = () => {
+  const { openModal } = useGlobalModal();
   const STORAGE_KEY = 'syncly:demoSession';
   
   const mockUser = { name: 'Sarah Johnson', email: 'sarah@example.com' };
@@ -153,10 +155,10 @@ const Settings = () => {
           <Badge variant="primary">Active</Badge>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
+        <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
           {/* Left column: categorized settings */}
           <div className="space-y-4">
-            <Card id="settings-preferences" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card id="settings-preferences" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Personal</h2>
@@ -165,7 +167,7 @@ const Settings = () => {
                 <UserRound size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
                   <Input
@@ -179,7 +181,7 @@ const Settings = () => {
                 <div />
               </div>
 
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-4 mt-4">
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">First name</label>
                   <Input
@@ -250,7 +252,7 @@ const Settings = () => {
                   onChange={(nextValues) => setProfileData((prev) => ({ ...prev, work: nextValues }))}
                 />
 
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                   <SearchableTagField
                     label="Hobbies"
                     helperText="Suggestions update while you type."
@@ -501,8 +503,28 @@ const Settings = () => {
             </Card>
 
             <Card id="settings-tutorials" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Tutorials</h2>
-              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Step-by-step walkthroughs for common workflows.</p>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Tutorials</h2>
+                  <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Step-by-step walkthroughs for common workflows.</p>
+                </div>
+                <Button
+                  variant="secondary"
+                  onClick={() => openModal(TutorialModal, {
+                    title: 'Product Tour',
+                    sizeClass: 'max-w-6xl',
+                    onClose: () => {
+                      try {
+                        window.localStorage.setItem('syncly:seenTutorialTour', JSON.stringify({ completedAt: new Date().toISOString() }));
+                      } catch {
+                        // ignore storage issues
+                      }
+                    },
+                  })}
+                >
+                  View Tutorial
+                </Button>
+              </div>
             </Card>
 
             <Card id="settings-community" className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">

@@ -57,8 +57,8 @@ const Analytics = () => {
           <Badge variant="primary" size="sm">This week</Badge>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.45fr_0.95fr]">
-            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="grid gap-4 lg:grid-cols-[1.45fr_0.95fr]">
+          <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Focus Distribution</h2>
@@ -66,13 +66,13 @@ const Analytics = () => {
               </div>
               <ChartColumnIncreasing size={18} className="text-neutral-400 dark:text-neutral-500" />
             </div>
-            <div className="mt-6 h-72">
+            <div className="mt-6 h-64 sm:h-72">
               <Bar data={data} options={chartOptions} />
             </div>
           </Card>
 
           <div className="space-y-4">
-              <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+            <Card className="rounded-md border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Key Metrics</h2>
@@ -81,15 +81,15 @@ const Analytics = () => {
                 <TrendingUp size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
               <ul className="mt-5 space-y-3 text-sm text-neutral-700 dark:text-neutral-200">
-                  <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">
+                <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:border dark:border-neutral-700 dark:bg-neutral-800">
                   <span>Average Focus Time</span>
                   <strong>45 min</strong>
                 </li>
-                  <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">
+                <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:border dark:border-neutral-700 dark:bg-neutral-800">
                   <span>Completed Tasks / Week</span>
                   <strong>8</strong>
                 </li>
-                  <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">
+                <li className="flex items-center justify-between rounded-md bg-neutral-100 px-4 py-3 dark:border dark:border-neutral-700 dark:bg-neutral-800">
                   <span>Productivity Score</span>
                   <strong>82%</strong>
                 </li>

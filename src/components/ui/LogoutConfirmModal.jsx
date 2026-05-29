@@ -5,7 +5,7 @@ const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
   return (
     <div className="space-y-4">
 
-      <div className="flex items-start gap-4 rounded-xl border border-neutral-200 bg-white p-5 shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
+      <div className="flex items-start gap-4 rounded-base border border-neutral-200 bg-white p-5 shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
         <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
           <AlertTriangle size={18} strokeWidth={2.2} />
         </div>

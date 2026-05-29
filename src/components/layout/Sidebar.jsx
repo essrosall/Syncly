@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, CheckSquare, Briefcase, BarChart3, Settings, Plus, UserRound } from 'lucide-react';
-import { Button } from '../ui';
+import { Button, TutorialModal } from '../ui';
 import { useCreateModal } from '../../contexts/CreateModalContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
+import { useMobileNav } from '../../contexts/MobileNavContext';
 import { useLayout } from '../../contexts/LayoutContext';
 import TaskCreateForm from '../tasks/TaskCreateForm';
 import ProfileInfoModal from '../ui/ProfileInfoModal';
@@ -16,6 +17,8 @@ const readProfile = (fallbackUser) => {
 
     const firstName = stored?.firstName || fallbackUser?.name?.split(' ')?.[0] || 'Sarah';
     const lastName = stored?.lastName || fallbackUser?.name?.split(' ')?.[1] || 'Johnson';
+    const middleName = stored?.middleName || '';
+    const middleInitial = stored?.middleInitial || stored?.middleName?.[0] || '';
     const nickname = stored?.nickname || '';
     const gender = stored?.gender || 'female';
     const displayPreference = stored?.displayPreference || 'nickname';
@@ -70,6 +73,20 @@ const getInitials = (name) => {
     .join('') || 'S';
 };
 
+const openTutorialTour = (openModal) => {
+  openModal(TutorialModal, {
+    title: 'Product Tour',
+    sizeClass: 'max-w-6xl',
+    onClose: () => {
+      try {
+        window.localStorage.setItem('syncly:seenTutorialTour', JSON.stringify({ completedAt: new Date().toISOString() }));
+      } catch {
+        // ignore storage issues
+      }
+    },
+  });
+};
+
 const Sidebar = ({ activeTab = 'dashboard', user }) => {
   const navMain = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/' },
@@ -84,7 +101,9 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
   const { openCreate } = useCreateModal();
   const { openModal } = useGlobalModal();
+  const { isSidebarOpen, closeSidebar } = useMobileNav();
   const { sidebarWidth } = useLayout();
+  const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(() => readProfile(user));
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -111,8 +130,22 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
     };
   }, [user]);
 
+  useEffect(() => {
+    closeSidebar();
+  }, [location.pathname, closeSidebar]);
+
   return (
-    <aside className={`hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 z-50 flex-col border-r border-neutral-200 bg-white p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 ${sidebarWidthClass}`}>
+    <>
+      {isSidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={closeSidebar}
+          className="fixed inset-0 top-20 z-40 bg-black/35 backdrop-blur-[1px] lg:hidden"
+        />
+      )}
+
+    <aside className={`fixed top-20 left-0 z-50 flex h-[calc(100vh-5rem)] w-[min(20rem,85vw)] -translate-x-full flex-col overflow-y-auto border-r border-neutral-200 bg-white p-4 text-neutral-900 shadow-[0_18px_50px_rgba(17,25,43,0.08)] transition-transform duration-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 lg:top-0 lg:h-screen lg:w-auto lg:translate-x-0 lg:overflow-visible lg:shadow-[0_18px_50px_rgba(17,25,43,0.05)] ${isSidebarOpen ? 'translate-x-0' : ''} ${sidebarWidthClass}`}>
       <div className="space-y-4 border-b border-neutral-200 pb-4 dark:border-neutral-700">
         <div className="flex items-center gap-3 px-1">
           <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-neutral-950 shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:border dark:border-neutral-700">
@@ -127,7 +160,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
       <div className="my-2" />
 
           <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
-          <div className="rounded-md border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="rounded-base border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => setShowProfileModal(true)}>
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100 overflow-hidden">
                   {profile.profileImageUrl ? (
@@ -137,8 +170,8 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                   )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-neutral-950 dark:text-neutral-100">{profile.displayName || profile.name}</p>
-                <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">{profile.email}</p>
+                <p className="truncate text-sm font-medium text-neutral-950 dark:text-neutral-100" title={profile.displayName || profile.name}>{profile.displayName || profile.name}</p>
+                <p className="truncate text-xs text-neutral-500 dark:text-neutral-400" title={profile.email}>{profile.email}</p>
               </div>
             </div>
 
@@ -157,7 +190,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 className="flex-1 justify-between rounded-sm !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => {
                   try {
-                    openModal(TaskCreateForm, { column: 'todo' });
+                    openModal(TaskCreateForm, { column: 'todo', title: 'Create Task', sizeClass: 'max-w-5xl' });
                   } catch {
                     try {
                       openCreate({ column: 'todo' });
@@ -192,6 +225,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               <NavLink
                 key={item.id}
                 to={item.href}
+                onClick={closeSidebar}
                 className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-100 text-neutral-900 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-0'
@@ -220,6 +254,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
               <NavLink
                 key={item.id}
                 to={item.href}
+                onClick={closeSidebar}
                 className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${
                   isActive
                     ? 'bg-neutral-100 text-neutral-900 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-0'
@@ -242,7 +277,17 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
       <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
           <div className="rounded-md border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">Need help getting started?</p>
-            <Button variant="secondary" size="sm" className="w-full rounded-md !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800">View Tutorials</Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full rounded-md !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+              onClick={() => {
+                closeSidebar();
+                openTutorialTour(openModal);
+              }}
+            >
+              View Tutorials
+            </Button>
         </div>
       </div>
 
@@ -257,6 +302,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
         />
       )}
     </aside>
+    </>
   );
 };
 
