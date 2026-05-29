@@ -1,10 +1,12 @@
 import { X, Briefcase, Heart, FileText, GraduationCap } from 'lucide-react';
 import { Button } from './index';
+import { createPortal } from 'react-dom';
+import React from 'react';
 
 const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
   if (!profile) return null;
 
-  return (
+  const jsx = (
     <>
       {/* Backdrop */}
       <div
@@ -194,6 +196,10 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
       </div>
     </>
   );
+
+  if (typeof document === 'undefined') return jsx;
+
+  return createPortal(jsx, document.body);
 };
 
 export default ProfileInfoModal;

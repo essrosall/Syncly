@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Input } from '../ui';
 import { filterSuggestions } from '../../lib/profileSuggestions';
+import usePersistentState from '../../hooks/usePersistentState';
 
 const SearchableTagField = ({
   label,
@@ -11,7 +12,7 @@ const SearchableTagField = ({
   values,
   onChange,
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue, clearInputValue] = usePersistentState(storageKey || `syncly:tagInput:${label}`, '');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -43,7 +44,7 @@ const SearchableTagField = ({
 
   const clearAll = () => {
     onChange([]);
-    setInputValue('');
+    clearInputValue();
     setIsOpen(false);
   };
 

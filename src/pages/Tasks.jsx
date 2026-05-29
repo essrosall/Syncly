@@ -9,6 +9,7 @@ import { Plus, Filter, Search, GripVertical, X } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useNotifications } from '../contexts/NotificationContext';
+import usePersistentState from '../hooks/usePersistentState';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import { createPortal } from 'react-dom';
 import {
@@ -366,18 +367,18 @@ const ColumnWrapper = ({ column, children }) => {
 };
 
 const Tasks = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPriorities, setSelectedPriorities] = useState(['high', 'medium', 'low']);
-  const [selectedAssignees, setSelectedAssignees] = useState([...assigneeOptions]);
-  const [dueDateSort, setDueDateSort] = useState('none');
+  const [searchTerm, setSearchTerm] = usePersistentState('syncly:tasks:searchTerm', '');
+  const [selectedPriorities, setSelectedPriorities] = usePersistentState('syncly:tasks:selectedPriorities', ['high', 'medium', 'low']);
+  const [selectedAssignees, setSelectedAssignees] = usePersistentState('syncly:tasks:selectedAssignees', [...assigneeOptions]);
+  const [dueDateSort, setDueDateSort] = usePersistentState('syncly:tasks:dueDateSort', 'none');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isTaskSearchFocused, setIsTaskSearchFocused] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditingTask, setIsEditingTask] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [taskForm, setTaskForm] = useState(null);
+  const [taskForm, setTaskForm] = usePersistentState('syncly:tasks:taskForm', null);
   const [taskActivity, setTaskActivity] = useState(() => readStoredJson(TASK_ACTIVITY_STORAGE_KEY, defaultTaskActivity));
-  const [commentDraft, setCommentDraft] = useState('');
+  const [commentDraft, setCommentDraft] = usePersistentState('syncly:tasks:commentDraft', '');
   const [toastMessage, setToastMessage] = useState(null);
   const filterMenuRef = useRef(null);
   const filterButtonRef = useRef(null);

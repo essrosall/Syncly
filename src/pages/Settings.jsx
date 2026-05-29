@@ -86,6 +86,34 @@ const Settings = () => {
     }
   }, []);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        firstName: profileData.firstName,
+        middleName: profileData.middleName,
+        lastName: profileData.lastName,
+        nickname: profileData.nickname,
+        name: profileData.name,
+        email: profileData.email,
+        gender: profileData.gender,
+        displayPreference: profileData.displayPreference,
+        educationStatus: profileData.educationStatus,
+        bio: profileData.bio,
+        work: profileData.work,
+        hobbies: profileData.hobbies,
+        interests: profileData.interests,
+        school: profileData.school,
+        graduatedFrom: profileData.graduatedFrom,
+        profileImage: profileData.profileImage,
+        profileImageUrl: profileData.profileImageUrl,
+      }));
+
+      window.dispatchEvent(new Event('syncly:profile-updated'));
+    } catch {
+      // ignore draft save failures
+    }
+  }, [profileData, STORAGE_KEY]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData(prev => ({
@@ -247,6 +275,7 @@ const Settings = () => {
                   label="Work / Profession"
                   helperText="Choose one or more roles, or add your own custom title."
                   placeholder="Search or add work..."
+                  storageKey="syncly:profile-work-input"
                   suggestions={WORK_SUGGESTIONS}
                   values={profileData.work}
                   onChange={(nextValues) => setProfileData((prev) => ({ ...prev, work: nextValues }))}
@@ -257,6 +286,7 @@ const Settings = () => {
                     label="Hobbies"
                     helperText="Suggestions update while you type."
                     placeholder="Search or add hobby..."
+                    storageKey="syncly:profile-hobbies-input"
                     suggestions={HOBBIES_SUGGESTIONS}
                     values={profileData.hobbies}
                     onChange={(nextValues) => setProfileData((prev) => ({ ...prev, hobbies: nextValues }))}
@@ -266,6 +296,7 @@ const Settings = () => {
                     label="Interests"
                     helperText="Search, select, and remove items anytime."
                     placeholder="Search or add interest..."
+                    storageKey="syncly:profile-interests-input"
                     suggestions={INTERESTS_SUGGESTIONS}
                     values={profileData.interests}
                     onChange={(nextValues) => setProfileData((prev) => ({ ...prev, interests: nextValues }))}
@@ -309,6 +340,7 @@ const Settings = () => {
                     label="Current school / university"
                     helperText="Use this if you're studying right now."
                     placeholder="Search school..."
+                    storageKey="syncly:profile-school-input"
                     suggestions={SCHOOL_SUGGESTIONS}
                     values={profileData.school}
                     onChange={(nextValues) => setProfileData((prev) => ({ ...prev, school: nextValues }))}
@@ -318,6 +350,7 @@ const Settings = () => {
                     label="Graduated from"
                     helperText="Use this if you already graduated."
                     placeholder="Search graduated school..."
+                    storageKey="syncly:profile-graduated-input"
                     suggestions={SCHOOL_SUGGESTIONS}
                     values={profileData.graduatedFrom}
                     onChange={(nextValues) => setProfileData((prev) => ({ ...prev, graduatedFrom: nextValues }))}

@@ -206,7 +206,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                   }
                 }}
               >
-                <span className="inline-flex items-center gap-2 text-xs font-medium">
+                <span className="inline-flex items-center gap-2 text-sm font-medium">
                   <Plus size={14} strokeWidth={2.6} className="text-white dark:text-white" />
                   New Task
                 </span>

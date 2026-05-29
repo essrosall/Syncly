@@ -5,6 +5,7 @@ import { MainLayout } from '../components/layout';
 import { Card, Button, Badge, Input, Textarea } from '../components/ui';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useToast } from '../contexts/ToastContext';
+import usePersistentState from '../hooks/usePersistentState';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
 const WORKSPACES_STORAGE_KEY = 'syncly:workspaces';
@@ -204,10 +205,20 @@ const getWorkspaceSummary = (workspace, tasksByColumn) => {
 };
 
 const WorkspaceCreateForm = ({ onCreate, onClose }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [membersText, setMembersText] = useState('You, Sarah');
-  const [color, setColor] = useState('primary');
+  const [draft, setDraft, clearDraft] = usePersistentState('syncly:workspaceDraft', {
+    name: '',
+    description: '',
+    membersText: 'You, Sarah',
+    color: 'primary',
+  });
+  const [name, setName] = useState(draft.name || '');
+  const [description, setDescription] = useState(draft.description || '');
+  const [membersText, setMembersText] = useState(draft.membersText || 'You, Sarah');
+  const [color, setColor] = useState(draft.color || 'primary');
+
+  useEffect(() => {
+    setDraft({ name, description, membersText, color });
+  }, [color, description, membersText, name, setDraft]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -228,6 +239,7 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
       keywords: getWorkspaceTokens({ name: nextName, description }),
       status: 'Active',
     });
+    try { clearDraft(); } catch {}
   };
 
   return (

@@ -3,6 +3,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 
 const DEMO_SESSION_KEY = 'syncly:demoSession';
 const ACTIVE_LOGIN_SESSION_KEY = 'syncly:activeLoginSession';
+const AUTH_SESSION_KEY = 'syncly:authSession';
 const DEMO_EMAIL = 'demo@syncly.app';
 const DEMO_PASSWORD = 'DemoPass123!';
 const DEMO_RESET_CODE = '123456';
@@ -59,6 +60,35 @@ const clearActiveLoginSession = () => {
   try { window.localStorage.removeItem('syncly:loginWelcomeNotice'); } catch {}
 };
 
+const readAuthSnapshot = () => {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const raw = window.localStorage.getItem(AUTH_SESSION_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    return parsed?.user ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeAuthSnapshot = (snapshot) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    if (!snapshot?.user) {
+      window.localStorage.removeItem(AUTH_SESSION_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(snapshot));
+  } catch {
+    // ignore storage errors
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
@@ -78,9 +108,13 @@ export const AuthProvider = ({ children }) => {
 
       if (!isSupabaseConfigured || !supabase) {
         const demoUser = readDemoSession();
+        const storedAuth = readAuthSnapshot();
         if (mounted) {
-          setUser(demoUser);
-          setSession(demoUser ? { user: demoUser } : null);
+          const nextSession = storedAuth?.session || (demoUser ? { user: demoUser } : null);
+          const nextUser = storedAuth?.user || demoUser || null;
+
+          setUser(nextUser);
+          setSession(nextSession);
           setLoading(false);
         }
         return;
@@ -90,10 +124,17 @@ export const AuthProvider = ({ children }) => {
       if (!mounted) return;
 
       const activeSession = data.session || null;
-      const demoUser = activeSession ? null : readDemoSession();
+      const storedAuth = readAuthSnapshot();
+      const demoUser = activeSession || storedAuth ? null : readDemoSession();
+      const nextSession = activeSession || storedAuth?.session || (demoUser ? { user: demoUser } : null);
+      const nextUser = activeSession?.user || storedAuth?.user || demoUser || null;
 
-      setSession(activeSession || (demoUser ? { user: demoUser } : null));
-      setUser(activeSession?.user || demoUser || null);
+      setSession(nextSession);
+      setUser(nextUser);
+
+      if (nextSession && nextUser) {
+        writeAuthSnapshot({ session: nextSession, user: nextUser });
+      }
       setLoading(false);
     };
 
@@ -107,8 +148,25 @@ export const AuthProvider = ({ children }) => {
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_, nextSession) => {
       if (!mounted) return;
+
+      // If Supabase reports no active session but we have a locally persisted
+      // auth snapshot, prefer the local snapshot instead of clearing it. This
+      // avoids an immediate sign-out on refresh when Supabase session is
+      // temporarily unavailable (network, CORS, or race conditions).
+      const storedAuth = readAuthSnapshot();
+
+      if (!nextSession && storedAuth) {
+        setSession(storedAuth.session || null);
+        setUser(storedAuth.user || null);
+        // ensure snapshot remains present
+        writeAuthSnapshot(storedAuth);
+        setLoading(false);
+        return;
+      }
+
       setSession(nextSession || null);
       setUser(nextSession?.user || null);
+      writeAuthSnapshot(nextSession ? { session: nextSession, user: nextSession.user || null } : null);
       setLoading(false);
     });
 
@@ -124,12 +182,19 @@ export const AuthProvider = ({ children }) => {
       const demoUser = readDemoSession();
       setUser(demoUser);
       setSession(demoUser ? { user: demoUser } : null);
+      writeAuthSnapshot(demoUser ? { session: { user: demoUser }, user: demoUser } : null);
       return { error: null };
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (!error) {
+      const nextSession = data?.session || null;
+      const nextUser = data?.user || nextSession?.user || null;
+
+      setSession(nextSession);
+      setUser(nextUser);
+      writeAuthSnapshot(nextSession && nextUser ? { session: nextSession, user: nextUser } : null);
       return { error: null, session: data?.session || null, user: data?.user || null };
     }
 
@@ -138,6 +203,7 @@ export const AuthProvider = ({ children }) => {
       const demoUser = readDemoSession();
       setUser(demoUser);
       setSession(demoUser ? { user: demoUser } : null);
+      writeAuthSnapshot(demoUser ? { session: { user: demoUser }, user: demoUser } : null);
       return { error: null, session: demoUser ? { user: demoUser } : null, user: demoUser };
     }
 
@@ -157,6 +223,7 @@ export const AuthProvider = ({ children }) => {
       const demoUser = readDemoSession();
       setUser(demoUser);
       setSession(demoUser ? { user: demoUser } : null);
+      writeAuthSnapshot(demoUser ? { session: { user: demoUser }, user: demoUser } : null);
       return { error: null, session: demoUser ? { user: demoUser } : null, user: demoUser };
     }
 
@@ -215,6 +282,7 @@ export const AuthProvider = ({ children }) => {
     if (!error && data?.session) {
       setSession(data.session);
       setUser(data.session.user || null);
+      writeAuthSnapshot(data.session?.user ? { session: data.session, user: data.session.user } : null);
     }
 
     return { error: error || null, session: data?.session || null, user: data?.user || null };
@@ -234,6 +302,7 @@ export const AuthProvider = ({ children }) => {
     if (!isSupabaseConfigured || !supabase) {
       clearDemoSession();
       clearActiveLoginSession();
+      writeAuthSnapshot(null);
       setUser(null);
       setSession(null);
       return { error: null };
@@ -241,6 +310,7 @@ export const AuthProvider = ({ children }) => {
 
     const { error } = await supabase.auth.signOut();
     clearActiveLoginSession();
+    writeAuthSnapshot(null);
     return { error: error || null };
   }, []);
 
