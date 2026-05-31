@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Button, Input, Textarea } from '../ui';
 import { useToast } from '../../contexts/ToastContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
+import { useAuth } from '../../contexts/AuthContext';
 import usePersistentState from '../../hooks/usePersistentState';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
@@ -30,9 +31,35 @@ const getNextTaskId = (tasks) => {
   return (taskIds.length > 0 ? Math.max(...taskIds) : 0) + 1;
 };
 
+const getUserAccessKey = (user) => user?.id || user?.email || 'guest';
+
+const getUserDisplayName = (user) => user?.user_metadata?.full_name || user?.name || user?.email || 'You';
+
+const isWorkspaceVisibleToUser = (workspace, userAccessKey, userDisplayName) => {
+  if (userAccessKey === 'guest') return true;
+
+  const createdBy = String(workspace?.createdBy || '').trim();
+  const memberKeys = (workspace?.memberKeys || []).map((value) => String(value).trim());
+  const memberNames = (workspace?.members || []).map((value) => String(value).trim().toLowerCase());
+
+  return (
+    createdBy === String(userAccessKey).trim() ||
+    memberKeys.includes(String(userAccessKey).trim()) ||
+    memberNames.includes(String(userDisplayName || '').trim().toLowerCase())
+  );
+};
+
 const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', priority: initialPriority = 'medium' }) => {
-  const DRAFT_KEY = 'syncly:taskDraft';
-  const workspaceOptions = useMemo(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces), []);
+  const { user } = useAuth();
+  const accountKey = useMemo(() => getUserAccessKey(user), [user]);
+  const userDisplayName = useMemo(() => getUserDisplayName(user), [user]);
+  const DRAFT_KEY = `syncly:${accountKey}:taskDraft`;
+  const TASKS_KEY = `syncly:${accountKey}:tasks`;
+  const TASK_ACTIVITY_KEY = `syncly:${accountKey}:taskActivity`;
+  const workspaceOptions = useMemo(() => {
+    const storedWorkspaces = readStoredJson(WORKSPACES_STORAGE_KEY, []);
+    return storedWorkspaces.filter((workspace) => isWorkspaceVisibleToUser(workspace, accountKey, userDisplayName));
+  }, [accountKey, userDisplayName]);
 
   const [draft, setDraft, clearDraft] = usePersistentState(DRAFT_KEY, {
     title: '',
@@ -62,7 +89,7 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
     const t = title.trim();
     if (!t) return;
 
-    const tasks = readStoredJson(TASKS_STORAGE_KEY, {}) || {};
+    const tasks = readStoredJson(TASKS_KEY, {}) || {};
     const nextId = getNextTaskId(tasks);
     const selectedWorkspace = workspaceOptions.find((item) => String(item.id) === String(workspaceId));
     const workspaceName = selectedWorkspace?.name || workspace;
@@ -80,16 +107,16 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
     };
 
     const nextTasks = { ...tasks, [column]: [...(tasks[column] || []), newTask] };
-    try { window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(nextTasks)); } catch (e) {}
+    try { window.localStorage.setItem(TASKS_KEY, JSON.stringify(nextTasks)); } catch (e) {}
     try { window.dispatchEvent(new Event('syncly:tasks-updated')); } catch (e) {}
 
     // activity
     try {
-      const activity = readStoredJson(TASK_ACTIVITY_STORAGE_KEY, {}) || {};
+      const activity = readStoredJson(TASK_ACTIVITY_KEY, {}) || {};
       activity[String(nextId)] = [
         { type: 'activity', message: 'Task created', author: 'You', timestamp: new Date().toISOString() },
       ];
-      window.localStorage.setItem(TASK_ACTIVITY_STORAGE_KEY, JSON.stringify(activity));
+      window.localStorage.setItem(TASK_ACTIVITY_KEY, JSON.stringify(activity));
     } catch (e) {}
 
     addToast({ title: 'Task created', message: `"${t}" added to ${workspaceName || column}`, variant: 'success' });

@@ -64,9 +64,6 @@ const defaultWorkspaces = [
   },
 ];
 
-const TASKS_STORAGE_KEY = 'syncly:tasks';
-const TASK_ACTIVITY_STORAGE_KEY = 'syncly:taskActivity';
-
 const defaultTasks = {
   todo: [
     { id: 1, title: 'Setup database', priority: 'high', assignee: 'You', dueDate: '2024-05-15', description: 'Configure schema, migrations, and initial tables.' },
@@ -367,18 +364,20 @@ const ColumnWrapper = ({ column, children }) => {
 };
 
 const Tasks = () => {
-  const [searchTerm, setSearchTerm] = usePersistentState('syncly:tasks:searchTerm', '');
-  const [selectedPriorities, setSelectedPriorities] = usePersistentState('syncly:tasks:selectedPriorities', ['high', 'medium', 'low']);
-  const [selectedAssignees, setSelectedAssignees] = usePersistentState('syncly:tasks:selectedAssignees', [...assigneeOptions]);
-  const [dueDateSort, setDueDateSort] = usePersistentState('syncly:tasks:dueDateSort', 'none');
+  const { user } = useAuth();
+  const accountKey = useMemo(() => user?.id || user?.email || 'guest', [user]);
+  const [searchTerm, setSearchTerm] = usePersistentState(`syncly:${accountKey}:tasks:searchTerm`, '');
+  const [selectedPriorities, setSelectedPriorities] = usePersistentState(`syncly:${accountKey}:tasks:selectedPriorities`, ['high', 'medium', 'low']);
+  const [selectedAssignees, setSelectedAssignees] = usePersistentState(`syncly:${accountKey}:tasks:selectedAssignees`, [...assigneeOptions]);
+  const [dueDateSort, setDueDateSort] = usePersistentState(`syncly:${accountKey}:tasks:dueDateSort`, 'none');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isTaskSearchFocused, setIsTaskSearchFocused] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditingTask, setIsEditingTask] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [taskForm, setTaskForm] = usePersistentState('syncly:tasks:taskForm', null);
-  const [taskActivity, setTaskActivity] = useState(() => readStoredJson(TASK_ACTIVITY_STORAGE_KEY, defaultTaskActivity));
-  const [commentDraft, setCommentDraft] = usePersistentState('syncly:tasks:commentDraft', '');
+  const [taskForm, setTaskForm] = usePersistentState(`syncly:${accountKey}:tasks:taskForm`, null);
+  const [taskActivity, setTaskActivity] = useState(() => readStoredJson(`syncly:${accountKey}:taskActivity`, defaultTaskActivity));
+  const [commentDraft, setCommentDraft] = usePersistentState(`syncly:${accountKey}:tasks:commentDraft`, '');
   const [toastMessage, setToastMessage] = useState(null);
   const filterMenuRef = useRef(null);
   const filterButtonRef = useRef(null);
@@ -396,14 +395,28 @@ const Tasks = () => {
     email: 'sarah@example.com',
   };
 
-  const { user } = useAuth();
-
-  const [tasks, setTasks] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+  const [tasks, setTasks] = useState(() => readStoredJson(`syncly:${accountKey}:tasks`, defaultTasks));
   const [workspaceList, setWorkspaceList] = useState(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
+  const visibleWorkspaceList = useMemo(() => {
+    if (accountKey === 'guest') return workspaceList;
+
+    const displayName = user?.user_metadata?.full_name || user?.name || user?.email || 'You';
+    return workspaceList.filter((workspace) => {
+      const createdBy = String(workspace.createdBy || '').trim();
+      const memberKeys = (workspace.memberKeys || []).map((value) => String(value).trim());
+      const memberNames = (workspace.members || []).map((value) => String(value).trim().toLowerCase());
+
+      return (
+        createdBy === String(accountKey).trim() ||
+        memberKeys.includes(String(accountKey).trim()) ||
+        memberNames.includes(String(displayName).trim().toLowerCase())
+      );
+    });
+  }, [accountKey, user, workspaceList]);
   const workspaceSlug = useMemo(() => new URLSearchParams(location.search).get('workspace') || '', [location.search]);
   const activeWorkspace = useMemo(
-    () => workspaceList.find((workspace) => slugify(workspace.name) === workspaceSlug) || defaultWorkspaces.find((workspace) => slugify(workspace.name) === workspaceSlug) || null,
-    [workspaceList, workspaceSlug]
+    () => visibleWorkspaceList.find((workspace) => slugify(workspace.name) === workspaceSlug) || null,
+    [visibleWorkspaceList, workspaceSlug]
   );
 
   // Load tasks from Supabase for authenticated users
@@ -463,7 +476,7 @@ const Tasks = () => {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      window.localStorage.setItem(`syncly:${accountKey}:tasks`, JSON.stringify(tasks));
       window.dispatchEvent(new Event('syncly:tasks-updated'));
     } catch (error) {
       console.error('Unable to persist tasks:', error);
@@ -476,7 +489,7 @@ const Tasks = () => {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(TASK_ACTIVITY_STORAGE_KEY, JSON.stringify(taskActivity));
+      window.localStorage.setItem(`syncly:${accountKey}:taskActivity`, JSON.stringify(taskActivity));
     } catch (error) {
       console.error('Unable to persist task activity:', error);
     }

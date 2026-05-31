@@ -5,6 +5,7 @@ import { Card, Button, Badge, Modal } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, ClipboardList, CheckCircle2, Layers3, AlertTriangle, Sparkles, PartyPopper, ArrowRight, X } from 'lucide-react';
 import { useLayout } from '../contexts/LayoutContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
+import { useAuth } from '../contexts/AuthContext';
 import useTheme from '../hooks/useTheme';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
@@ -215,6 +216,7 @@ const buildWelcomeModal = ({ activeTasks, completedTasks, overdueTasks, dueSoonT
 };
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const { layoutMode } = useLayout();
   const { openModal } = useGlobalModal();
   const { theme } = useTheme();
@@ -222,7 +224,8 @@ const Dashboard = () => {
   const [welcomeModal, setWelcomeModal] = useState(null);
   const [loginSession, setLoginSession] = useState(() => readSessionJson(ACTIVE_LOGIN_SESSION_KEY, null));
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [taskColumns, setTaskColumns] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+  const accountKey = useMemo(() => user?.id || user?.email || 'guest', [user]);
+  const [taskColumns, setTaskColumns] = useState(() => readStoredJson(`syncly:${accountKey}:tasks`, defaultTasks));
   const [workspaces, setWorkspaces] = useState(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
   const mockUser = {
     name: 'Sarah Johnson',
@@ -254,7 +257,7 @@ const Dashboard = () => {
       setBannerDismissed(false);
     }
 
-    const syncTasks = () => setTaskColumns(readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+    const syncTasks = () => setTaskColumns(readStoredJson(`syncly:${accountKey}:tasks`, defaultTasks));
     const syncWorkspaces = () => setWorkspaces(readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
 
     window.addEventListener('storage', syncTasks);
@@ -268,7 +271,7 @@ const Dashboard = () => {
       window.removeEventListener('syncly:tasks-updated', syncTasks);
       window.removeEventListener('syncly:workspaces-updated', syncWorkspaces);
     };
-  }, []);
+  }, [accountKey]);
 
   const bannerDismissalKey = loginSession?.signedInAt ? `${BANNER_DISMISSAL_KEY_PREFIX}${loginSession.signedInAt}` : null;
 

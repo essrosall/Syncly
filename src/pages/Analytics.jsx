@@ -4,6 +4,7 @@ import { Card, Badge } from '../components/ui';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { TrendingUp, Clock3, ChartColumnIncreasing } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -43,12 +44,14 @@ const flattenTasks = (taskColumns) =>
   );
 
 const Analytics = () => {
-  const mockUser = { name: 'Sarah Johnson', email: 'sarah@example.com' };
-  const [taskColumns, setTaskColumns] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+  const { user } = useAuth();
+  const mockUser = { name: user?.user_metadata?.full_name || user?.name || 'Sarah Johnson', email: user?.email || 'sarah@example.com' };
+  const accountKey = user?.id || user?.email || 'guest';
+  const [taskColumns, setTaskColumns] = useState(() => readStoredJson(`syncly:${accountKey}:tasks`, defaultTasks));
   const [workspaces, setWorkspaces] = useState(() => readStoredJson(WORKSPACES_STORAGE_KEY, []));
 
   useEffect(() => {
-    const syncTasks = () => setTaskColumns(readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
+    const syncTasks = () => setTaskColumns(readStoredJson(`syncly:${accountKey}:tasks`, defaultTasks));
     const syncWorkspaces = () => setWorkspaces(readStoredJson(WORKSPACES_STORAGE_KEY, []));
 
     window.addEventListener('storage', syncTasks);
@@ -62,7 +65,7 @@ const Analytics = () => {
       window.removeEventListener('syncly:tasks-updated', syncTasks);
       window.removeEventListener('syncly:workspaces-updated', syncWorkspaces);
     };
-  }, []);
+  }, [accountKey]);
 
   const analytics = useMemo(() => {
     const allTasks = flattenTasks(taskColumns);

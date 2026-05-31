@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const cloneValue = (value) => {
   if (value === null || typeof value !== 'object') {
@@ -27,6 +27,14 @@ const readStoredValue = (key, fallbackValue) => {
 
 const usePersistentState = (key, fallbackValue) => {
   const [value, setValue] = useState(() => readStoredValue(key, fallbackValue));
+  const previousKeyRef = useRef(key);
+
+  useEffect(() => {
+    if (previousKeyRef.current === key) return;
+
+    previousKeyRef.current = key;
+    setValue(readStoredValue(key, fallbackValue));
+  }, [fallbackValue, key]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

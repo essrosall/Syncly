@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import usePersistentState from '../hooks/usePersistentState';
 // touch: trigger dev server refresh
 import { MainLayout } from '../components/layout';
@@ -6,6 +6,7 @@ import { Card, Input, Button, Badge, Textarea, TutorialModal } from '../componen
 import { UserRound, BellRing, ShieldCheck, Upload, ChevronDown, Briefcase } from 'lucide-react';
 import SearchableTagField from '../components/profile/SearchableTagField';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
+import { useAuth } from '../contexts/AuthContext';
 import {
   HOBBIES_SUGGESTIONS,
   INTERESTS_SUGGESTIONS,
@@ -15,14 +16,18 @@ import {
 
 const Settings = () => {
   const { openModal } = useGlobalModal();
-  const STORAGE_KEY = 'syncly:demoSession';
-  
-  const mockUser = { name: 'Sarah Johnson', email: 'sarah@example.com' };
+  const { user } = useAuth();
 
-  const initialProfile = {
-    firstName: 'Sarah',
+  const accountKey = useMemo(() => user?.id || user?.email || 'guest', [user]);
+  const mockUser = useMemo(() => ({
+    name: user?.user_metadata?.full_name || user?.name || 'Sarah Johnson',
+    email: user?.email || 'sarah@example.com',
+  }), [user]);
+
+  const initialProfile = useMemo(() => ({
+    firstName: user ? '' : 'Sarah',
     middleName: '',
-    lastName: 'Johnson',
+    lastName: user ? '' : 'Johnson',
     nickname: '',
     name: mockUser.name,
     email: mockUser.email,
@@ -37,9 +42,18 @@ const Settings = () => {
     graduatedFrom: [],
     profileImage: null,
     profileImageUrl: null,
-  };
+  }), [mockUser.email, mockUser.name, user]);
 
-  const [profileData, setProfileData, resetProfileData] = usePersistentState('syncly:profileData', initialProfile);
+  const [profileDataRaw, setProfileData, resetProfileData] = usePersistentState(`syncly:${accountKey}:profileData`, initialProfile);
+  const profileData = useMemo(() => ({
+    ...initialProfile,
+    ...(profileDataRaw || {}),
+    work: Array.isArray(profileDataRaw?.work) ? profileDataRaw.work : [],
+    hobbies: Array.isArray(profileDataRaw?.hobbies) ? profileDataRaw.hobbies : [],
+    interests: Array.isArray(profileDataRaw?.interests) ? profileDataRaw.interests : [],
+    school: Array.isArray(profileDataRaw?.school) ? profileDataRaw.school : [],
+    graduatedFrom: Array.isArray(profileDataRaw?.graduatedFrom) ? profileDataRaw.graduatedFrom : [],
+  }), [initialProfile, profileDataRaw]);
 
   const [saveStatus, setSaveStatus] = useState('');
 

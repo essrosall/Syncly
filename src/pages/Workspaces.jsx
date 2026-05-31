@@ -5,6 +5,7 @@ import { MainLayout } from '../components/layout';
 import { Card, Button, Badge, Input, Textarea } from '../components/ui';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 import usePersistentState from '../hooks/usePersistentState';
 
 const TASKS_STORAGE_KEY = 'syncly:tasks';
@@ -93,6 +94,32 @@ const writeStoredJson = (key, value) => {
 };
 
 const normalizeInviteCode = (value) => String(value || '').trim().toUpperCase().replace(/\s+/g, '');
+
+const getUserAccessKey = (user) => user?.id || user?.email || '';
+
+const getUserDisplayName = (user) => user?.user_metadata?.full_name || user?.name || user?.email || 'You';
+
+const isWorkspaceOwnedByUser = (workspace, userAccessKey) => {
+  if (!userAccessKey) return true;
+
+  return String(workspace?.createdBy || '').trim() === String(userAccessKey).trim();
+};
+
+const isWorkspaceJoinedByUser = (workspace, userAccessKey, userDisplayName) => {
+  if (!userAccessKey) return true;
+
+  const memberKeys = (workspace?.memberKeys || []).map((value) => String(value).trim());
+  if (memberKeys.includes(String(userAccessKey).trim())) return true;
+
+  const memberNames = (workspace?.members || []).map((value) => String(value).trim().toLowerCase());
+  return memberNames.includes(String(userDisplayName || '').trim().toLowerCase());
+};
+
+const isWorkspaceVisibleToUser = (workspace, userAccessKey, userDisplayName) => {
+  if (!userAccessKey) return true;
+
+  return isWorkspaceOwnedByUser(workspace, userAccessKey) || isWorkspaceJoinedByUser(workspace, userAccessKey, userDisplayName);
+};
 
 const getExistingInviteCodes = (workspaces, ignoreWorkspaceId = null) =>
   new Set(
@@ -224,8 +251,8 @@ const getWorkspaceSummary = (workspace, tasksByColumn) => {
   };
 };
 
-const WorkspaceCreateForm = ({ onCreate, onClose, existingInviteCodes = [] }) => {
-  const [draft, setDraft, clearDraft] = usePersistentState('syncly:workspaceDraft', {
+const WorkspaceCreateForm = ({ onCreate, onClose, existingInviteCodes = [], userAccessKey, userDisplayName }) => {
+  const [draft, setDraft, clearDraft] = usePersistentState(`syncly:${userAccessKey || 'guest'}:workspaceDraft`, {
     name: '',
     description: '',
     membersText: 'You, Sarah',
@@ -256,6 +283,9 @@ const WorkspaceCreateForm = ({ onCreate, onClose, existingInviteCodes = [] }) =>
       color,
       members,
       inviteCode: generateInviteCode(nextName, existingInviteCodes),
+      createdBy: userAccessKey,
+      createdByName: userDisplayName,
+      memberKeys: userAccessKey ? [userAccessKey] : [],
       keywords: getWorkspaceTokens({ name: nextName, description }),
       status: 'Active',
     });
@@ -483,7 +513,7 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
   );
 };
 
-const WorkspaceJoinForm = ({ workspaces, onJoin, onClose }) => {
+const WorkspaceJoinForm = ({ workspaces, onJoin, onClose, userAccessKey, userDisplayName }) => {
   const [inviteCode, setInviteCode] = useState('');
 
   const normalizedInviteCode = normalizeInviteCode(inviteCode);
@@ -497,7 +527,7 @@ const WorkspaceJoinForm = ({ workspaces, onJoin, onClose }) => {
       return;
     }
 
-    onJoin?.(matchingWorkspace, normalizedInviteCode);
+    onJoin?.(matchingWorkspace, normalizedInviteCode, userAccessKey, userDisplayName);
   };
 
   return (
@@ -599,7 +629,11 @@ const WorkspaceDeleteConfirmModal = ({ workspace, onConfirm, onClose }) => {
 };
 
 const Workspaces = () => {
-  const mockUser = { name: 'Sarah Johnson', email: 'sarah@example.com' };
+  const { user } = useAuth();
+  const mockUser = useMemo(() => ({
+    name: getUserDisplayName(user),
+    email: user?.email || 'sarah@example.com',
+  }), [user]);
   const navigate = useNavigate();
   const { openModal, closeModal } = useGlobalModal();
   const { addToast } = useToast();
@@ -607,6 +641,8 @@ const Workspaces = () => {
   const [workspaceList, setWorkspaceList] = useState(() => readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
   const [taskColumns, setTaskColumns] = useState(() => readStoredJson(TASKS_STORAGE_KEY, defaultTasks));
   const [openMenuId, setOpenMenuId] = useState(null);
+  const userAccessKey = getUserAccessKey(user);
+  const userDisplayName = getUserDisplayName(user);
 
   useEffect(() => {
     const syncWorkspaces = () => setWorkspaceList(readStoredJson(WORKSPACES_STORAGE_KEY, defaultWorkspaces));
@@ -662,11 +698,13 @@ const Workspaces = () => {
   }, [openMenuId]);
 
   const workspaceData = useMemo(() => {
-    return workspaceList.map((workspace) => ({
+    return workspaceList
+      .filter((workspace) => isWorkspaceVisibleToUser(workspace, userAccessKey, userDisplayName))
+      .map((workspace) => ({
       ...workspace,
       summary: getWorkspaceSummary(workspace, taskColumns),
     }));
-  }, [workspaceList, taskColumns]);
+  }, [workspaceList, taskColumns, userAccessKey, userDisplayName]);
 
   const workspaceMetrics = useMemo(() => {
     const allTaskSummaries = workspaceData.map((workspace) => workspace.summary);
@@ -705,6 +743,8 @@ const Workspaces = () => {
       title: 'Create Workspace',
       sizeClass: 'max-w-6xl',
       existingInviteCodes: [...getExistingInviteCodes(workspaceList)],
+      userAccessKey,
+      userDisplayName,
       onClose: closeModal,
       onCreate: (workspace) => {
         const existingInviteCodes = getExistingInviteCodes(workspaceList);
@@ -799,6 +839,15 @@ const Workspaces = () => {
   };
 
   const handleDeleteWorkspace = (workspace) => {
+    if (!isWorkspaceOwnedByUser(workspace, userAccessKey)) {
+      addToast({
+        title: 'Access denied',
+        message: 'Only the workspace creator can delete this workspace.',
+        variant: 'error',
+      });
+      return;
+    }
+
     openModal(WorkspaceDeleteConfirmModal, {
       title: 'Delete Workspace',
       sizeClass: 'max-w-xl',
@@ -830,8 +879,10 @@ const Workspaces = () => {
       title: 'Join Workspace',
       sizeClass: 'max-w-2xl',
       workspaces: workspaceList,
+      userAccessKey,
+      userDisplayName,
       onClose: closeModal,
-      onJoin: (matchedWorkspace, attemptedCode) => {
+      onJoin: (matchedWorkspace, attemptedCode, accessKey, displayName) => {
         if (!matchedWorkspace) {
           addToast({
             title: 'Workspace not found',
@@ -846,9 +897,12 @@ const Workspaces = () => {
           if (workspace.id !== matchedWorkspace.id) return workspace;
 
           const members = Array.from(new Set([...(workspace.members || []), memberName]));
+          const memberKeys = Array.from(new Set([...(workspace.memberKeys || []), accessKey || ''])).filter(Boolean);
           return {
             ...workspace,
             members,
+            memberKeys,
+            joinedByName: displayName || workspace.joinedByName,
             updatedAt: new Date().toISOString(),
           };
         });
@@ -969,7 +1023,7 @@ const Workspaces = () => {
                             { label: 'Rename', icon: PencilLine, action: () => handleRenameWorkspace(workspace) },
                             { label: 'Duplicate', icon: Copy, action: () => handleDuplicateWorkspace(workspace) },
                             { label: workspace.status === 'Archived' ? 'Restore' : 'Archive', icon: Archive, action: () => handleToggleArchive(workspace) },
-                            { label: 'Delete', icon: Trash2, action: () => handleDeleteWorkspace(workspace), danger: true },
+                            ...(isWorkspaceOwnedByUser(workspace, userAccessKey) ? [{ label: 'Delete', icon: Trash2, action: () => handleDeleteWorkspace(workspace), danger: true }] : []),
                           ].map((item) => {
                             const Icon = item.icon;
                             return (

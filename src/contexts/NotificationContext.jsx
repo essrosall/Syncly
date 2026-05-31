@@ -91,6 +91,7 @@ const buildDueDateNotificationTemplates = (tasksByColumn) => {
 
 export const NotificationProvider = ({ children }) => {
   const { user } = useAuth();
+  const accountKey = user?.id || user?.email || 'guest';
 
   const [notifications, setNotifications] = useState(() => readStoredJson(NOTIFICATIONS_STORAGE_KEY, []));
 
@@ -290,7 +291,7 @@ export const NotificationProvider = ({ children }) => {
   }, []);
 
   const refreshNotifications = useCallback(() => {
-    const tasksByColumn = readStoredJson(TASKS_STORAGE_KEY, null);
+    const tasksByColumn = readStoredJson(`syncly:${accountKey}:tasks`, null);
     if (!tasksByColumn) return;
 
     const dueTemplates = buildDueDateNotificationTemplates(tasksByColumn);
@@ -314,7 +315,7 @@ export const NotificationProvider = ({ children }) => {
 
       return [...toAdd, ...kept].slice(0, 200);
     });
-  }, []);
+  }, [accountKey]);
 
   useEffect(() => {
     refreshNotifications();
@@ -322,7 +323,7 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     const handleStorage = (event) => {
-      if (event.key === TASKS_STORAGE_KEY) {
+      if (event.key === `syncly:${accountKey}:tasks`) {
         refreshNotifications();
         return;
       }
@@ -334,7 +335,7 @@ export const NotificationProvider = ({ children }) => {
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, [refreshNotifications]);
+  }, [accountKey, refreshNotifications]);
 
   const markAsRead = useCallback((id) => {
     if (isSupabaseConfigured && supabase && user) {
