@@ -1282,7 +1282,7 @@ const Tasks = () => {
         <Card className="rounded-base border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
           <div className="space-y-4">
             <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)_auto] lg:items-center lg:gap-4 ">
-              <div className="flex flex-wrap items-center gap-2 rounded-base py-3 dark:border-neutral-700 dark:bg-neutral-800/70 lg:justify-start">
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-100/80 px-3 py-3 dark:border-neutral-700 dark:bg-transparent lg:justify-start">
                   <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Priority</span>
                   <div className="flex flex-wrap gap-2">
                     {priorityOptions.map((priority) => (
@@ -1296,7 +1296,7 @@ const Tasks = () => {
                               : priority === 'medium'
                               ? 'border-orange-500 bg-orange-500 text-white'
                               : 'border-green-500 bg-green-500 text-white'
-                            : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                            : 'border-neutral-200 bg-neutral-100 text-neutral-500 dark:border-neutral-700 dark:bg-transparent dark:text-neutral-300 dark:hover:bg-neutral-800/50'
                         }`}
                       >
                         {priority.charAt(0).toUpperCase() + priority.slice(1)}
