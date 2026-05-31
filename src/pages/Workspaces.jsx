@@ -92,10 +92,30 @@ const writeStoredJson = (key, value) => {
   }
 };
 
-const generateInviteCode = (name, id) => {
-  const base = slugify(name).replace(/-/g, '').slice(0, 6).toUpperCase() || 'SYNC';
-  const suffix = String(id || Date.now()).slice(-4);
-  return `${base}-${suffix}`;
+const normalizeInviteCode = (value) => String(value || '').trim().toUpperCase().replace(/\s+/g, '');
+
+const getExistingInviteCodes = (workspaces, ignoreWorkspaceId = null) =>
+  new Set(
+    (workspaces || [])
+      .filter((workspace) => ignoreWorkspaceId === null || String(workspace.id) !== String(ignoreWorkspaceId))
+      .map((workspace) => normalizeInviteCode(workspace.inviteCode))
+      .filter(Boolean)
+  );
+
+const generateInviteCode = (name, existingCodes = []) => {
+  const prefix = slugify(name).replace(/-/g, '').slice(0, 4).toUpperCase() || 'SYNC';
+  const existing = new Set((existingCodes || []).map((code) => normalizeInviteCode(code)).filter(Boolean));
+
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    const randomPart = Array.from({ length: 6 }, () => Math.floor(Math.random() * 36).toString(36)).join('').toUpperCase();
+    const code = `${prefix}-${randomPart}`;
+
+    if (!existing.has(code)) {
+      return code;
+    }
+  }
+
+  return `${prefix}-${Date.now().toString(36).toUpperCase()}`;
 };
 
 const slugify = (value) =>
@@ -204,7 +224,7 @@ const getWorkspaceSummary = (workspace, tasksByColumn) => {
   };
 };
 
-const WorkspaceCreateForm = ({ onCreate, onClose }) => {
+const WorkspaceCreateForm = ({ onCreate, onClose, existingInviteCodes = [] }) => {
   const [draft, setDraft, clearDraft] = usePersistentState('syncly:workspaceDraft', {
     name: '',
     description: '',
@@ -235,7 +255,7 @@ const WorkspaceCreateForm = ({ onCreate, onClose }) => {
       description: description.trim(),
       color,
       members,
-      inviteCode: generateInviteCode(nextName),
+      inviteCode: generateInviteCode(nextName, existingInviteCodes),
       keywords: getWorkspaceTokens({ name: nextName, description }),
       status: 'Active',
     });
@@ -454,12 +474,124 @@ const WorkspaceDetailsModal = ({ workspace, summary, onClose, onOpenTasks }) => 
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-        <Button variant="secondary" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={onClose}>
+      <div className="flex justify-end pt-2">
+        <Button variant="secondary" className="w-full justify-center bg-neutral-900 text-white hover:bg-neutral-800 sm:w-auto dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={onClose}>
           Close
         </Button>
-        <Button variant="primary" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={onOpenTasks}>
-          <ArrowRight size={16} /> View Tasks
+      </div>
+    </div>
+  );
+};
+
+const WorkspaceJoinForm = ({ workspaces, onJoin, onClose }) => {
+  const [inviteCode, setInviteCode] = useState('');
+
+  const normalizedInviteCode = normalizeInviteCode(inviteCode);
+  const matchingWorkspace = workspaces.find((workspace) => normalizeInviteCode(workspace.inviteCode) === normalizedInviteCode);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!matchingWorkspace) {
+      onJoin?.(null, normalizedInviteCode);
+      return;
+    }
+
+    onJoin?.(matchingWorkspace, normalizedInviteCode);
+  };
+
+  return (
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="rounded-base border border-primary-200 bg-primary-50 p-5 dark:border-primary-700/30 dark:bg-primary-600/10">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-base bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
+            <span className="text-sm font-semibold">+</span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-primary-200">Join workspace</p>
+            <p className="text-sm font-medium text-neutral-950 dark:text-neutral-100">Enter the invite code to join a shared workspace.</p>
+            <p className="text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+              Ask the workspace owner for the code. Each workspace gets a unique code made of letters and numbers.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <label className="space-y-2 block">
+        <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Workspace code</span>
+        <Input
+          value={inviteCode}
+          onChange={(event) => setInviteCode(event.target.value)}
+          placeholder="e.g. PROD-1A2B3C"
+          autoComplete="off"
+          spellCheck={false}
+        />
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">The code is case-insensitive and unique to one workspace.</p>
+      </label>
+
+      <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+        <Button
+          variant="secondary"
+          type="button"
+          className="w-full justify-center !border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 sm:w-auto dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          type="submit"
+          className="w-full justify-center !border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 sm:w-auto dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+          disabled={!normalizedInviteCode}
+        >
+          Join Workspace
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const WorkspaceDeleteConfirmModal = ({ workspace, onConfirm, onClose }) => {
+  const [confirmation, setConfirmation] = useState('');
+  const expectedValue = workspace?.name || 'confirm delete';
+  const normalizedConfirmation = confirmation.trim().toLowerCase();
+  const canDelete = normalizedConfirmation === 'confirm delete' || normalizedConfirmation === expectedValue.toLowerCase();
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-base border border-error-200 bg-error-50 p-5 dark:border-error-700/40 dark:bg-error-950/25">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-error-700 dark:text-error-200">Delete workspace</p>
+        <h3 className="mt-1 text-xl font-semibold text-neutral-950 dark:text-neutral-100">This cannot be undone</h3>
+        <p className="mt-2 text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+          Type <span className="font-semibold text-neutral-950 dark:text-neutral-100">confirm delete</span> or <span className="font-semibold text-neutral-950 dark:text-neutral-100">{expectedValue}</span> to remove <span className="font-semibold text-neutral-950 dark:text-neutral-100">{workspace?.name}</span>.
+        </p>
+      </div>
+
+      <label className="space-y-2 block">
+        <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Confirmation text</span>
+        <Input
+          value={confirmation}
+          onChange={(event) => setConfirmation(event.target.value)}
+          placeholder="confirm delete"
+          autoComplete="off"
+        />
+      </label>
+
+      <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+        <Button
+          variant="secondary"
+          className="w-full justify-center !border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 sm:w-auto dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="danger"
+          className="w-full justify-center disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          disabled={!canDelete}
+          onClick={() => onConfirm?.(confirmation)}
+        >
+          Delete Workspace
         </Button>
       </div>
     </div>
@@ -494,9 +626,15 @@ const Workspaces = () => {
   }, []);
 
   useEffect(() => {
+    const seenCodes = new Set();
     const nextWorkspaceList = workspaceList.map((workspace) => {
-      if (workspace.inviteCode) return workspace;
-      return { ...workspace, inviteCode: generateInviteCode(workspace.name, workspace.id) };
+      const existingCode = normalizeInviteCode(workspace.inviteCode);
+      const code = existingCode && !seenCodes.has(existingCode)
+        ? existingCode
+        : generateInviteCode(workspace.name, [...seenCodes, ...getExistingInviteCodes(workspaceList, workspace.id)]);
+
+      seenCodes.add(code);
+      return { ...workspace, inviteCode: code };
     });
 
     if (nextWorkspaceList.some((workspace, index) => workspace.inviteCode !== workspaceList[index]?.inviteCode)) {
@@ -566,13 +704,15 @@ const Workspaces = () => {
     openModal(WorkspaceCreateForm, {
       title: 'Create Workspace',
       sizeClass: 'max-w-6xl',
+      existingInviteCodes: [...getExistingInviteCodes(workspaceList)],
       onClose: closeModal,
       onCreate: (workspace) => {
+        const existingInviteCodes = getExistingInviteCodes(workspaceList);
         const next = [
           {
             id: Date.now(),
             ...workspace,
-            inviteCode: workspace.inviteCode || generateInviteCode(workspace.name, workspace.id),
+            inviteCode: workspace.inviteCode || generateInviteCode(workspace.name, [...existingInviteCodes]),
           },
           ...workspaceList,
         ];
@@ -624,13 +764,14 @@ const Workspaces = () => {
 
   const handleDuplicateWorkspace = (workspace) => {
     const duplicateName = `${workspace.name} Copy`;
+    const existingInviteCodes = getExistingInviteCodes(workspaceList, workspace.id);
     const next = [
       {
         ...workspace,
         id: Date.now(),
         name: duplicateName,
         status: 'Active',
-        inviteCode: generateInviteCode(duplicateName, Date.now()),
+        inviteCode: generateInviteCode(duplicateName, [...existingInviteCodes]),
         keywords: getWorkspaceTokens({ name: duplicateName, description: workspace.description }),
       },
       ...workspaceList,
@@ -658,24 +799,87 @@ const Workspaces = () => {
   };
 
   const handleDeleteWorkspace = (workspace) => {
-    const confirmed = window.confirm(`Delete ${workspace.name}? This cannot be undone.`);
-    if (!confirmed) return;
+    openModal(WorkspaceDeleteConfirmModal, {
+      title: 'Delete Workspace',
+      sizeClass: 'max-w-xl',
+      workspace,
+      onClose: closeModal,
+      onConfirm: (confirmationText) => {
+        const normalizedConfirmation = String(confirmationText || '').trim().toLowerCase();
+        const expectedName = String(workspace.name || '').toLowerCase();
+        const canDelete = normalizedConfirmation === 'confirm delete' || normalizedConfirmation === expectedName;
 
-    persistWorkspaceList(workspaceList.filter((item) => item.id !== workspace.id));
-    addToast({ title: 'Workspace deleted', message: `${workspace.name} has been removed.`, variant: 'success' });
+        if (!canDelete) {
+          addToast({
+            title: 'Confirmation needed',
+            message: 'Type confirm delete or the workspace name to continue.',
+            variant: 'error',
+          });
+          return;
+        }
+
+        persistWorkspaceList(workspaceList.filter((item) => item.id !== workspace.id));
+        closeModal();
+        addToast({ title: 'Workspace deleted', message: `${workspace.name} has been removed.`, variant: 'success' });
+      },
+    });
+  };
+
+  const handleJoinWorkspace = () => {
+    openModal(WorkspaceJoinForm, {
+      title: 'Join Workspace',
+      sizeClass: 'max-w-2xl',
+      workspaces: workspaceList,
+      onClose: closeModal,
+      onJoin: (matchedWorkspace, attemptedCode) => {
+        if (!matchedWorkspace) {
+          addToast({
+            title: 'Workspace not found',
+            message: attemptedCode ? `No workspace matches code ${attemptedCode}.` : 'Enter a workspace code to continue.',
+            variant: 'error',
+          });
+          return;
+        }
+
+        const memberName = 'You';
+        const updatedList = workspaceList.map((workspace) => {
+          if (workspace.id !== matchedWorkspace.id) return workspace;
+
+          const members = Array.from(new Set([...(workspace.members || []), memberName]));
+          return {
+            ...workspace,
+            members,
+            updatedAt: new Date().toISOString(),
+          };
+        });
+
+        persistWorkspaceList(updatedList);
+        closeModal();
+        addToast({
+          title: 'Workspace joined',
+          message: `You joined ${matchedWorkspace.name}.`,
+          variant: 'success',
+        });
+      },
+    });
   };
 
   return (
     <MainLayout user={mockUser} activeTab="workspaces">
       <div className="space-y-6 animate-fade-in-up">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div id="workspaces-overview">
             <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Workspaces</h1>
             <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Organize teams and manage projects across dedicated workspaces.</p>
           </div>
-          <Button variant="primary" size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={handleOpenCreate}>
-            <FolderKanban size={18} /> Create Workspace
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
+            <Button variant="secondary" size="sm" className="w-full justify-center !border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 sm:w-auto dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800" onClick={handleJoinWorkspace}>
+              <ExternalLink size={18} /> Join with code
+            </Button>
+            <Button variant="primary" size="sm" className="w-full justify-center !border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 sm:w-auto dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800" onClick={handleOpenCreate}>
+              <FolderKanban size={18} /> Create Workspace
+            </Button>
+          </div>
         </div>
 
         <Card className="rounded-base border-neutral-200 bg-white p-5 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
@@ -684,16 +888,17 @@ const Workspaces = () => {
               <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Workspace overview</h2>
               <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">The workspace section now stays in sync with the task board and keeps details live across the app.</p>
             </div>
-            <div className="w-full lg:max-w-sm">
-              <div className="flex items-center gap-3 rounded-base border border-neutral-200 bg-white px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800">
-                <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
-                <Input
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Search workspaces or members"
-                  className="border-0 p-0 shadow-none focus:ring-0"
-                />
-              </div>
+          </div>
+
+          <div className="mt-4 w-full lg:max-w-sm">
+            <div className="flex items-center gap-3 rounded-base border border-neutral-200 bg-white px-4 py-3 shadow-[0_10px_25px_rgba(17,25,43,0.05)] dark:border-neutral-700 dark:bg-neutral-800">
+              <Search size={18} className="text-neutral-400 dark:text-neutral-500" />
+              <Input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search workspaces or members"
+                className="border-0 p-0 shadow-none focus:ring-0"
+              />
             </div>
           </div>
         </Card>

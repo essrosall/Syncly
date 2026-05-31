@@ -191,8 +191,21 @@ const TaskCreateForm = ({ column = 'todo', assignee: initialAssignee = 'You', pr
       </label>
 
       <div className="flex justify-end gap-3">
-        <Button variant="secondary" type="button" onClick={() => closeModal()}>Cancel</Button>
-        <Button variant="primary" type="submit">Create Task</Button>
+        <Button
+          variant="secondary"
+          type="button"
+          className="!border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+          onClick={() => closeModal()}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          type="submit"
+          className="!border-neutral-900 !bg-neutral-900 !text-white hover:!bg-neutral-800 dark:!border-neutral-900 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
+        >
+          Create Task
+        </Button>
       </div>
     </form>
   );
