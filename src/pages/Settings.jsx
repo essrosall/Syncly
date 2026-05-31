@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import usePersistentState from '../hooks/usePersistentState';
 // touch: trigger dev server refresh
 import { MainLayout } from '../components/layout';
 import { Card, Input, Button, Badge, Textarea, TutorialModal } from '../components/ui';
@@ -18,7 +19,7 @@ const Settings = () => {
   
   const mockUser = { name: 'Sarah Johnson', email: 'sarah@example.com' };
 
-  const [profileData, setProfileData] = useState({
+  const initialProfile = {
     firstName: 'Sarah',
     middleName: '',
     lastName: 'Johnson',
@@ -36,7 +37,9 @@ const Settings = () => {
     graduatedFrom: [],
     profileImage: null,
     profileImageUrl: null,
-  });
+  };
+
+  const [profileData, setProfileData, resetProfileData] = usePersistentState('syncly:profileData', initialProfile);
 
   const [saveStatus, setSaveStatus] = useState('');
 
@@ -59,60 +62,12 @@ const Settings = () => {
     ? 'Add your current school to make your profile easier to discover.'
     : 'Add your graduated school to help people recognize your background.';
 
-  // Load profile data from localStorage on mount
+  // keep sidebar in sync when profileData changes
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsedData = JSON.parse(stored);
-        setProfileData(prev => ({
-          ...prev,
-          firstName: parsedData.firstName || prev.firstName,
-          lastName: parsedData.lastName || prev.lastName,
-          nickname: parsedData.nickname || prev.nickname,
-          gender: parsedData.gender || prev.gender,
-          displayPreference: parsedData.displayPreference || prev.displayPreference,
-          educationStatus: parsedData.educationStatus || prev.educationStatus,
-          work: parsedData.work || [],
-          hobbies: parsedData.hobbies || [],
-          interests: parsedData.interests || [],
-          school: parsedData.school || [],
-          graduatedFrom: parsedData.graduatedFrom || [],
-          ...parsedData,
-        }));
-      }
-    } catch (error) {
-      console.error('Failed to load profile:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        firstName: profileData.firstName,
-        middleName: profileData.middleName,
-        lastName: profileData.lastName,
-        nickname: profileData.nickname,
-        name: profileData.name,
-        email: profileData.email,
-        gender: profileData.gender,
-        displayPreference: profileData.displayPreference,
-        educationStatus: profileData.educationStatus,
-        bio: profileData.bio,
-        work: profileData.work,
-        hobbies: profileData.hobbies,
-        interests: profileData.interests,
-        school: profileData.school,
-        graduatedFrom: profileData.graduatedFrom,
-        profileImage: profileData.profileImage,
-        profileImageUrl: profileData.profileImageUrl,
-      }));
-
       window.dispatchEvent(new Event('syncly:profile-updated'));
-    } catch {
-      // ignore draft save failures
-    }
-  }, [profileData, STORAGE_KEY]);
+    } catch {}
+  }, [profileData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -139,28 +94,7 @@ const Settings = () => {
 
   const handleSaveProfile = () => {
     try {
-      // Save to localStorage
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        firstName: profileData.firstName,
-        middleName: profileData.middleName,
-        lastName: profileData.lastName,
-        nickname: profileData.nickname,
-        name: profileData.name,
-        email: profileData.email,
-        gender: profileData.gender,
-        displayPreference: profileData.displayPreference,
-        educationStatus: profileData.educationStatus,
-        bio: profileData.bio,
-        work: profileData.work,
-        hobbies: profileData.hobbies,
-        interests: profileData.interests,
-        school: profileData.school,
-        graduatedFrom: profileData.graduatedFrom,
-        profileImage: profileData.profileImage,
-        profileImageUrl: profileData.profileImageUrl,
-      }));
-
-      // Trigger event for sidebar to update
+      // persisted automatically via usePersistentState; trigger UI sync
       window.dispatchEvent(new Event('syncly:profile-updated'));
 
       setSaveStatus('saved');
