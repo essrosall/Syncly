@@ -8,14 +8,15 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
   const jsx = (
     <>
-      {/* Backdrop */}
+      {/* Backdrop (full-screen blur + dim) */}
       <div
-        className="fixed inset-0 z-50 bg-black/50 transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        style={{ zIndex: 9000 }}
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+      {/* Modal (centered above backdrop) */}
+      <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 9100 }}>
           <div className="w-full max-w-md overflow-hidden rounded-base border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200/80 px-6 py-4 dark:border-neutral-700/80">

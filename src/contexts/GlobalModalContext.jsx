@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useState } from 'react';
+import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
 import Modal from '../components/ui/Modal';
 
 const GlobalModalContext = createContext(null);
@@ -11,6 +11,10 @@ export const GlobalModalProvider = ({ children }) => {
   const [modal, setModal] = useState(null);
 
   const openModal = useCallback((content, props = {}) => {
+    try {
+      window.dispatchEvent(new Event('syncly:close-local-modals'));
+    } catch {}
+
     setModal({ content, props });
   }, []);
 
@@ -25,6 +29,19 @@ export const GlobalModalProvider = ({ children }) => {
       return null;
     });
   }, []);
+
+  // Close global modal when a local modal requests global modals to close
+  useEffect(() => {
+    const handleCloseGlobal = () => closeModal();
+    try {
+      window.addEventListener('syncly:close-global-modals', handleCloseGlobal);
+    } catch {}
+    return () => {
+      try {
+        window.removeEventListener('syncly:close-global-modals', handleCloseGlobal);
+      } catch {}
+    };
+  }, [closeModal]);
 
   return (
     <GlobalModalContext.Provider value={{ modal, openModal, closeModal }}>
@@ -44,6 +61,8 @@ export const GlobalModalProvider = ({ children }) => {
     </GlobalModalContext.Provider>
   );
 };
+
+// (no-op) all global/local close listeners are registered inside the provider
 
 export const useGlobalModal = () => {
   const ctx = useContext(GlobalModalContext);

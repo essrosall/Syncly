@@ -76,7 +76,8 @@ const getInitials = (name) => {
 const openTutorialTour = (openModal) => {
   openModal(TutorialModal, {
     title: 'Product Tour',
-    sizeClass: 'max-w-6xl',
+    sizeClass: 'max-w-7xl',
+    shell: false,
     onClose: () => {
       try {
         window.localStorage.setItem('syncly:seenTutorialTour', JSON.stringify({ completedAt: new Date().toISOString() }));
@@ -100,7 +101,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
   ];
 
   const { openCreate } = useCreateModal();
-  const { openModal } = useGlobalModal();
+  const { openModal, modal, closeModal } = useGlobalModal();
   const { isSidebarOpen, closeSidebar } = useMobileNav();
   const { sidebarWidth } = useLayout();
   const location = useLocation();
@@ -117,6 +118,18 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
   useEffect(() => {
     setProfile(readProfile(user));
   }, [user]);
+
+  useEffect(() => {
+    const handleCloseLocal = () => setShowProfileModal(false);
+    try {
+      window.addEventListener('syncly:close-local-modals', handleCloseLocal);
+    } catch {}
+    return () => {
+      try {
+        window.removeEventListener('syncly:close-local-modals', handleCloseLocal);
+      } catch {}
+    };
+  }, []);
 
   useEffect(() => {
     const syncProfile = () => setProfile(readProfile(user));
@@ -161,7 +174,10 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
           <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
           <div className="rounded-base border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-            <div className="flex cursor-pointer items-center gap-3 rounded-base p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => setShowProfileModal(true)}>
+            <div className="flex cursor-pointer items-center gap-3 rounded-base p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => {
+                try { if (typeof closeModal === 'function') { closeModal(); } } catch {}
+                setTimeout(() => setShowProfileModal(true), 80);
+              }}>
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 dark:bg-neutral-800 dark:text-neutral-100 overflow-hidden">
                   {profile.profileImageUrl ? (
                     <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
@@ -180,7 +196,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 variant="primary"
                 size="sm"
                 className="!h-9 !w-9 !p-0 !gap-0 rounded-base !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
-                onClick={() => setShowProfileModal(true)}
+                onClick={() => { try { if (typeof closeModal === 'function') { closeModal(); } } catch {} setTimeout(() => setShowProfileModal(true), 80); }}
                 aria-label="View profile"
               >
                 <UserRound size={16} strokeWidth={1.8} className="text-white dark:text-white" />
@@ -189,6 +205,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 variant="primary"
                 className="flex-1 justify-between rounded-base !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => {
+                  try { window.dispatchEvent(new Event('syncly:close-local-modals')); } catch {}
                   try {
                     openModal(TaskCreateForm, { column: 'todo', title: 'Create Task', sizeClass: 'max-w-5xl' });
                   } catch {
@@ -291,7 +308,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
         </div>
       </div>
 
-      {showProfileModal && (
+      {showProfileModal && !modal && (
         <ProfileInfoModal
           profile={profile}
           onClose={() => setShowProfileModal(false)}

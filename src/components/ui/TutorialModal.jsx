@@ -10,37 +10,30 @@ const tutorialSteps = [
   {
     icon: LayoutDashboard,
     label: 'Dashboard',
-    title: 'Start with the daily brief',
-    description: 'Your dashboard brings together the daily brief, welcome message, and the most important work so you can decide what needs attention first.',
-    hint: 'Use this area to scan the day before opening tasks or settings.',
+    title: 'Daily brief & quick overview',
+    description: 'See today’s priorities and quick links to jump into work.',
+    image: '/src/assets/hero.png',
   },
   {
     icon: CheckSquare,
     label: 'Tasks',
-    title: 'Keep work organized by status',
-    description: 'The Tasks board helps you move work between To Do, In Progress, Review, and Done so everything stays easy to track.',
-    hint: 'This is where most users spend their time managing daily work.',
+    title: 'Track tasks by status',
+    description: 'Move tasks between columns to reflect progress and ownership.',
+    image: '/src/assets/react.svg',
   },
   {
     icon: Briefcase,
     label: 'Workspaces',
-    title: 'Group related work together',
-    description: 'Workspaces keep projects separated, making it easier to manage teams, invite others, and switch between different areas of work.',
-    hint: 'Use this when you want to separate product, design, and backend tasks.',
+    title: 'Organize projects and teams',
+    description: 'Create separate workspaces for different projects and invite collaborators.',
+    image: '/src/assets/logo.svg',
   },
   {
     icon: BarChart3,
     label: 'Analytics',
-    title: 'Track progress at a glance',
-    description: 'Analytics shows trends, completion balance, and workload patterns so you can see how the team is moving.',
-    hint: 'Check this when you want a quick overview of progress.',
-  },
-  {
-    icon: Settings2,
-    label: 'Settings',
-    title: 'Adjust your account and app options',
-    description: 'Settings is where you review profile details, tutorials, and deployment-facing options as the app gets closer to production.',
-    hint: 'Use this area for preferences and system setup.',
+    title: 'Simple progress insights',
+    description: 'Quick charts to help you spot trends and balance workload.',
+    image: '/src/assets/vite.svg',
   },
 ];
 
@@ -52,7 +45,7 @@ const markTutorialSeen = () => {
   }
 };
 
-const TutorialModal = ({ steps = tutorialSteps }) => {
+const TutorialModal = ({ steps = tutorialSteps, sizeClass = 'max-w-6xl' }) => {
   const [stepIndex, setStepIndex] = useState(0);
   const { closeModal } = useGlobalModal();
 
@@ -72,96 +65,75 @@ const TutorialModal = ({ steps = tutorialSteps }) => {
     closeModal();
   };
 
+  // Render as a fixed overlay so shell:false openings are visible.
   return (
-    <div className="w-full max-w-none space-y-8">
-      <div className="flex items-start justify-between gap-8">
-        <div className="space-y-3">
-          <Badge variant="primary" className="w-fit">Product tour</Badge>
-          <h3 className="max-w-3xl text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">A quick walkthrough of Syncly</h3>
-          <p className="max-w-3xl text-base leading-7 text-neutral-600 dark:text-neutral-300">
-            This tour explains the main parts of the system in a simple step-by-step modal. Use Next to continue, Back to review, or Skip to close it anytime.
-          </p>
-        </div>
-        <div className="hidden rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 md:block">
-          Available after successful login
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="rounded-base border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
-          {stepLabels.map((label, index) => {
-            const isActive = index === stepIndex;
-
-            return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => setStepIndex(index)}
-                className={`flex w-full items-center gap-3 rounded-base px-4 py-4 text-left text-sm transition-colors ${
-                  isActive
-                    ? 'bg-white text-neutral-950 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:ring-neutral-600'
-                    : 'text-neutral-600 hover:bg-white hover:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100'
-                }`}
-              >
-                <span className={`flex h-10 w-10 items-center justify-center rounded-base text-sm font-semibold ${isActive ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950' : 'bg-neutral-200 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'}`}>
-                  {index + 1}
-                </span>
-                <span className="font-medium">{label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="min-h-[24rem] rounded-base border border-neutral-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-neutral-700 dark:bg-neutral-800">
-          <div className="flex items-start justify-between gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-                <StepIcon size={14} />
-                <span>{currentStep.label}</span>
+    <div className="fixed inset-0 flex items-center justify-center p-6" style={{ zIndex: 9200 }}>
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} style={{ zIndex: 9200 }} />
+      <div className={`relative w-full ${sizeClass} tutorial-modal-root`} style={{ zIndex: 9300 }}>
+        <div className="overflow-hidden rounded-lg bg-white dark:bg-neutral-800 shadow-[0_30px_80px_rgba(2,6,23,0.6)] border border-neutral-200">
+          <div className="flex w-full min-h-[360px]">
+            <div className="w-72 border-r border-neutral-100 p-4 dark:border-neutral-700">
+              <div className="mb-3">
+                <Badge variant="primary">Product tour</Badge>
+                <h3 className="mt-3 text-base font-semibold text-neutral-900 dark:text-neutral-100">Quick walkthrough</h3>
+                <p className="mt-2 text-xs text-neutral-600 dark:text-neutral-400">Click a step or use Next</p>
               </div>
-              <h4 className="max-w-2xl text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">{currentStep.title}</h4>
-              <p className="max-w-2xl text-base leading-8 text-neutral-600 dark:text-neutral-300">{currentStep.description}</p>
-            </div>
-            <div className="rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">
-              {stepIndex + 1}/{steps.length}
-            </div>
-          </div>
 
-          <div className="mt-8 rounded-base border border-dashed border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900/40">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">What to focus on</p>
-            <p className="mt-3 text-base leading-7 text-neutral-700 dark:text-neutral-300">{currentStep.hint}</p>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-            <div className="text-sm text-neutral-500 dark:text-neutral-400">
-              Step {stepIndex + 1} of {steps.length}
+              <nav className="space-y-2 overflow-y-auto max-h-[60vh]">
+                {stepLabels.map((label, index) => {
+                  const isActive = index === stepIndex;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setStepIndex(index)}
+                      className={`flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${isActive ? 'bg-neutral-50 dark:bg-neutral-900' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'}`}
+                    >
+                      <span className={`flex h-8 w-8 items-center justify-center rounded text-sm font-semibold ${isActive ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300'}`}>
+                        {index + 1}
+                      </span>
+                      <span className="font-medium truncate">{label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" type="button" onClick={skipTour}>
-                Skip
-              </Button>
-              <Button type="button" variant="secondary" onClick={goBack} disabled={stepIndex === 0}>
-                <ChevronLeft size={16} />
-                Back
-              </Button>
-              {stepIndex < steps.length - 1 ? (
-                <Button type="button" variant="primary" onClick={goNext}>
-                  Next
-                  <ChevronRight size={16} />
-                </Button>
-              ) : (
-                <Button type="button" variant="primary" onClick={finishTour}>
-                  Finish tour
-                </Button>
+            <div className="flex-1 p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase text-neutral-500 dark:text-neutral-400">
+                    <StepIcon size={16} />
+                    <span>{currentStep.label}</span>
+                  </div>
+                  <h4 className="mt-2 text-2xl font-semibold text-neutral-900 dark:text-neutral-100">{currentStep.title}</h4>
+                  <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{currentStep.description}</p>
+                </div>
+
+                <div className="text-sm text-neutral-500 dark:text-neutral-400">{stepIndex + 1}/{steps.length}</div>
+              </div>
+
+              {currentStep.image && (
+                <div className="mt-6 flex items-center justify-center">
+                  <img src={currentStep.image} alt={currentStep.label} className="max-h-64 w-full object-contain rounded" />
+                </div>
               )}
+
+              <div className="mt-6 flex items-center justify-between">
+                <div className="text-sm text-neutral-500 dark:text-neutral-400">Step {stepIndex + 1} of {steps.length}</div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" onClick={skipTour}>Skip</Button>
+                  <Button variant="secondary" onClick={goBack} disabled={stepIndex === 0}><ChevronLeft size={16} /> Back</Button>
+                  {stepIndex < steps.length - 1 ? (
+                    <Button variant="primary" onClick={goNext}>Next</Button>
+                  ) : (
+                    <Button variant="primary" onClick={finishTour}>Finish tour</Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="rounded-base border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-        This tutorial opens only from the View Tutorial button after sign-in.
       </div>
     </div>
   );

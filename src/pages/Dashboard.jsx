@@ -452,7 +452,7 @@ const Dashboard = () => {
                 </div>
                 <div className="rounded-base border border-white/20 bg-white/5 p-4 shadow-sm dark:border-black/15 dark:bg-black/5">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/75 dark:text-black/60">Focus cue</p>
-                  <p className="mt-2 text-sm leading-6 text-white/85 dark:text-black/72">
+                  <p className="mt-2 text-sm leading-6 text-white/85 dark:text-black/60">
                     Start with the next visible task and keep the momentum simple.
                   </p>
                 </div>

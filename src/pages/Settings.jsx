@@ -55,22 +55,41 @@ const Settings = () => {
     graduatedFrom: Array.isArray(profileDataRaw?.graduatedFrom) ? profileDataRaw.graduatedFrom : [],
   }), [initialProfile, profileDataRaw]);
 
+  // Normalize stored profile data if it becomes malformed (prevents runtime crashes)
+  useEffect(() => {
+    try {
+      if (!profileDataRaw || typeof profileDataRaw !== 'object' || Array.isArray(profileDataRaw)) {
+        // reset to initial profile when stored value is invalid
+        resetProfileData();
+      }
+    } catch (err) {
+      // best-effort: reset on any unexpected error
+      try { resetProfileData(); } catch {}
+    }
+  }, [profileDataRaw, resetProfileData, initialProfile]);
+
   const [saveStatus, setSaveStatus] = useState('');
 
-  const profileCompletion = Math.round(
-    (
-      [
-        profileData.firstName,
-        profileData.lastName,
-        profileData.email,
-        profileData.bio,
-        profileData.work.length,
-        profileData.hobbies.length,
-        profileData.interests.length,
-        profileData.educationStatus === 'studying' ? profileData.school.length : profileData.graduatedFrom.length,
-      ].filter(Boolean).length / 8
-    ) * 100
-  );
+  let profileCompletion = 0;
+  try {
+    profileCompletion = Math.round(
+      (
+        [
+          profileData.firstName,
+          profileData.lastName,
+          profileData.email,
+          profileData.bio,
+          Array.isArray(profileData.work) ? profileData.work.length : 0,
+          Array.isArray(profileData.hobbies) ? profileData.hobbies.length : 0,
+          Array.isArray(profileData.interests) ? profileData.interests.length : 0,
+          profileData.educationStatus === 'studying' ? (Array.isArray(profileData.school) ? profileData.school.length : 0) : (Array.isArray(profileData.graduatedFrom) ? profileData.graduatedFrom.length : 0),
+        ].filter(Boolean).length / 8
+      ) * 100
+    );
+  } catch (err) {
+    console.error('Failed to compute profileCompletion:', err);
+    profileCompletion = 0;
+  }
 
   const profileTip = profileData.educationStatus === 'studying'
     ? 'Add your current school to make your profile easier to discover.'
@@ -493,7 +512,8 @@ const Settings = () => {
                   variant="secondary"
                   onClick={() => openModal(TutorialModal, {
                     title: 'Product Tour',
-                    sizeClass: 'max-w-6xl',
+                    sizeClass: 'max-w-7xl',
+                    shell: false,
                     onClose: () => {
                       try {
                         window.localStorage.setItem('syncly:seenTutorialTour', JSON.stringify({ completedAt: new Date().toISOString() }));

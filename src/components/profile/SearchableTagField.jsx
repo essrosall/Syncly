@@ -11,6 +11,7 @@ const SearchableTagField = ({
   suggestions,
   values,
   onChange,
+  storageKey,
 }) => {
   const [inputValue, setInputValue, clearInputValue] = usePersistentState(storageKey || `syncly:tagInput:${label}`, '');
   const [isOpen, setIsOpen] = useState(false);
