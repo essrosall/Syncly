@@ -4,8 +4,9 @@ import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { MainLayout } from '../components/layout';
 import { Card, Badge, Button, Input, Modal, Textarea, Toast } from '../components/ui';
+import { EmptyStateCard } from '../components/ui';
 import { useCreateModal } from '../contexts/CreateModalContext';
-import { Plus, Filter, Search, GripVertical, X } from 'lucide-react';
+import { Plus, Filter, Search, GripVertical, X, MessageSquare } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -1591,7 +1592,13 @@ const Tasks = () => {
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400">No activity yet.</p>
+                        <EmptyStateCard
+                          icon={MessageSquare}
+                          title="No activity yet"
+                          description="Comments, updates, and task history will appear here once someone starts the conversation."
+                          className="min-h-40 border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800"
+                          contentClassName="max-w-sm gap-3"
+                        />
                       )}
                     </div>
 

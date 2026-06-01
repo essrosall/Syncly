@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FolderKanban, Users, MoreHorizontal, Layers3, Search, Plus, Clock3, CheckCircle2, ArrowRight, PencilLine, Copy, Archive, Trash2, ExternalLink, CalendarDays } from 'lucide-react';
 import { MainLayout } from '../components/layout';
-import { Card, Button, Badge, Input, Textarea } from '../components/ui';
+import { Card, Button, Badge, Input, Textarea, EmptyStateCard } from '../components/ui';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -728,6 +728,9 @@ const Workspaces = () => {
     });
   }, [searchTerm, workspaceData]);
 
+  const hasWorkspaces = workspaceData.length > 0;
+  const isSearchEmptyState = hasWorkspaces && filteredWorkspaces.length === 0;
+
   const persistWorkspaceList = (nextList) => {
     setWorkspaceList(nextList);
     writeStoredJson(WORKSPACES_STORAGE_KEY, nextList);
@@ -1105,15 +1108,34 @@ const Workspaces = () => {
               );
             })
           ) : (
-            <Card className="rounded-base border border-dashed border-neutral-200 bg-white p-8 text-center dark:border-neutral-700 dark:bg-neutral-800">
-              <p className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">No workspaces match your search.</p>
-              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Try a different keyword or create a new workspace.</p>
-              <div className="mt-4 flex justify-center">
-                <Button variant="primary" className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800" onClick={handleOpenCreate}>
-                  <Plus size={16} /> Create Workspace
-                </Button>
-              </div>
-            </Card>
+            <div className="col-span-full flex justify-center">
+              <EmptyStateCard
+                icon={FolderKanban}
+                title={isSearchEmptyState ? 'No workspaces match your search.' : 'No workspaces created yet.'}
+                description={isSearchEmptyState
+                  ? 'Try a different keyword, clear the search, or start a new workspace from scratch.'
+                  : 'Start a new workspace to organize your team, keep tasks together, and move work forward.'}
+                className="w-full max-w-2xl"
+                action={(
+                  <>
+                    <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                      <span className="rounded-full bg-neutral-100 px-3 py-1 dark:bg-neutral-700/60">Team space</span>
+                      <span className="rounded-full bg-neutral-100 px-3 py-1 dark:bg-neutral-700/60">Shared tasks</span>
+                      <span className="rounded-full bg-neutral-100 px-3 py-1 dark:bg-neutral-700/60">Invite members</span>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      className="w-full max-w-xs bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
+                      onClick={handleOpenCreate}
+                    >
+                      <Plus size={16} />
+                      {isSearchEmptyState ? 'Create Workspace' : 'Start a New Workspace'}
+                    </Button>
+                  </>
+                )}
+              />
+            </div>
           )}
         </div>
       </div>

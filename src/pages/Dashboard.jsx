@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '../components/layout';
-import { Card, Button, Badge, Modal } from '../components/ui';
+import { Card, Button, Badge, Modal, EmptyStateCard } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, ClipboardList, CheckCircle2, Layers3, AlertTriangle, Sparkles, PartyPopper, ArrowRight, X } from 'lucide-react';
 import { useLayout } from '../contexts/LayoutContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
@@ -601,9 +601,12 @@ const Dashboard = () => {
                   );
                 })
               ) : (
-                <div className="rounded-base border border-dashed border-neutral-200 bg-neutral-100 p-4 text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
-                  No upcoming deadlines yet.
-                </div>
+                <EmptyStateCard
+                  icon={CalendarDays}
+                  title="No upcoming deadlines yet."
+                  description="Add a due date to a task and it will show up here so the next priority stays visible."
+                  className="min-h-[10rem] border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+                />
               )}
             </div>
           </Card>

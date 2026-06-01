@@ -2,6 +2,7 @@ import { Bell, X, Trash2, CheckCircle, Clock3, MessageSquare } from 'lucide-reac
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
+import EmptyStateCard from './EmptyStateCard';
 
 const NotificationsPanel = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -125,10 +126,14 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-2 py-12 px-4">
-              <Bell size={32} className="text-neutral-300 dark:text-neutral-600" />
-              <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">No notifications yet</p>
-            </div>
+            <EmptyStateCard
+              icon={Bell}
+              title="No notifications yet"
+              description="New updates, task mentions, and workspace activity will appear here when they happen."
+              className="border-0 bg-transparent px-4 py-10 shadow-none dark:bg-transparent"
+              contentClassName="max-w-sm gap-3"
+              iconClassName="bg-neutral-100 text-neutral-400 dark:bg-neutral-700 dark:text-neutral-200"
+            />
           )}
         </div>
 
