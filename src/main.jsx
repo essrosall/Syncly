@@ -6,21 +6,24 @@ import { AuthProvider } from './contexts/AuthContext'
 import { CreateModalProvider } from './contexts/CreateModalContext'
 import { GlobalModalProvider } from './contexts/GlobalModalContext'
 import { NotificationProvider } from './contexts/NotificationContext'
+import { PreferencesProvider } from './contexts/PreferencesContext'
 import { ToastProvider } from './contexts/ToastContext'
 // Global modal is now rendered from inside GlobalModalProvider
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <CreateModalProvider>
-        <GlobalModalProvider>
-          <NotificationProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </NotificationProvider>
-        </GlobalModalProvider>
-      </CreateModalProvider>
-    </AuthProvider>
+    <PreferencesProvider>
+      <AuthProvider>
+        <CreateModalProvider>
+          <GlobalModalProvider>
+            <NotificationProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </NotificationProvider>
+          </GlobalModalProvider>
+        </CreateModalProvider>
+      </AuthProvider>
+    </PreferencesProvider>
   </StrictMode>,
 )

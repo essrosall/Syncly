@@ -6,6 +6,7 @@ import { useLayout } from '../../contexts/LayoutContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { usePreferences } from '../../contexts/PreferencesContext';
 import { NotificationsPanel, LayoutModal, MoreMenu } from '../ui';
 
 const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () => {} }) => {
@@ -23,6 +24,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
   const { unreadCount, refreshNotifications } = useNotifications();
   const { signOut } = useAuth();
   const { addToast } = useToast();
+  const { t } = usePreferences();
 
   const navbarPaddingClass = {
     compact: 'lg:pl-60',
@@ -215,8 +217,8 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
         <button
           onClick={toggleSidebar}
           className="inline-flex lg:hidden h-11 w-11 items-center justify-center rounded-base border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-          aria-label="Toggle navigation menu"
-          title="Menu"
+          aria-label={t('nav.main')}
+          title={t('nav.main')}
         >
           <Menu size={18} />
         </button>
@@ -227,7 +229,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search everything..."
+              placeholder={t('common.searchEverything')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
@@ -244,7 +246,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
                 <X size={16} />
               </button>
             )}
-            <span className="shrink-0 rounded-base px-2 py-1 text-xs font-medium text-neutral-400 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">CTRL + K</span>
+            <span className="shrink-0 rounded-base px-2 py-1 text-xs font-medium text-neutral-400 dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">{t('common.ctrlK')}</span>
           </div>
 
           {/* System-wide Suggestions Dropdown */}

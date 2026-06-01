@@ -6,6 +6,7 @@ import { useCreateModal } from '../../contexts/CreateModalContext';
 import { useGlobalModal } from '../../contexts/GlobalModalContext';
 import { useMobileNav } from '../../contexts/MobileNavContext';
 import { useLayout } from '../../contexts/LayoutContext';
+import { usePreferences } from '../../contexts/PreferencesContext';
 import TaskCreateForm from '../tasks/TaskCreateForm';
 import ProfileInfoModal from '../ui/ProfileInfoModal';
 
@@ -89,21 +90,11 @@ const openTutorialTour = (openModal) => {
 };
 
 const Sidebar = ({ activeTab = 'dashboard', user }) => {
-  const navMain = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/' },
-    { id: 'tasks', label: 'Tasks', icon: CheckSquare, href: '/tasks' },
-    { id: 'workspaces', label: 'Workspaces', icon: Briefcase, href: '/workspaces' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, href: '/analytics' },
-  ];
-
-  const navManage = [
-    { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
-  ];
-
   const { openCreate } = useCreateModal();
   const { openModal, modal, closeModal } = useGlobalModal();
   const { isSidebarOpen, closeSidebar } = useMobileNav();
   const { sidebarWidth } = useLayout();
+  const { t } = usePreferences();
   const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(() => readProfile(user));
@@ -114,6 +105,17 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
     wide: 'lg:w-72',
     full: 'lg:w-96',
   }[sidebarWidth] || 'lg:w-72';
+
+  const navMain = [
+    { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, href: '/' },
+    { id: 'tasks', label: t('nav.tasks'), icon: CheckSquare, href: '/tasks' },
+    { id: 'workspaces', label: t('nav.workspaces'), icon: Briefcase, href: '/workspaces' },
+    { id: 'analytics', label: t('nav.analytics'), icon: BarChart3, href: '/analytics' },
+  ];
+
+  const navManage = [
+    { id: 'settings', label: t('nav.settings'), icon: Settings, href: '/settings' },
+  ];
 
   useEffect(() => {
     setProfile(readProfile(user));
@@ -172,7 +174,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
       </div>
       <div className="my-2" />
 
-          <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Profile</div>
+          <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">{t('nav.profile')}</div>
           <div className="rounded-base border border-neutral-200 bg-white p-4 shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
             <div className="flex cursor-pointer items-center gap-3 rounded-base p-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700/50" onClick={() => {
                 try { if (typeof closeModal === 'function') { closeModal(); } } catch {}
@@ -197,7 +199,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 size="sm"
                 className="!h-9 !w-9 !p-0 !gap-0 rounded-base !bg-neutral-900 !text-white shadow-sm transition-colors hover:!bg-neutral-800 dark:!bg-neutral-900 dark:!text-white dark:hover:!bg-neutral-800"
                 onClick={() => { try { if (typeof closeModal === 'function') { closeModal(); } } catch {} setTimeout(() => setShowProfileModal(true), 80); }}
-                aria-label="View profile"
+                aria-label={t('nav.viewProfile')}
               >
                 <UserRound size={16} strokeWidth={1.8} className="text-white dark:text-white" />
               </Button>
@@ -223,16 +225,16 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                   }
                 }}
               >
-                <span className="inline-flex items-center gap-2 text-sm font-medium">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium">
                   <Plus size={14} strokeWidth={2.6} className="text-white dark:text-white" />
-                  New Task
+                  {t('nav.newTask')}
                 </span>
               </Button>
             </div>
           </div>
 
       <nav className="flex-1 py-8" aria-label="Primary">
-        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">Main</div>
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">{t('nav.main')}</div>
         <div className="space-y-2">
           {navMain.map((item) => {
             const Icon = item.icon;
@@ -261,7 +263,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
         <div className="my-5" />
 
-        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">General</div>
+        <div className="mb-3 px-1 text-xs uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">{t('nav.general')}</div>
         <div className="space-y-2">
           {navManage.map((item) => {
             const Icon = item.icon;
@@ -293,7 +295,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
 
       <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
           <div className="rounded-base border border-neutral-200 bg-white p-4 text-center shadow-[0_10px_25px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-            <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">Need help getting started?</p>
+            <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">{t('nav.needHelpGettingStarted')}</p>
             <Button
               variant="secondary"
               size="sm"
@@ -303,7 +305,7 @@ const Sidebar = ({ activeTab = 'dashboard', user }) => {
                 openTutorialTour(openModal);
               }}
             >
-              View Tutorials
+              {t('nav.viewTutorials')}
             </Button>
         </div>
       </div>

@@ -3,10 +3,12 @@ import usePersistentState from '../hooks/usePersistentState';
 // touch: trigger dev server refresh
 import { MainLayout } from '../components/layout';
 import { Card, Input, Button, Badge, Textarea, TutorialModal } from '../components/ui';
-import { UserRound, BellRing, ShieldCheck, Upload, ChevronDown, Briefcase } from 'lucide-react';
+import { UserRound, Upload, ChevronDown, Briefcase } from 'lucide-react';
 import SearchableTagField from '../components/profile/SearchableTagField';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
 import { useAuth } from '../contexts/AuthContext';
+import { usePreferences } from '../contexts/PreferencesContext';
+import { availableLanguages, textScaleOptions } from '../lib/translations';
 import {
   HOBBIES_SUGGESTIONS,
   INTERESTS_SUGGESTIONS,
@@ -17,6 +19,7 @@ import {
 const Settings = () => {
   const { openModal } = useGlobalModal();
   const { user } = useAuth();
+  const { language, setLanguage, textScale, setTextScale, t } = usePreferences();
 
   const accountKey = useMemo(() => user?.id || user?.email || 'guest', [user]);
   const mockUser = useMemo(() => ({
@@ -42,6 +45,8 @@ const Settings = () => {
     graduatedFrom: [],
     profileImage: null,
     profileImageUrl: null,
+    coverImage: null,
+    coverImageUrl: null,
   }), [mockUser.email, mockUser.name, user]);
 
   const [profileDataRaw, setProfileData, resetProfileData] = usePersistentState(`syncly:${accountKey}:profileData`, initialProfile);
@@ -92,8 +97,8 @@ const Settings = () => {
   }
 
   const profileTip = profileData.educationStatus === 'studying'
-    ? 'Add your current school to make your profile easier to discover.'
-    : 'Add your graduated school to help people recognize your background.';
+    ? t('settings.defaultProfileTipStudying')
+    : t('settings.defaultProfileTipGraduated');
 
   // keep sidebar in sync when profileData changes
   useEffect(() => {
@@ -125,6 +130,29 @@ const Settings = () => {
     }
   };
 
+  const handleCoverImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileData(prev => ({
+          ...prev,
+          coverImage: file.name,
+          coverImageUrl: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveCoverImage = () => {
+    setProfileData(prev => ({
+      ...prev,
+      coverImage: null,
+      coverImageUrl: null,
+    }));
+  };
+
   const handleSaveProfile = () => {
     try {
       // persisted automatically via usePersistentState; trigger UI sync
@@ -144,27 +172,115 @@ const Settings = () => {
       <div className="space-y-6 animate-fade-in-up">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div id="settings-overview">
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">Settings</h1>
-            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Manage your profile, preferences, and workspace security.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-100">{t('settings.title')}</h1>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.subtitle')}</p>
           </div>
           <Badge variant="primary">Active</Badge>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
-          {/* Left column: categorized settings */}
-          <div className="space-y-4">
+        <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.yourProfile')}</h2>
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.yourProfileDesc')}</p>
+            </div>
+            <UserRound size={18} className="text-neutral-400 dark:text-neutral-500" />
+          </div>
+
+          <div className="mt-4 space-y-5">
+            <div className="relative overflow-hidden rounded-[20px] border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-700/40">
+              <div className="relative h-40 sm:h-48">
+                {profileData.coverImageUrl ? (
+                  <img src={profileData.coverImageUrl} alt="Cover preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-center">
+                    <div className="rounded-full border border-white/20 bg-white/15 px-5 py-2 text-sm font-semibold tracking-[0.22em] text-white shadow-sm backdrop-blur">
+                      SYNCLY
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+                <div className="absolute inset-x-4 top-4 flex flex-wrap items-center justify-end gap-2">
+                  <label className="relative flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/90 px-3 py-2 text-xs font-medium text-neutral-800 shadow-sm backdrop-blur transition-colors hover:bg-white dark:bg-neutral-900/80 dark:text-neutral-100 dark:hover:bg-neutral-900">
+                    <Upload size={14} />
+                    <span>{t('settings.uploadCoverPhoto')}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {profileData.coverImageUrl && (
+                    <Button variant="secondary" className="rounded-full px-3 py-2 text-xs" onClick={handleRemoveCoverImage}>
+                      {t('settings.removeCoverPhoto')}
+                    </Button>
+                  )}
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-4 text-white">
+                  <div>
+                    <div className="text-sm font-semibold">
+                      {profileData.nickname || profileData.firstName || profileData.name}
+                    </div>
+                    <div className="text-xs text-white/80">{profileData.email}</div>
+                  </div>
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-white/90 text-neutral-800 shadow-md dark:bg-neutral-900/90 dark:text-neutral-100">
+                    {profileData.profileImageUrl ? (
+                      <img src={profileData.profileImageUrl} alt="Profile" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-semibold">
+                        {(profileData.firstName || 'S')
+                          .split(' ')
+                          .slice(0, 2)
+                          .map(part => part[0]?.toUpperCase() || '')
+                          .join('') || 'S'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <div>
+                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{profileData.nickname || profileData.firstName}</div>
+                  <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{profileData.email}</div>
+                  <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
+                    Upload a cover photo to make your profile feel more personal.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="relative flex cursor-pointer items-center gap-2 rounded-base border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-700/50 dark:hover:bg-neutral-700">
+                    <Upload size={14} className="text-neutral-600 dark:text-neutral-400" />
+                    <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{t('settings.changePhoto')}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  <Button variant="ghost" onClick={() => window.dispatchEvent(new Event('syncly:profile-updated'))}>{t('settings.preview')}</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-[1.25fr_0.85fr] lg:items-start">
             <Card id="settings-preferences" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Personal</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Basic identity and contact information.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.personal')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.personalDesc')}</p>
                 </div>
                 <UserRound size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.email')}</label>
                   <Input
                     placeholder="email@example.com"
                     name="email"
@@ -178,7 +294,7 @@ const Settings = () => {
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">First name</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.firstName')}</label>
                   <Input
                     placeholder="First name"
                     name="firstName"
@@ -187,7 +303,7 @@ const Settings = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Middle name</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.middleName')}</label>
                   <Input
                     placeholder="Middle name"
                     name="middleName"
@@ -196,7 +312,7 @@ const Settings = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Last name</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.lastName')}</label>
                   <Input
                     placeholder="Last name"
                     name="lastName"
@@ -205,7 +321,7 @@ const Settings = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Nickname</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.nickname')}</label>
                   <Input
                     placeholder="Nickname"
                     name="nickname"
@@ -216,7 +332,7 @@ const Settings = () => {
               </div>
 
               <div className="space-y-2 mt-4">
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Bio</label>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.bio')}</label>
                 <Textarea
                   placeholder="Tell us about yourself..."
                   name="bio"
@@ -231,15 +347,15 @@ const Settings = () => {
             <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Work & Interests</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Search and select work, hobbies, and interests from a richer suggestion list.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.workInterests')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.workInterestsDesc')}</p>
                 </div>
                 <Briefcase size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
 
               <div className="mt-4 space-y-5">
                 <SearchableTagField
-                  label="Work / Profession"
+                  label={t('settings.workTitle')}
                   helperText="Choose one or more roles, or add your own custom title."
                   placeholder="Search or add work..."
                   storageKey="syncly:profile-work-input"
@@ -250,7 +366,7 @@ const Settings = () => {
 
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                   <SearchableTagField
-                    label="Hobbies"
+                    label={t('settings.hobbies')}
                     helperText="Suggestions update while you type."
                     placeholder="Search or add hobby..."
                     storageKey="syncly:profile-hobbies-input"
@@ -260,7 +376,7 @@ const Settings = () => {
                   />
 
                   <SearchableTagField
-                    label="Interests"
+                    label={t('settings.interests')}
                     helperText="Search, select, and remove items anytime."
                     placeholder="Search or add interest..."
                     storageKey="syncly:profile-interests-input"
@@ -275,8 +391,8 @@ const Settings = () => {
             <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Education</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Add where you study now or where you graduated from.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.education')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.educationDesc')}</p>
                 </div>
                 <ChevronDown size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
@@ -284,8 +400,8 @@ const Settings = () => {
               <div className="mt-4 space-y-4">
                 <div className="inline-flex rounded-full bg-neutral-100 p-1 dark:bg-neutral-700">
                   {[
-                    { value: 'studying', label: 'Studying now' },
-                    { value: 'graduated', label: 'Graduated' },
+                    { value: 'studying', label: t('settings.studyingNow') },
+                    { value: 'graduated', label: t('settings.graduated') },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -304,7 +420,7 @@ const Settings = () => {
 
                 {profileData.educationStatus === 'studying' ? (
                   <SearchableTagField
-                    label="Current school / university"
+                    label={t('settings.currentSchool')}
                     helperText="Use this if you're studying right now."
                     placeholder="Search school..."
                     storageKey="syncly:profile-school-input"
@@ -314,7 +430,7 @@ const Settings = () => {
                   />
                 ) : (
                   <SearchableTagField
-                    label="Graduated from"
+                    label={t('settings.graduatedFrom')}
                     helperText="Use this if you already graduated."
                     placeholder="Search graduated school..."
                     storageKey="syncly:profile-graduated-input"
@@ -329,15 +445,15 @@ const Settings = () => {
             <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Preferences</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">How your name appears across the app.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.preferences')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.preferencesDesc')}</p>
                 </div>
                 <ChevronDown size={18} className="text-neutral-400 dark:text-neutral-500" />
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Gender</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.gender')}</label>
                   <div className="relative">
                     <select name="gender" value={profileData.gender} onChange={handleInputChange} className="w-full rounded-base border px-3 py-2 pr-10 text-sm">
                       <option value="female">Female</option>
@@ -348,7 +464,7 @@ const Settings = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Display name</label>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('settings.displayName')}</label>
                   <div className="relative">
                     <select name="displayPreference" value={profileData.displayPreference} onChange={handleInputChange} className="w-full rounded-base border px-3 py-2 pr-10 text-sm">
                       <option value="nickname">Nickname</option>
@@ -362,29 +478,75 @@ const Settings = () => {
               </div>
             </Card>
 
+            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.appearance')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.appearanceDesc')}</p>
+                </div>
+                <ChevronDown size={18} className="text-neutral-400 dark:text-neutral-500" />
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('common.language')}</label>
+                  <select
+                    value={language}
+                    onChange={(event) => setLanguage(event.target.value)}
+                    className="w-full rounded-base border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-primary-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                  >
+                    {availableLanguages.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('common.textSize')}</label>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {textScaleOptions.map((option) => {
+                      const isActive = textScale === option.value;
+
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setTextScale(option.value)}
+                          className={`rounded-base border px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'}`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             <div className="flex justify-end">
               {saveStatus === 'saved' && (
-                <span className="flex items-center text-sm text-green-600 dark:text-green-400 mr-4">✓ Changes saved</span>
+                <span className="mr-4 flex items-center text-sm text-green-600 dark:text-green-400">✓ {t('settings.changesSaved')}</span>
               )}
               {saveStatus === 'error' && (
-                <span className="flex items-center text-sm text-red-600 dark:text-red-400 mr-4">✗ Save failed</span>
+                <span className="mr-4 flex items-center text-sm text-red-600 dark:text-red-400">✗ {t('settings.saveFailed')}</span>
               )}
               <Button
                 variant="primary"
                 className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
                 onClick={handleSaveProfile}
               >
-                Save changes
+                {t('settings.saveChanges')}
               </Button>
             </div>
           </div>
 
           <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-2">
             <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Profile at a glance</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">A quick snapshot of what you’ve added.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.profileAtGlance')}</h2>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.profileAtGlanceDesc')}</p>
                 </div>
                 <Badge variant="primary">{profileCompletion}%</Badge>
               </div>
@@ -397,7 +559,7 @@ const Settings = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:grid-cols-2">
                   <div className="rounded-base bg-neutral-50 px-3 py-2 text-neutral-700 dark:bg-neutral-700/50 dark:text-neutral-200">
                     <div className="text-xs text-neutral-500 dark:text-neutral-400">Work</div>
                     <div className="font-medium">{profileData.work.length} selected</div>
@@ -422,91 +584,11 @@ const Settings = () => {
               </div>
             </Card>
 
-            {/* Profile summary card on the right with avatar + upload */}
-            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Your Profile</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Quick preview and avatar upload</p>
-                </div>
-                <UserRound size={18} className="text-neutral-400 dark:text-neutral-500" />
-              </div>
-
-              <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                <div className="order-2 flex-1 lg:order-1">
-                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{profileData.nickname || profileData.firstName}</div>
-                  <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{profileData.email}</div>
-                  <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-                    Upload a photo to personalize your workspace and make your profile easier to recognize.
-                  </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <label className="relative flex cursor-pointer items-center gap-2 rounded-base border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-600 dark:bg-neutral-700/50 dark:hover:bg-neutral-700">
-                      <Upload size={14} className="text-neutral-600 dark:text-neutral-400" />
-                      <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">Change photo</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </label>
-                    <Button variant="ghost" onClick={() => window.dispatchEvent(new Event('syncly:profile-updated'))}>Preview</Button>
-                  </div>
-                </div>
-
-                <div className="order-1 flex w-full justify-center lg:order-2 lg:w-auto lg:justify-end">
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-700">
-                    {profileData.profileImageUrl ? (
-                      <img src={profileData.profileImageUrl} alt="Profile" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-semibold text-neutral-600 dark:text-neutral-300">
-                        {(profileData.firstName || 'S')
-                          .split(' ')
-                          .slice(0, 2)
-                          .map(part => part[0]?.toUpperCase() || '')
-                          .join('') || 'S'}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Notifications</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Control alerts and email preferences</p>
-                </div>
-                <BellRing size={18} className="text-neutral-400 dark:text-neutral-500" />
-              </div>
-              <div className="mt-5 space-y-3 text-sm text-neutral-700 dark:text-neutral-200">
-                <div className="rounded-base bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Task reminders enabled</div>
-                <div className="rounded-base bg-neutral-100 px-4 py-3 dark:bg-neutral-800 dark:border dark:border-neutral-700">Workspace mentions enabled</div>
-              </div>
-            </Card>
-
-            <Card className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Security</h2>
-                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Basic account protection</p>
-                </div>
-                <ShieldCheck size={18} className="text-neutral-400 dark:text-neutral-500" />
-              </div>
-              <p className="mt-5 text-sm text-neutral-600 dark:text-neutral-300">Your workspace access is protected with standard sign-in controls.</p>
-            </Card>
-
-            <Card id="settings-documentation" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Documentation</h2>
-              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Product docs, API usage notes, and setup guides.</p>
-            </Card>
-
             <Card id="settings-tutorials" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Tutorials</h2>
-                  <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Step-by-step walkthroughs for common workflows.</p>
+                  <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{t('settings.tutorials')}</h2>
+                  <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{t('settings.tutorialsDesc')}</p>
                 </div>
                 <Button
                   variant="secondary"
@@ -527,13 +609,9 @@ const Settings = () => {
                 </Button>
               </div>
             </Card>
-
-            <Card id="settings-community" className="rounded-base border-neutral-200 bg-white p-6 shadow-[0_12px_30px_rgba(17,25,43,0.04)] dark:border-neutral-700 dark:bg-neutral-800">
-              <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">Community</h2>
-              <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Get help, ask questions, and share feedback.</p>
-            </Card>
           </div>
         </div>
+      </div>
       </div>
     </MainLayout>
   );

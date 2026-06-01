@@ -17,7 +17,7 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
       {/* Modal (centered above backdrop) */}
       <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 9100 }}>
-          <div className="w-full max-w-md overflow-hidden rounded-base border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="w-full max-w-2xl overflow-hidden rounded-base border border-neutral-200 bg-white shadow-[0_14px_35px_rgba(17,25,43,0.06)] dark:border-neutral-700 dark:bg-neutral-800">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200/80 px-6 py-4 dark:border-neutral-700/80">
             <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-100">Profile Information</h2>
@@ -32,9 +32,43 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
 
           {/* Content */}
           <div className="space-y-6 px-6 py-6">
+            <div className="relative overflow-hidden rounded-[20px] border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-700/40">
+              <div className="relative h-48 sm:h-56">
+                {profile.coverImageUrl ? (
+                  <img src={profile.coverImageUrl} alt={`${profile.name || 'Profile'} cover`} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-center">
+                    <div className="rounded-full border border-white/20 bg-white/15 px-5 py-2 text-sm font-semibold tracking-[0.22em] text-white shadow-sm backdrop-blur">
+                      SYNCLY
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-4 text-white">
+                  <div>
+                    <h3 className="text-xl font-semibold">{profile.displayName || profile.name}</h3>
+                    <p className="text-sm text-white/80">{profile.email}</p>
+                  </div>
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-white/90 text-neutral-800 shadow-md dark:bg-neutral-900/90 dark:text-neutral-100">
+                    {profile.profileImageUrl ? (
+                      <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-semibold">
+                        {(profile.name || 'S')
+                          .split(' ')
+                          .slice(0, 2)
+                          .map(part => part[0]?.toUpperCase() || '')
+                          .join('') || 'S'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Avatar and Name */}
             <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-100">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-100 sm:hidden">
                 {profile.profileImageUrl ? (
                   <img src={profile.profileImageUrl} alt={profile.name} className="h-full w-full object-cover" />
                 ) : (
@@ -47,8 +81,6 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
                   </span>
                 )}
               </div>
-              <h3 className="text-xl font-semibold text-neutral-950 dark:text-neutral-100">{profile.displayName || profile.name}</h3>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">{profile.email}</p>
             </div>
 
             {/* Name details */}
