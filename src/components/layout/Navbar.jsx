@@ -7,6 +7,8 @@ import { useNotifications } from '../../contexts/NotificationContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { usePreferences } from '../../contexts/PreferencesContext';
+import { useGlobalModal } from '../../contexts/GlobalModalContext';
+import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import { NotificationsPanel, LayoutModal, MoreMenu } from '../ui';
 
 const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () => {} }) => {
@@ -25,6 +27,7 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
   const { signOut } = useAuth();
   const { addToast } = useToast();
   const { t } = usePreferences();
+  const { openModal, closeModal } = useGlobalModal();
 
   const navbarPaddingClass = {
     compact: 'lg:pl-60',
@@ -190,24 +193,35 @@ const Navbar = ({ onNotifications = () => {}, onMore = () => {}, onLayout = () =
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      const { error } = await signOut();
-      if (error) throw error;
+  const handleSignOut = () => {
+    // Open confirmation modal and perform sign-out only after confirmation
+    openModal(LogoutConfirmModal, {
+      title: 'Confirm sign out',
+      shell: false,
+      onConfirm: async ({}) => {
+        try {
+          const { error } = await signOut();
+          if (error) throw error;
 
-      addToast({
-        title: 'Signed out',
-        message: 'You have been logged out successfully.',
-        variant: 'success',
-      });
-      navigate('/login');
-    } catch {
-      addToast({
-        title: 'Sign out failed',
-        message: 'Unable to sign out right now. Please try again.',
-        variant: 'error',
-      });
-    }
+          addToast({
+            title: 'Signed out',
+            message: 'You have been logged out successfully.',
+            variant: 'success',
+          });
+          closeModal();
+          navigate('/login');
+        } catch (err) {
+          addToast({
+            title: 'Sign out failed',
+            message: 'Unable to sign out right now. Please try again.',
+            variant: 'error',
+          });
+        }
+      },
+      onCancel: () => {
+        try { closeModal(); } catch {}
+      }
+    });
   };
 
   return (

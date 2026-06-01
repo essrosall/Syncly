@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '../components/layout';
-import { Card, Button, Badge, Modal, EmptyStateCard } from '../components/ui';
+import { Card, Button, Badge, Modal, EmptyStateCard, TutorialModal } from '../components/ui';
 import { TrendingUp, Users, CheckCircle, CalendarDays, ClipboardList, CheckCircle2, Layers3, AlertTriangle, Sparkles, PartyPopper, ArrowRight, X } from 'lucide-react';
 import { useLayout } from '../contexts/LayoutContext';
 import { useGlobalModal } from '../contexts/GlobalModalContext';
@@ -239,10 +239,28 @@ const Dashboard = () => {
       const rawNotice = window.sessionStorage.getItem(LOGIN_WELCOME_NOTICE_KEY);
       if (rawNotice) {
         const parsedNotice = JSON.parse(rawNotice);
-        setWelcomeModal(parsedNotice);
-        nextLoginSession = parsedNotice;
-        window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(parsedNotice));
-        window.sessionStorage.removeItem(LOGIN_WELCOME_NOTICE_KEY);
+        // If the user hasn't seen the tutorial tour yet, show the tutorial instead
+        try {
+          const tutorialSeen = window.localStorage.getItem('syncly:seenTutorialTour');
+          if (!tutorialSeen) {
+            // open tutorial modal (uses global modal provider elsewhere)
+            try { openModal(TutorialModal, { shell: false }); } catch {}
+            // still record active session but don't show the welcome modal
+            nextLoginSession = parsedNotice;
+            window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(parsedNotice));
+            window.sessionStorage.removeItem(LOGIN_WELCOME_NOTICE_KEY);
+          } else {
+            setWelcomeModal(parsedNotice);
+            nextLoginSession = parsedNotice;
+            window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(parsedNotice));
+            window.sessionStorage.removeItem(LOGIN_WELCOME_NOTICE_KEY);
+          }
+        } catch {
+          setWelcomeModal(parsedNotice);
+          nextLoginSession = parsedNotice;
+          window.sessionStorage.setItem(ACTIVE_LOGIN_SESSION_KEY, JSON.stringify(parsedNotice));
+          window.sessionStorage.removeItem(LOGIN_WELCOME_NOTICE_KEY);
+        }
       }
     } catch {
       // ignore malformed session storage

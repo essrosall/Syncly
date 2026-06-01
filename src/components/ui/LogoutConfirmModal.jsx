@@ -1,7 +1,20 @@
+import { useState } from 'react';
 import { AlertTriangle, LogOut } from 'lucide-react';
-import { Button } from './index';
+import { Button, LoadingSpinner } from './index';
 
-const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
+const LogoutConfirmModal = ({ onConfirm, onCancel }) => {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleConfirm = async () => {
+    if (isSigningOut) return;
+    setIsSigningOut(true);
+    try {
+      await onConfirm?.();
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
 
@@ -38,11 +51,20 @@ const LogoutConfirmModal = ({ onConfirm, onCancel, isSigningOut = false }) => {
         <Button
           variant="danger"
           className="flex-1 justify-center rounded-base shadow-sm"
-          onClick={onConfirm}
+          onClick={handleConfirm}
           disabled={isSigningOut}
         >
-          <LogOut size={16} />
-          {isSigningOut ? 'Logging out…' : 'Log out'}
+          {isSigningOut ? (
+            <div className="flex items-center justify-center gap-2">
+              <LoadingSpinner size="sm" />
+              <span>Logging out…</span>
+            </div>
+          ) : (
+            <>
+              <LogOut size={16} />
+              <span>Log out</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

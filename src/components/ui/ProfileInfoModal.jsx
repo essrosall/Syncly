@@ -218,8 +218,8 @@ const ProfileInfoModal = ({ profile, onClose, onEdit }) => {
               Close
             </Button>
             <Button
-              variant="success"
-              className="flex-1 justify-center rounded-base"
+              variant="secondary"
+              className="flex-1 justify-center rounded-base bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
               onClick={onEdit}
             >
               Edit Profile
