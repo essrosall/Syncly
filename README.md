@@ -1,96 +1,134 @@
 # 🚀 Syncly
 
-**Syncly** is a modern web-based productivity and collaboration platform designed to help students, teams, and organizations manage tasks, schedules, and workflows in a centralized workspace.
+<div align="center">
+
+### Stay Connected. Stay Organized. Stay Productive.
+
+A modern productivity and collaboration platform designed to help students, teams, and organizations manage tasks, schedules, files, and workflows in one centralized workspace.
+
+🌐 Live Demo: https://mysyncly.vercel.app
+
+</div>
 
 ---
 
-## 📋 Prerequisites
+## 📖 Overview
 
-Before getting started, ensure you have the following installed:
+Syncly is a web-based productivity and collaboration management system that streamlines project coordination, task management, and team collaboration.
 
-* Node.js 18+
-* npm 9+
+Instead of switching between multiple tools, users can organize work, manage schedules, collaborate with teammates, and monitor progress from a single platform.
 
 ---
 
-## ⚙️ Setup
+## ✨ Key Features
 
-### 1. Clone the Repository
+### 📋 Task Management
+
+* Create and manage tasks
+* Track progress efficiently
+* Organize work by priorities
+
+### 👥 Team Collaboration
+
+* Collaborate with team members
+* Manage shared projects
+* Improve communication and coordination
+
+### 📅 Schedule Management
+
+* Plan activities and deadlines
+* Stay synchronized with project timelines
+* Improve productivity through organized scheduling
+
+### 🔔 Real-Time Updates
+
+* Instant notifications
+* Activity tracking
+* Better workflow visibility
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* React
+* Vite
+* JavaScript
+* Tailwind CSS
+
+### Backend & Database
+
+* Supabase
+* PostgreSQL
+
+### Authentication
+
+* Supabase Auth
+
+### Deployment
+
+* Vercel
+
+### Development Tools
+
+* Git
+* GitHub
+* ESLint
+
+---
+
+## 🏗️ Project Structure
+
+```text
+Syncly/
+├── public/
+├── scripts/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── hooks/
+│   ├── services/
+│   ├── assets/
+│   └── layouts/
+├── supabase/
+│   └── migrations/
+├── package.json
+├── vite.config.js
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/essrosall/Syncly.git
 cd Syncly
 ```
 
-### 2. Install Dependencies
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
+### Configure Environment Variables
 
-Create a local environment file:
-
-```bash
-cp .env.example .env
-```
-
-Then configure the following variables:
+Create a `.env` file:
 
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-> **Note:** If these variables are not configured, Syncly will run in local demo authentication mode for development purposes.
+If these variables are not configured, the application can run in local demo mode for development.
 
 ---
 
-## 🔐 Email Confirmation Setup
-
-For production environments, email verification is recommended to ensure account security.
-
-### Recommended SMTP Provider: Resend
-
-Resend offers a generous free tier and integrates seamlessly with Supabase Authentication.
-
-### Setup Instructions
-
-1. Create an account at https://resend.com
-2. Verify your sender email address or domain.
-3. Open your Supabase Dashboard.
-4. Navigate to:
-
-```text
-Authentication → Providers → Email
-```
-
-5. Enable **Email Confirmations**.
-6. Configure SMTP using the following settings:
-
-```text
-Host: smtp.resend.com
-Port: 587
-Username: resend
-Password: YOUR_RESEND_API_KEY
-```
-
-7. Configure your application's Site URL and Redirect URL so users are redirected back to:
-
-```text
-/confirm-email
-```
-
-### Notes
-
-* After registration, users are automatically redirected to the email confirmation page.
-* Accounts remain unverified until the confirmation link is clicked.
-* Brevo can also be used as an alternative SMTP provider if preferred.
-
----
-
-## 🚀 Running the Application
+## 🚀 Running the Project
 
 Start the development server:
 
@@ -106,15 +144,15 @@ http://localhost:5173
 
 ---
 
-## 📦 Building for Production
+## 📦 Production Build
 
-Generate an optimized production build:
+Generate a production build:
 
 ```bash
 npm run build
 ```
 
-Preview the production build locally:
+Preview the build locally:
 
 ```bash
 npm run preview
@@ -122,21 +160,39 @@ npm run preview
 
 ---
 
-## 🛠 Tech Stack
 
-* React
-* Vite
-* JavaScript
-* Tailwind CSS
-* Supabase
-* PostgreSQL
-* Vercel
+## 🎯 Project Goals
+
+* Improve productivity through centralized management
+* Simplify team collaboration
+* Streamline project tracking
+* Enhance organization and scheduling
+* Provide a scalable productivity solution
 
 ---
 
-## 📄 License
+## 🌟 Future Enhancements
 
-This project is licensed under the MIT License.
+* AI-powered productivity assistant
+* Team chat and messaging
+* Mobile application support
+* Calendar integrations
+* Advanced analytics dashboard
+* Workflow automation
+* File collaboration tools
+
+---
+
+## 👨‍💻 Developer
+
+**John Rey Rosales**
+
+Graduating Information Technology Student passionate about:
+
+* UI/UX Design
+* Web Development
+* Productivity Systems
+* Modern Web Technologies
 
 ---
 
@@ -144,6 +200,8 @@ This project is licensed under the MIT License.
 
 ### Syncly
 
-**Stay Connected. Stay Organized. Stay Productive.**
+**Connecting people, tasks, and productivity in one workspace.**
+
+⭐ If you found this project interesting, consider giving it a star!
 
 </div>
