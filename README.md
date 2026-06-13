@@ -1,4 +1,4 @@
-# 🚀 Syncly
+# Syncly
 
 <div align="center">
 
@@ -6,13 +6,13 @@
 
 A modern productivity and collaboration platform designed to help students, teams, and organizations manage tasks, schedules, files, and workflows in one centralized workspace.
 
-🌐 Live Demo: https://mysyncly.vercel.app
+Live Demo: https://mysyncly.vercel.app
 
 </div>
 
 ---
 
-## 📖 Overview
+## Overview
 
 Syncly is a web-based productivity and collaboration management system that streamlines project coordination, task management, and team collaboration.
 
@@ -20,27 +20,27 @@ Instead of switching between multiple tools, users can organize work, manage sch
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 📋 Task Management
+### Task Management
 
 * Create and manage tasks
 * Track progress efficiently
 * Organize work by priorities
 
-### 👥 Team Collaboration
+### Team Collaboration
 
 * Collaborate with team members
 * Manage shared projects
 * Improve communication and coordination
 
-### 📅 Schedule Management
+### Schedule Management
 
 * Plan activities and deadlines
 * Stay synchronized with project timelines
 * Improve productivity through organized scheduling
 
-### 🔔 Real-Time Updates
+### Real-Time Updates
 
 * Instant notifications
 * Activity tracking
@@ -48,7 +48,7 @@ Instead of switching between multiple tools, users can organize work, manage sch
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -78,7 +78,7 @@ Instead of switching between multiple tools, users can organize work, manage sch
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```text
 Syncly/
@@ -100,7 +100,7 @@ Syncly/
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### Clone the Repository
 
@@ -128,7 +128,7 @@ If these variables are not configured, the application can run in local demo mod
 
 ---
 
-## 🚀 Running the Project
+## Running the Project
 
 Start the development server:
 
@@ -144,7 +144,7 @@ http://localhost:5173
 
 ---
 
-## 📦 Production Build
+## Production Build
 
 Generate a production build:
 
@@ -161,7 +161,7 @@ npm run preview
 ---
 
 
-## 🎯 Project Goals
+## Project Goals
 
 * Improve productivity through centralized management
 * Simplify team collaboration
@@ -171,7 +171,7 @@ npm run preview
 
 ---
 
-## 🌟 Future Enhancements
+## Future Enhancements
 
 * AI-powered productivity assistant
 * Team chat and messaging
@@ -183,11 +183,11 @@ npm run preview
 
 ---
 
-## 👨‍💻 Developer
+## Developer
 
 **John Rey Rosales**
 
-Graduating Information Technology Student passionate about:
+Graduating Information Technology Student, passionate about:
 
 * UI/UX Design
 * Web Development
